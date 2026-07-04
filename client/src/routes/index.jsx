@@ -55,6 +55,7 @@ const SubmitOpportunity = lazyLoad(() => import('../pages/Static/SubmitOpportuni
 const PrivacyPolicy = lazyLoad(() => import('../pages/Static/PrivacyPolicy'));
 const Terms = lazyLoad(() => import('../pages/Static/Terms'));
 const Cookies = lazyLoad(() => import('../pages/Static/Cookies'));
+const License = lazyLoad(() => import('../pages/Static/License'));
 const EmployerLogin = lazyLoad(() => import('../pages/Employer/EmployerLogin'));
 const EmployerRegister = lazyLoad(() => import('../pages/Employer/EmployerRegister'));
 const EmployerLayout = lazyLoad(() => import('../pages/Employer/EmployerLayout'));
@@ -122,6 +123,7 @@ export const routes = [
       { path: ROUTES.PRIVACY_POLICY, element: <PrivacyPolicy /> },
       { path: ROUTES.TERMS, element: <Terms /> },
       { path: ROUTES.COOKIES, element: <Cookies /> },
+      { path: ROUTES.LICENSE, element: <License /> },
       { path: ROUTES.LOGIN, element: <Login /> },
       { path: ROUTES.REGISTER, element: <Register /> },
       { path: ROUTES.EMPLOYER_LOGIN, element: <EmployerLogin /> },

@@ -2,6 +2,9 @@
   "name": "edurozgaar-client",
   "private": true,
   "version": "1.0.0",
+  "description": "EduRozgaar – Pakistan Job & Education E-Portal (React frontend)",
+  "license": "MIT",
+  "author": "Syed Daniyal Abbas",
   "type": "module",
   "scripts": {
     "dev": "vite",

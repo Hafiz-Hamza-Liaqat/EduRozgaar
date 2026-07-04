@@ -34,6 +34,7 @@ export const ROUTES = {
   PRIVACY_POLICY: '/privacy-policy',
   TERMS: '/terms',
   COOKIES: '/cookies',
+  LICENSE: '/license',
   EMPLOYER_LOGIN: '/employer/login',
   EMPLOYER_REGISTER: '/employer/register',
   EMPLOYER_DASHBOARD: '/employer',

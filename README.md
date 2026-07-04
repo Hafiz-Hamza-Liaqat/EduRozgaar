@@ -134,4 +134,6 @@ docker compose up --build
 
 ## License
 
-MIT.
+This project is licensed under the [MIT License](LICENSE).
+
+Copyright (c) 2026 Syed Daniyal Abbas. See [LICENSE](LICENSE) for the full text.

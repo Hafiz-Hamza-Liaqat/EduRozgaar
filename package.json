@@ -16,7 +16,7 @@
     "format": "prettier --write \"client/src/**/*.{js,jsx,ts,tsx,json,css,md}\" \"server/src/**/*.{js,ts,json,md}\""
   },
   "keywords": ["education", "jobs", "pakistan", "scholarships", "admissions"],
-  "author": "",
+  "author": "Syed Daniyal Abbas",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^9.1.0",

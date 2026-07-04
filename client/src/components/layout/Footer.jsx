@@ -118,8 +118,14 @@ export function Footer() {
           </div>
         </div>
         {/* Copyright bar */}
-        <div className="mt-12 pt-6 border-t border-white/10 text-center text-sm text-[#64748B]">
-          © 2026 EduRozgaar. All rights reserved.
+        <div className="mt-12 pt-6 border-t border-white/10 text-center text-sm text-[#64748B] space-y-2">
+          <p className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+            <Link to={ROUTES.PRIVACY_POLICY} className="hover:text-primary transition-colors">Privacy</Link>
+            <Link to={ROUTES.TERMS} className="hover:text-primary transition-colors">Terms</Link>
+            <Link to={ROUTES.COOKIES} className="hover:text-primary transition-colors">Cookies</Link>
+            <Link to={ROUTES.LICENSE} className="hover:text-primary transition-colors">License</Link>
+          </p>
+          <p>© 2026 EduRozgaar. All rights reserved. · Open source under MIT License.</p>
         </div>
       </div>
     </footer>

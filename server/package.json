@@ -2,6 +2,8 @@
   "name": "edurozgaar-server",
   "version": "1.0.0",
   "description": "EduRozgaar API server",
+  "license": "MIT",
+  "author": "Syed Daniyal Abbas",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

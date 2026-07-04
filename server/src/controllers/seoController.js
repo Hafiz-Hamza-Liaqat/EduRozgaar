@@ -36,6 +36,7 @@ const STATIC_PAGES = [
   { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
   { path: '/terms', changefreq: 'yearly', priority: '0.3' },
   { path: '/cookies', changefreq: 'yearly', priority: '0.3' },
+  { path: '/license', changefreq: 'yearly', priority: '0.3' },
   { path: '/latest-government-jobs', changefreq: 'daily', priority: '0.9' },
 ];
 
