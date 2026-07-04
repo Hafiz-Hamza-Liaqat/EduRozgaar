@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { admissionsApi, savedApi } from '../../services/listingsService';
 import { useListings } from '../../hooks/useListings';
 import { ROUTES } from '../../constants';
@@ -34,11 +36,24 @@ export default function Admissions() {
 
   return (
     <>
-      <Helmet>
-        <title>Admissions – EduRozgaar Pakistan</title>
-        <meta name="description" content="University and college admissions in Pakistan. Deadlines and application guides." />
-        <meta property="og:title" content="Admissions – EduRozgaar Pakistan" />
-      </Helmet>
+      <SeoHead
+        title="Admissions – EduRozgaar Pakistan"
+        description="University and college admissions in Pakistan. Deadlines and application guides."
+        canonical={ROUTES.ADMISSIONS}
+        keywords={`admissions Pakistan, university admissions, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Admissions', url: ROUTES.ADMISSIONS },
+          ]),
+          collectionPageSchema({
+            name: 'Admissions – EduRozgaar Pakistan',
+            description: 'University and college admissions in Pakistan. Deadlines and application guides.',
+            url: ROUTES.ADMISSIONS,
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Admissions</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Current admission cycles and deadlines.</p>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { Link, useParams } from 'react-router-dom';
 import { examsApi } from '../../services/listingsService';
 import { useToast } from '../../context/ToastContext';
@@ -64,6 +64,7 @@ export default function QuizTake() {
   if (loading || !quiz) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
+        <SeoHead title="Quiz" description="Exam preparation quiz." noindex />
         <div className="animate-pulse h-8 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
       </div>
     );
@@ -74,7 +75,7 @@ export default function QuizTake() {
   if (submitted) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <Helmet><title>Quiz Result – EduRozgaar</title></Helmet>
+        <SeoHead title="Quiz Result" noindex />
         <div className="p-6 rounded-xl border border-primary/30 dark:border-mint/30 bg-mint/20 dark:bg-mint/10 text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Your Score: {submitted.score}%</h2>
           <p className="text-gray-600 dark:text-gray-400 mt-2">{submitted.correctCount} / {submitted.totalQuestions} correct</p>
@@ -89,7 +90,7 @@ export default function QuizTake() {
   if (!started) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <Helmet><title>{quiz.title} – Quiz – EduRozgaar</title></Helmet>
+        <SeoHead title={`${quiz.title} – Quiz`} noindex />
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{quiz.title}</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">{questions.length} questions · {quiz.durationMinutes || 30} minutes</p>
         <button
@@ -108,7 +109,7 @@ export default function QuizTake() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <Helmet><title>{quiz.title} – Quiz – EduRozgaar</title></Helmet>
+      <SeoHead title={`${quiz.title} – Quiz`} noindex />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">{quiz.title}</h1>
         {secondsLeft != null && (

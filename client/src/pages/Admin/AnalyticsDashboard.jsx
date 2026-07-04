@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { v1Api } from '../../services/listingsService';
 
 export default function AnalyticsDashboard() {
@@ -17,7 +17,7 @@ export default function AnalyticsDashboard() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Helmet><title>Analytics – Admin – EduRozgaar</title></Helmet>
+        <SeoHead title="Analytics" noindex />
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -33,7 +33,7 @@ export default function AnalyticsDashboard() {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Helmet><title>Analytics – Admin – EduRozgaar</title></Helmet>
+        <SeoHead title="Analytics" noindex />
         <p className="text-red-600 dark:text-red-400">{error}</p>
       </div>
     );
@@ -41,9 +41,7 @@ export default function AnalyticsDashboard() {
 
   return (
     <>
-      <Helmet>
-        <title>Analytics Dashboard – Admin – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="Analytics Dashboard" description="Engagement and notification metrics." noindex />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Analytics Dashboard</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">Engagement and notification metrics. Placeholder for revenue and ad analytics.</p>

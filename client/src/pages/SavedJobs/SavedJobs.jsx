@@ -4,6 +4,7 @@ import { savedApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { formatDate } from '../../utils/formatDate';
 import { Alert } from '../../components/ui/Alerts';
+import { SeoHead } from '../../components/seo';
 
 export default function SavedJobs() {
   const [savedJobs, setSavedJobs] = useState([]);
@@ -26,9 +27,12 @@ export default function SavedJobs() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="animate-pulse text-gray-500 dark:text-gray-400">Loading saved items...</div>
-      </div>
+      <>
+        <SeoHead title="Saved listings" description="Your saved jobs, scholarships, and admissions." noindex />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="animate-pulse text-gray-500 dark:text-gray-400">Loading saved items...</div>
+        </div>
+      </>
     );
   }
 
@@ -36,7 +40,7 @@ export default function SavedJobs() {
 
   return (
     <>
-      <meta name="description" content="Your saved jobs, scholarships, and admissions." />
+      <SeoHead title="Saved listings" description="Your saved jobs, scholarships, and admissions." noindex />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Saved listings</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Jobs, scholarships, and admissions you saved for later.</p>

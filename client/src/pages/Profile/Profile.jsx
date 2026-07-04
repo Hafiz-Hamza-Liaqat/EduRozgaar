@@ -10,6 +10,7 @@ import { FormField } from '../../components/common/FormField';
 import { Alert } from '../../components/ui/Alerts';
 import { ROUTES } from '../../constants';
 import { formatDate } from '../../utils/formatDate';
+import { SeoHead } from '../../components/seo';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
@@ -90,15 +91,18 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center">
-        <div className="animate-pulse text-gray-500 dark:text-gray-400">Loading profile...</div>
-      </div>
+      <>
+        <SeoHead title="Profile" description="Your EduRozgaar profile and preferences." noindex />
+        <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center">
+          <div className="animate-pulse text-gray-500 dark:text-gray-400">Loading profile...</div>
+        </div>
+      </>
     );
   }
 
   return (
     <>
-      <meta name="description" content="Your EduRozgaar profile and preferences." />
+      <SeoHead title="Profile" description="Your EduRozgaar profile and preferences." noindex />
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Profile</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Manage your preferences and saved items.</p>

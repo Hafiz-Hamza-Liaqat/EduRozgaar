@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { employerApi } from '../../services/employerService';
 import { ROUTES } from '../../constants';
 
@@ -19,9 +19,7 @@ export default function EmployerJobs() {
 
   return (
     <>
-      <Helmet>
-        <title>My Job Posts – Employer – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="My Job Posts" description="View and manage your employer job posts." noindex />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A]">My Job Posts</h1>
         <Link

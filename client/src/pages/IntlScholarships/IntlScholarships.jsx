@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { intlScholarshipsApi, savedApi } from '../../services/listingsService';
 import { useListings } from '../../hooks/useListings';
 import { ROUTES } from '../../constants';
@@ -42,10 +44,24 @@ export default function IntlScholarships() {
 
   return (
     <>
-      <Helmet>
-        <title>International Scholarships – EduRozgaar</title>
-        <meta name="description" content="Scholarships and university admissions abroad. Filter by country, deadline, and visa requirements." />
-      </Helmet>
+      <SeoHead
+        title="International Scholarships – EduRozgaar"
+        description="Scholarships and university admissions abroad. Filter by country, deadline, and visa requirements."
+        canonical={ROUTES.INTL_SCHOLARSHIPS}
+        keywords={`international scholarships, study abroad, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'International Scholarships', url: ROUTES.INTL_SCHOLARSHIPS },
+          ]),
+          collectionPageSchema({
+            name: 'International Scholarships – EduRozgaar',
+            description: 'Scholarships and university admissions abroad. Filter by country, deadline, and visa requirements.',
+            url: ROUTES.INTL_SCHOLARSHIPS,
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">International Scholarships</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Scholarships and university admissions abroad. Save and track your applications.</p>

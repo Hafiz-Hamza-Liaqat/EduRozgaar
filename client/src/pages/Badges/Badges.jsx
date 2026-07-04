@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { badgesApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { Link } from 'react-router-dom';
@@ -35,10 +35,7 @@ export default function Badges() {
 
   return (
     <>
-      <Helmet>
-        <title>Badges & Leaderboard – EduRozgaar</title>
-        <meta name="description" content="Your achievements and top students leaderboard." />
-      </Helmet>
+      <SeoHead title="Badges & Leaderboard" description="Your achievements and top students leaderboard." noindex />
       <div className="max-w-4xl mx-auto px-4 py-6 md:py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Gamified Achievements</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">Earn badges for applying to jobs, completing quizzes, attending webinars, and more.</p>

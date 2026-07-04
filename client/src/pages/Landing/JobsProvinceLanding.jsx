@@ -1,36 +1,98 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import { v1Api } from '../../services/listingsService';
+import { Link, useParams } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, itemListSchema, combineSchemas } from '../../seo/schemas';
+import { v1Api, seoApi, jobsApi, savedApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
+import { HomeJobCard } from '../../components/listings/HomeListingCard';
+import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
+import { useAuth } from '../../context/AuthContext';
 
 export default function JobsProvinceLanding() {
   const { slug } = useParams();
-  const navigate = useNavigate();
-  const [seo, setSeo] = useState(null);
+  const { isAuthenticated } = useAuth();
+  const [meta, setMeta] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [savedIds, setSavedIds] = useState(new Set());
 
   useEffect(() => {
     if (!slug) return;
-    v1Api.landingPage('province', slug).then(({ data }) => {
-      setSeo(data);
-      navigate(`${ROUTES.JOBS}?province=${encodeURIComponent(slug)}`, { replace: true });
-    }).catch(() => navigate(ROUTES.JOBS, { replace: true }));
-  }, [slug, navigate]);
+    setLoading(true);
+    Promise.all([
+      v1Api.landingPage('province', slug).then(({ data }) => data?.meta || null).catch(() => null),
+      seoApi.jobsIn(slug).then(({ data }) => ({ meta: data.meta, jobs: data.data || [] })).catch(() => ({ meta: null, jobs: [] })),
+    ]).then(([landingMeta, jobsData]) => {
+      setMeta(landingMeta || jobsData.meta || {
+        title: `Jobs in ${slug}`,
+        description: `Find jobs in ${slug}, Pakistan.`,
+      });
+      setJobs(jobsData.jobs);
+    }).finally(() => setLoading(false));
+  }, [slug]);
 
-  if (!seo?.meta) return <div className="min-h-[40vh] flex items-center justify-center text-gray-500">Loading...</div>;
-  const { meta, schema } = seo;
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    savedApi.get().then(({ data }) => setSavedIds(new Set((data.savedJobs || []).map((j) => j._id)))).catch(() => {});
+  }, [isAuthenticated]);
+
+  const handleSave = async (id, save) => {
+    if (save) await jobsApi.save(id);
+    else await jobsApi.unsave(id);
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (save) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  };
+
+  const canonical = meta?.canonical || `${ROUTES.JOBS}/province/${slug}`;
+  const pageTitle = meta?.title?.split('|')[0]?.trim() || `Jobs in ${slug}`;
+  const description = meta?.description || `Find jobs in ${slug}, Pakistan.`;
+  const filteredJobsUrl = `${ROUTES.JOBS}?province=${encodeURIComponent(slug)}`;
+
   return (
     <>
-      <Helmet>
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <link rel="canonical" href={meta.canonical} />
-        <meta property="og:title" content={meta.og?.title} />
-        <meta property="og:description" content={meta.og?.description} />
-        <meta property="og:url" content={meta.og?.url} />
-      </Helmet>
-      {schema && <script type="application/ld+json">{JSON.stringify(schema)}</script>}
-      <div className="min-h-[40vh] flex items-center justify-center text-gray-500">Loading...</div>
+      <SeoHead
+        title={meta?.title || pageTitle}
+        description={description}
+        canonical={canonical}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Jobs', url: ROUTES.JOBS },
+            { name: pageTitle, url: canonical },
+          ]),
+          collectionPageSchema({ name: pageTitle, description, url: canonical }),
+          jobs.length > 0 && itemListSchema({ name: pageTitle, description, items: jobs })
+        )}
+      />
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{pageTitle}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
+          <div className="flex flex-wrap gap-3 mt-3 text-sm">
+            <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline">← All jobs</Link>
+            <Link to={filteredJobsUrl} className="text-primary dark:text-mint hover:underline">View all jobs in {slug} →</Link>
+          </div>
+        </div>
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => <ListingCardSkeleton key={i} />)}
+          </div>
+        ) : jobs.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {jobs.map((job) => (
+              <HomeJobCard key={job._id} job={job} saved={savedIds.has(job._id)} onSaveToggle={handleSave} showBadge />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 dark:text-gray-400">
+            No jobs found. <Link to={filteredJobsUrl} className="text-primary dark:text-mint">Browse jobs in {slug}</Link>
+          </p>
+        )}
+      </div>
     </>
   );
 }

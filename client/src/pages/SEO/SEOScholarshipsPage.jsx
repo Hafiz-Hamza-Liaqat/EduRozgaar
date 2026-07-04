@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, itemListSchema, combineSchemas } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
 import { seoApi } from '../../services/listingsService';
 import { HomeScholarshipCard } from '../../components/listings/HomeListingCard';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
 import { useAuth } from '../../context/AuthContext';
 import { scholarshipsApi, savedApi } from '../../services/listingsService';
-
-const SITE_URL = import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk';
 
 export default function SEOScholarshipsPage() {
   const { country } = useParams();
@@ -45,27 +44,37 @@ export default function SEOScholarshipsPage() {
     });
   };
 
-  const canonical = meta?.canonical || `${SITE_URL}/scholarships-in-${country}`;
+  const canonical = meta?.canonical || `/scholarships-in-${country}`;
+  const pageTitle = meta?.title?.split('|')[0]?.trim() || `Scholarships in ${country}`;
+  const description = meta?.description || 'Find scholarships.';
 
   return (
     <>
-      {meta && (
-        <Helmet>
-          <title>{meta.title}</title>
-          <meta name="description" content={meta.description} />
-          <link rel="canonical" href={canonical} />
-          <meta property="og:title" content={meta.title} />
-          <meta property="og:description" content={meta.description} />
-          <meta property="og:url" content={canonical} />
-          <meta property="og:type" content="website" />
-        </Helmet>
-      )}
+      <SeoHead
+        title={meta?.title || pageTitle}
+        description={description}
+        canonical={canonical}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Scholarships', url: ROUTES.SCHOLARSHIPS },
+            { name: pageTitle, url: canonical },
+          ]),
+          collectionPageSchema({ name: pageTitle, description, url: canonical }),
+          scholarships.length > 0 && itemListSchema({
+            name: pageTitle,
+            description,
+            items: scholarships,
+            itemType: 'Scholarship',
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-            {meta?.title?.split('|')[0]?.trim() || `Scholarships in ${country}`}
+            {pageTitle}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{meta?.description}</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
           <Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint hover:underline text-sm mt-2 inline-block">← All scholarships</Link>
         </div>
         {loading ? (

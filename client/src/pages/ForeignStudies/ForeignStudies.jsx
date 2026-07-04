@@ -1,7 +1,13 @@
+import { SeoHead } from '../../components/seo';
+
 export default function ForeignStudies() {
   return (
     <>
-      <meta name="description" content="Study abroad opportunities for Pakistani students. UK, USA, Australia, and more." />
+      <SeoHead
+        title="Foreign Studies"
+        description="Study abroad opportunities for Pakistani students. UK, USA, Australia, and more."
+        noindex
+      />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Foreign Studies</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">Study abroad programs and guides. More content coming soon.</p>

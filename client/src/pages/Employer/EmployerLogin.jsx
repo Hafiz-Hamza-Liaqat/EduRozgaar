@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { useEmployerAuth } from '../../context/EmployerAuthContext';
 import { ROUTES } from '../../constants';
 
@@ -30,9 +30,7 @@ export default function EmployerLogin() {
 
   return (
     <>
-      <Helmet>
-        <title>Employer Login – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="Employer Login" description="Sign in to manage your job posts." noindex />
       <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm p-8">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { scholarshipSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { scholarshipsApi, savedApi, recentViewedApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { SaveButton } from '../../components/listings/SaveButton';
@@ -38,15 +39,23 @@ export default function ScholarshipDetail() {
   if (error || !item) return <div className="max-w-3xl mx-auto px-4 py-8"><Alert variant="error">{error || 'Not found'}</Alert><Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint mt-4 inline-block">← Back to Scholarships</Link></div>;
 
   const related = item.related || [];
-  const canonicalUrl = `${import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk'}${ROUTES.SCHOLARSHIPS}/${item.slug || item._id}`;
+  const canonicalPath = `${ROUTES.SCHOLARSHIPS}/${item.slug || item._id}`;
+
   return (
     <>
-      <Helmet>
-        <title>{item.title} – Scholarships – EduRozgaar</title>
-        <meta name="description" content={item.description || item.title} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content={`${item.title} – EduRozgaar`} />
-      </Helmet>
+      <SeoHead
+        title={`${item.title} – Scholarships`}
+        description={item.description || item.title}
+        canonical={canonicalPath}
+        jsonLd={combineSchemas(
+          scholarshipSchema(item),
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Scholarships', url: ROUTES.SCHOLARSHIPS },
+            { name: item.title, url: canonicalPath },
+          ]),
+        )}
+      />
       <article className="max-w-3xl mx-auto px-4 py-6 md:py-8">
         <Link to={ROUTES.SCHOLARSHIPS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← Back to Scholarships</Link>
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 md:p-8">

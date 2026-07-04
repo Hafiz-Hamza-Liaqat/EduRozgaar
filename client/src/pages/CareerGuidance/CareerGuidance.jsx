@@ -1,4 +1,6 @@
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../constants';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
@@ -60,10 +62,24 @@ const JOB_PREP_TIPS = [
 export default function CareerGuidance() {
   return (
     <>
-      <Helmet>
-        <title>Career Guidance – EduRozgaar</title>
-        <meta name="description" content="Career paths by degree, skill development, and resume & interview tips for Pakistani students." />
-      </Helmet>
+      <SeoHead
+        title="Career Guidance – EduRozgaar"
+        description="Career paths by degree, skill development, and resume & interview tips for Pakistani students."
+        canonical={ROUTES.CAREER_GUIDANCE}
+        keywords={`career guidance, career paths, interview tips, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Career Guidance', url: ROUTES.CAREER_GUIDANCE },
+          ]),
+          webPageSchema({
+            name: 'Career Guidance – EduRozgaar',
+            description: 'Career paths by degree, skill development, and resume & interview tips for Pakistani students.',
+            url: ROUTES.CAREER_GUIDANCE,
+          })
+        )}
+      />
       <div className="max-w-5xl mx-auto px-4 py-8 md:py-10">
         <Link to={ROUTES.DASHBOARD} className="text-edur-steel dark:text-edur-sky hover:underline text-sm mb-6 inline-block">← Dashboard</Link>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">Career Guidance</h1>

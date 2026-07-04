@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Help Center';
+const DESCRIPTION = 'Get help using EduRozgaar: how to search jobs, save listings, apply, and manage your account.';
 
 export default function HelpCenter() {
   return (
     <>
-      <Helmet>
-        <title>Help Center – EduRozgaar</title>
-        <meta name="description" content="Get help using EduRozgaar: how to search jobs, save listings, apply, and manage your account." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.HELP_CENTER}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Help Center', url: ROUTES.HELP_CENTER },
+          ]),
+          webPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.HELP_CENTER })
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Help Center</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">

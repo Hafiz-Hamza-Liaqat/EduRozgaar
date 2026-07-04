@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Cookie Policy';
+const DESCRIPTION = 'How EduRozgaar uses cookies and similar technologies.';
 
 export default function Cookies() {
   return (
     <>
-      <Helmet>
-        <title>Cookie Policy – EduRozgaar</title>
-        <meta name="description" content="How EduRozgaar uses cookies and similar technologies." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.COOKIES}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Cookie Policy', url: ROUTES.COOKIES },
+          ]),
+          webPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.COOKIES })
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Cookie Policy</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">Last updated: 2026</p>

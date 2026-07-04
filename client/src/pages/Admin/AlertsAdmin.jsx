@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { v1Api } from '../../services/listingsService';
 import { PROVINCES } from '../../constants/profileOptions';
 import { JOB_CATEGORIES } from '../../constants/listings';
@@ -32,7 +32,7 @@ export default function AlertsAdmin() {
 
   return (
     <>
-      <Helmet><title>Alerts – Admin – EduRozgaar</title></Helmet>
+      <SeoHead title="Alerts" description="Send multi-channel alerts by province and interest." noindex />
       <div className="max-w-xl">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Multi-Channel Alerts</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">

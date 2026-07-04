@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
+import { DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS } from '../../seo/config';
 import { ROUTES } from '../../constants';
 import { PROVINCES } from '../../constants/listings';
 import { SearchBar } from '../../components/ui/SearchBar';
@@ -19,9 +21,6 @@ const SCHOLARSHIPS_LIMIT = 6;
 const ADMISSIONS_LIMIT = 6;
 const BLOG_LIMIT = 4;
 const SKELETON_COUNT = 3;
-
-const SITE_URL = import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk';
-const DEFAULT_DESCRIPTION = "EduRozgaar – Pakistan's job and education portal. Find jobs, scholarships, admissions, and study abroad opportunities.";
 
 function readingTimeMinutes(content) {
   if (!content || typeof content !== 'string') return 5;
@@ -148,15 +147,21 @@ export default function Home() {
 
   return (
     <>
-      <Helmet>
-        <title>EduRozgaar – Jobs & Education Portal Pakistan</title>
-        <meta name="description" content={DEFAULT_DESCRIPTION} />
-        <link rel="canonical" href={SITE_URL} />
-        <meta property="og:title" content="EduRozgaar – Jobs & Education Portal Pakistan" />
-        <meta property="og:description" content={DEFAULT_DESCRIPTION} />
-        <meta property="og:url" content={SITE_URL} />
-        <meta property="og:type" content="website" />
-      </Helmet>
+      <SeoHead
+        title="EduRozgaar – Jobs & Education Portal Pakistan"
+        description={DEFAULT_DESCRIPTION}
+        canonical={ROUTES.HOME}
+        keywords={DEFAULT_KEYWORDS}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([{ name: 'Home', url: ROUTES.HOME }]),
+          webPageSchema({
+            name: 'EduRozgaar – Jobs & Education Portal Pakistan',
+            description: DEFAULT_DESCRIPTION,
+            url: ROUTES.HOME,
+          })
+        )}
+      />
 
       {/* 1. HERO */}
       <section className="relative bg-gradient-to-br from-edur-steel via-edur-blue to-edur-steel dark:from-edur-steel dark:via-edur-blue dark:to-edur-steel py-12 sm:py-14 md:py-24 px-4 sm:px-6 overflow-hidden">

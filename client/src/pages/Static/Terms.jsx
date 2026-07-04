@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Terms of Service';
+const DESCRIPTION = 'EduRozgaar terms of service for using the jobs, scholarships, and admissions platform.';
 
 export default function Terms() {
   return (
     <>
-      <Helmet>
-        <title>Terms of Service – EduRozgaar</title>
-        <meta name="description" content="EduRozgaar terms of service for using the jobs, scholarships, and admissions platform." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.TERMS}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Terms of Service', url: ROUTES.TERMS },
+          ]),
+          webPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.TERMS })
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Terms of Service</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">Last updated: 2026</p>

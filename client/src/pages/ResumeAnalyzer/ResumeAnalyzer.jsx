@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { Link } from 'react-router-dom';
 import { resumeApi } from '../../services/listingsService';
 import { useToast } from '../../context/ToastContext';
@@ -35,10 +35,7 @@ export default function ResumeAnalyzer() {
 
   return (
     <>
-      <Helmet>
-        <title>Resume Analyzer – EduRozgaar</title>
-        <meta name="description" content="Upload your resume and get matched with top jobs based on your skills and experience." />
-      </Helmet>
+      <SeoHead title="Resume Analyzer" description="Upload your resume and get matched with top jobs based on your skills and experience." noindex />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">AI Job Matching Resume Scanner</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Upload your resume (PDF or DOCX). We extract skills, education, and experience and suggest top matching jobs with improvement tips.</p>

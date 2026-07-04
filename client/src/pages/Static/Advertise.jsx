@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Advertise With Us';
+const DESCRIPTION = 'Reach students and job seekers across Pakistan. Advertise jobs, courses, or services on EduRozgaar.';
 
 export default function Advertise() {
   return (
     <>
-      <Helmet>
-        <title>Advertise With Us – EduRozgaar</title>
-        <meta name="description" content="Reach students and job seekers across Pakistan. Advertise jobs, courses, or services on EduRozgaar." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.ADVERTISE}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Advertise', url: ROUTES.ADVERTISE },
+          ]),
+          webPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.ADVERTISE })
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Advertise With Us</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">

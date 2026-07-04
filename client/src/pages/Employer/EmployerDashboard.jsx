@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { employerApi } from '../../services/employerService';
 import { ROUTES } from '../../constants';
 
@@ -36,9 +36,7 @@ export default function EmployerDashboard() {
 
   return (
     <>
-      <Helmet>
-        <title>Dashboard – Employer – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="Employer Dashboard" description="Manage your job posts and applications." noindex />
       <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card title="Active Jobs" value={data?.activeJobs ?? 0} />

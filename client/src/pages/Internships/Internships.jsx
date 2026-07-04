@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { internshipsApi, savedApi } from '../../services/listingsService';
 import { useListings } from '../../hooks/useListings';
 import { ROUTES } from '../../constants';
@@ -45,10 +47,24 @@ export default function Internships() {
 
   return (
     <>
-      <Helmet>
-        <title>Internships & Trainings – EduRozgaar</title>
-        <meta name="description" content="Find internships and training opportunities across Pakistan." />
-      </Helmet>
+      <SeoHead
+        title="Internships & Trainings – EduRozgaar"
+        description="Find internships and training opportunities across Pakistan."
+        canonical={ROUTES.INTERNSHIPS}
+        keywords={`internships Pakistan, training opportunities, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Internships', url: ROUTES.INTERNSHIPS },
+          ]),
+          collectionPageSchema({
+            name: 'Internships & Trainings – EduRozgaar',
+            description: 'Find internships and training opportunities across Pakistan.',
+            url: ROUTES.INTERNSHIPS,
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Internships & Trainings</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Discover internship and training opportunities to kickstart your career.</p>

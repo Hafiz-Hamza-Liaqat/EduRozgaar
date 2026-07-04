@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { aboutPageSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'About Us';
+const DESCRIPTION = "EduRozgaar is Pakistan's student-first portal for jobs, scholarships, admissions, and internships.";
 
 export default function About() {
   return (
     <>
-      <Helmet>
-        <title>About Us – EduRozgaar</title>
-        <meta name="description" content="EduRozgaar is Pakistan's student-first portal for jobs, scholarships, admissions, and internships." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.ABOUT}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'About', url: ROUTES.ABOUT },
+          ]),
+          aboutPageSchema({ name: 'About EduRozgaar', description: DESCRIPTION, url: ROUTES.ABOUT })
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">About EduRozgaar</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">

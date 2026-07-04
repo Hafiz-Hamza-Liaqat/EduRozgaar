@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
+import { ROUTES } from '../../constants';
 import { webinarsApi } from '../../services/listingsService';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../utils/formatDate';
@@ -39,10 +42,24 @@ export default function Webinars() {
 
   return (
     <>
-      <Helmet>
-        <title>Live Webinars & Workshops – EduRozgaar</title>
-        <meta name="description" content="Join live webinars and watch recorded sessions on careers, exams, and scholarships." />
-      </Helmet>
+      <SeoHead
+        title="Live Webinars & Workshops – EduRozgaar"
+        description="Join live webinars and watch recorded sessions on careers, exams, and scholarships."
+        canonical={ROUTES.WEBINARS}
+        keywords={`webinars, workshops, career guidance, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Webinars', url: ROUTES.WEBINARS },
+          ]),
+          collectionPageSchema({
+            name: 'Live Webinars & Workshops – EduRozgaar',
+            description: 'Join live webinars and watch recorded sessions on careers, exams, and scholarships.',
+            url: ROUTES.WEBINARS,
+          })
+        )}
+      />
       <div className="max-w-4xl mx-auto px-4 py-6 md:py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Live Webinars & Workshops</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">Register for upcoming sessions and watch past recordings.</p>

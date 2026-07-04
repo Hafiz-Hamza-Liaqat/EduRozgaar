@@ -1,7 +1,13 @@
+import { SeoHead } from '../../components/seo';
+
 export default function SchoolsAndColleges() {
   return (
     <>
-      <meta name="description" content="Schools and colleges in Pakistan. Directories and information." />
+      <SeoHead
+        title="Schools & Colleges"
+        description="Schools and colleges in Pakistan. Directories and information."
+        noindex
+      />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Schools & Colleges</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">Explore institutions across Pakistan. Full directory coming soon.</p>

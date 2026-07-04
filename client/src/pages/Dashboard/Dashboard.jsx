@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardApi, applicationsApi, referralsApi, resumesApi } from '../../services/listingsService';
@@ -7,8 +7,6 @@ import { ROUTES } from '../../constants';
 import { formatDate } from '../../utils/formatDate';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
 import { Chatbot } from '../../components/chatbot/Chatbot';
-
-const SITE_URL = import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -40,11 +38,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <Helmet>
-          <title>Dashboard – EduRozgaar</title>
-          <meta name="description" content="Your EduRozgaar dashboard." />
-          <meta property="og:title" content="Dashboard – EduRozgaar" />
-        </Helmet>
+        <SeoHead title="Dashboard" description="Your EduRozgaar dashboard." noindex />
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
           <div className="grid sm:grid-cols-2 gap-4">
@@ -59,7 +53,7 @@ export default function Dashboard() {
   if (error || !dashboard) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <Helmet><title>Dashboard – EduRozgaar</title></Helmet>
+        <SeoHead title="Dashboard" noindex />
         <p className="text-red-600 dark:text-red-400">{error || 'Could not load dashboard.'}</p>
       </div>
     );
@@ -81,12 +75,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <Helmet>
-        <title>Dashboard – EduRozgaar</title>
-        <meta name="description" content="Your EduRozgaar dashboard: saved listings, alerts, and recommendations." />
-        <link rel="canonical" href={`${SITE_URL}${ROUTES.DASHBOARD}`} />
-        <meta property="og:title" content="Dashboard – EduRozgaar" />
-      </Helmet>
+      <SeoHead title="Dashboard" description="Your EduRozgaar dashboard: saved listings, alerts, and recommendations." noindex />
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h1>

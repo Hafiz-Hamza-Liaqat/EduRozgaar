@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { employerApi } from '../../services/employerService';
 
 const STATUS_OPTIONS = ['shortlisted', 'rejected', 'interview', 'hired'];
@@ -44,9 +44,7 @@ export default function EmployerApplications() {
 
   return (
     <>
-      <Helmet>
-        <title>Applications – Employer – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="Applications" description="Review and manage job applications." noindex />
       <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">Applications</h1>
       <div className="mb-4">
         <label className="block text-sm font-medium text-slate-600 mb-2">Select job</label>

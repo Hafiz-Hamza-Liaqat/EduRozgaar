@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { adminApi } from '../../services/listingsService';
 
 export default function GrowthDashboard() {
@@ -28,7 +28,7 @@ export default function GrowthDashboard() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <Helmet><title>Growth Dashboard – Admin – EduRozgaar</title></Helmet>
+        <SeoHead title="Growth Dashboard" noindex />
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -44,7 +44,7 @@ export default function GrowthDashboard() {
   if (error) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <Helmet><title>Growth Dashboard – Admin – EduRozgaar</title></Helmet>
+        <SeoHead title="Growth Dashboard" noindex />
         <p className="text-red-600 dark:text-red-400">{error}</p>
       </div>
     );
@@ -52,7 +52,7 @@ export default function GrowthDashboard() {
 
   return (
     <>
-      <Helmet><title>Growth Dashboard – Admin – EduRozgaar</title></Helmet>
+      <SeoHead title="Growth Dashboard" noindex />
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Growth Dashboard</h1>

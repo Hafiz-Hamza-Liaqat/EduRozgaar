@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { blogsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { SAMPLE_BLOGS } from '../../constants/seedData';
@@ -38,10 +40,24 @@ export default function Blog() {
 
   return (
     <>
-      <Helmet>
-        <title>Blog – Career Advice, Scholarships, Job Tips – EduRozgaar Pakistan</title>
-        <meta name="description" content="EduRozgaar blog – career tips, admission guides, scholarships, and education news for Pakistan." />
-      </Helmet>
+      <SeoHead
+        title="Blog – Career Advice, Scholarships, Job Tips – EduRozgaar Pakistan"
+        description="EduRozgaar blog – career tips, admission guides, scholarships, and education news for Pakistan."
+        canonical={ROUTES.BLOG}
+        keywords={`career advice, education blog, job tips, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Blog', url: ROUTES.BLOG },
+          ]),
+          collectionPageSchema({
+            name: 'Blog – Career Advice, Scholarships, Job Tips – EduRozgaar Pakistan',
+            description: 'EduRozgaar blog – career tips, admission guides, scholarships, and education news for Pakistan.',
+            url: ROUTES.BLOG,
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <ScrollReveal>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Blog & Career Articles</h1>

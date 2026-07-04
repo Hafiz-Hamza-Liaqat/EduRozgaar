@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { employerApi } from '../../services/employerService';
 
 export default function EmployerAnalytics() {
@@ -24,9 +24,7 @@ export default function EmployerAnalytics() {
 
   return (
     <>
-      <Helmet>
-        <title>Analytics – Employer – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="Job Analytics" description="View analytics for your job posts." noindex />
       <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">Job Analytics</h1>
       <div className="mb-4">
         <label className="block text-sm font-medium text-slate-600 mb-2">Select job</label>

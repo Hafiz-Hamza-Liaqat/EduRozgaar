@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
+import { blogPostingSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
+import { buildCanonicalUrl } from '../../seo/config';
 import { blogsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { SAMPLE_BLOGS } from '../../constants/seedData';
@@ -110,21 +112,28 @@ export default function BlogPost() {
     );
   }
 
-  const canonicalUrl = `${import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk'}${ROUTES.BLOG}/${post.slug}`;
+  const canonicalPath = `${ROUTES.BLOG}/${post.slug}`;
   const readingMin = readingTimeMinutes(post.content || post.excerpt);
   const toc = extractHeadings(post.content);
 
   return (
     <>
-      <Helmet>
-        <title>{post.title} – Blog – EduRozgaar</title>
-        <meta name="description" content={post.excerpt || post.title} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={post.excerpt || post.title} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:type" content="article" />
-      </Helmet>
+      <SeoHead
+        title={`${post.title} – Blog`}
+        description={post.excerpt || post.title}
+        canonical={canonicalPath}
+        ogType="article"
+        ogImage={post.featuredImage || post.imageUrl || undefined}
+        ogImageAlt={post.title}
+        jsonLd={combineSchemas(
+          blogPostingSchema(post, { readingMinutes: readingMin }),
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Blog', url: ROUTES.BLOG },
+            { name: post.title, url: canonicalPath },
+          ]),
+        )}
+      />
       <article className="max-w-4xl mx-auto px-4 py-8">
         <Link to={ROUTES.BLOG} className="text-sm text-edur-steel dark:text-edur-sky hover:underline mb-6 inline-block">← Back to Blog</Link>
 
@@ -143,7 +152,7 @@ export default function BlogPost() {
         )}
 
         {post.featuredImage ? (
-          <img src={post.featuredImage} alt="" className="w-full rounded-xl mt-6 object-cover max-h-64" />
+          <img src={post.featuredImage || post.imageUrl} alt={post.title} className="w-full rounded-xl mt-6 object-cover max-h-64" loading="lazy" />
         ) : (
           <div className="w-full h-48 rounded-xl mt-6 bg-gradient-to-br from-edur-steel/20 to-edur-blue/20 dark:from-edur-steel/30 dark:to-edur-blue/30 flex items-center justify-center text-edur-steel/50 dark:text-edur-sky/50 text-sm">
             Featured image
@@ -155,7 +164,7 @@ export default function BlogPost() {
             <div className="prose dark:prose-invert text-gray-700 dark:text-gray-300 whitespace-pre-wrap max-w-none">
               {post.content || post.excerpt}
             </div>
-            <ShareButtons title={post.title} url={canonicalUrl} />
+            <ShareButtons title={post.title} url={buildCanonicalUrl(canonicalPath)} />
           </div>
           {toc.length > 0 && (
             <aside className="lg:w-56 shrink-0">

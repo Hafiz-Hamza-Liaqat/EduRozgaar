@@ -1,5 +1,4 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { useEmployerAuth } from '../../context/EmployerAuthContext';
 import { ROUTES } from '../../constants';
 
@@ -17,11 +16,7 @@ export default function EmployerLayout() {
   const { employer, logout } = useEmployerAuth();
 
   return (
-    <>
-      <Helmet>
-        <title>Employer Dashboard – EduRozgaar</title>
-      </Helmet>
-      <div className="min-h-screen bg-[#F8FAFC] flex">
+    <div className="min-h-screen bg-[#F8FAFC] flex">
         <aside className="w-56 bg-white border-r border-[#E5E7EB] flex flex-col">
           <div className="p-4 border-b border-[#E5E7EB]">
             <Link to={ROUTES.HOME} className="text-[#0F172A] font-semibold tracking-tight">
@@ -60,7 +55,6 @@ export default function EmployerLayout() {
             <Outlet />
           </div>
         </main>
-      </div>
-    </>
+    </div>
   );
 }

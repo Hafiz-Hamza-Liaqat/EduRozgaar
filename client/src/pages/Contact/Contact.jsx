@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, contactPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Contact Us';
+const DESCRIPTION = 'Contact EduRozgaar for support, partnerships, or to submit opportunities.';
 
 export default function Contact() {
   return (
     <>
-      <Helmet>
-        <title>Contact Us – EduRozgaar</title>
-        <meta name="description" content="Contact EduRozgaar for support, partnerships, or to submit opportunities." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.CONTACT}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Contact', url: ROUTES.CONTACT },
+          ]),
+          contactPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.CONTACT })
+        )}
+      />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Contact Us</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base">

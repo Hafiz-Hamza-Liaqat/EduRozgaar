@@ -1,6 +1,8 @@
 import { useState, useEffect, Fragment } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { jobsApi, savedApi, recommendationsApi, v1Api } from '../../services/listingsService';
 import { useListings } from '../../hooks/useListings';
 import { ROUTES } from '../../constants';
@@ -70,12 +72,24 @@ export default function Jobs() {
 
   return (
     <>
-      <Helmet>
-        <title>Jobs – EduRozgaar Pakistan</title>
-        <meta name="description" content="Browse job listings in Pakistan. Full-time, part-time, and internship opportunities." />
-        <meta property="og:title" content="Jobs – EduRozgaar Pakistan" />
-        <meta property="og:description" content="Browse job listings in Pakistan. Full-time, part-time, and internship opportunities." />
-      </Helmet>
+      <SeoHead
+        title="Jobs – EduRozgaar Pakistan"
+        description="Browse job listings in Pakistan. Full-time, part-time, and internship opportunities."
+        canonical={ROUTES.JOBS}
+        keywords={`jobs Pakistan, government jobs, FPSC, PPSC, NTS, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Jobs', url: ROUTES.JOBS },
+          ]),
+          collectionPageSchema({
+            name: 'Jobs – EduRozgaar Pakistan',
+            description: 'Browse job listings in Pakistan. Full-time, part-time, and internship opportunities.',
+            url: ROUTES.JOBS,
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
         <AdBanner slotId="jobs-header" className="mb-4" />
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Jobs</h1>

@@ -30,6 +30,12 @@ export function LanguageProvider({ children }) {
   useEffect(() => {
     const stored = localStorage.getItem(LANG_KEY);
     if (stored && stored !== lang) setLangState(stored);
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = params.get('lang');
+    if (urlLang === 'en' || urlLang === 'ur') {
+      setLangState(urlLang);
+      localStorage.setItem(LANG_KEY, urlLang);
+    }
   }, []);
 
   const t = useCallback((key) => {

@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Submit Opportunity';
+const DESCRIPTION = 'Submit a job, scholarship, or admission opportunity to EduRozgaar for review.';
 
 export default function SubmitOpportunity() {
   return (
     <>
-      <Helmet>
-        <title>Submit Opportunity – EduRozgaar</title>
-        <meta name="description" content="Submit a job, scholarship, or admission opportunity to EduRozgaar for review." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.SUBMIT_OPPORTUNITY}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Submit Opportunity', url: ROUTES.SUBMIT_OPPORTUNITY },
+          ]),
+          webPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.SUBMIT_OPPORTUNITY })
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Submit an Opportunity</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">

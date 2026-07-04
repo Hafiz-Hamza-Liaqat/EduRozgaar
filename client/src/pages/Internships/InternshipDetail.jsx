@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { jobPostingSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
+import { buildCanonicalUrl } from '../../seo/config';
 import { internshipsApi, savedApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { SaveButton } from '../../components/listings/SaveButton';
@@ -71,12 +73,31 @@ export default function InternshipDetail() {
     );
   }
 
+  const canonicalPath = `${ROUTES.INTERNSHIPS}/${internship.slug || internship._id}`;
+  const description = `${internship.title} at ${internship.organization}. ${internship.duration || ''}`.trim();
+  const postingSchema = jobPostingSchema({
+    ...internship,
+    organization: internship.organization,
+    type: 'INTERN',
+    slug: undefined,
+  });
+  if (postingSchema) postingSchema.url = buildCanonicalUrl(canonicalPath);
+
   return (
     <>
-      <Helmet>
-        <title>{internship.title} – EduRozgaar</title>
-        <meta name="description" content={`${internship.title} at ${internship.organization}. ${internship.duration || ''}`} />
-      </Helmet>
+      <SeoHead
+        title={internship.title}
+        description={description}
+        canonical={canonicalPath}
+        jsonLd={combineSchemas(
+          postingSchema,
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Internships', url: ROUTES.INTERNSHIPS },
+            { name: internship.title, url: canonicalPath },
+          ]),
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
         <Link to={ROUTES.INTERNSHIPS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← Internships</Link>
 

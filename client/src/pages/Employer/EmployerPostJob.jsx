@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { employerApi } from '../../services/employerService';
 import { ROUTES } from '../../constants';
 
@@ -72,9 +72,7 @@ export default function EmployerPostJob() {
   if (step === 'plan' && createdJob) {
     return (
       <>
-        <Helmet>
-          <title>Choose Plan – Employer – EduRozgaar</title>
-        </Helmet>
+        <SeoHead title="Choose Plan" description="Select a plan to publish your job post." noindex />
         <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-2">Choose a plan</h1>
         <p className="text-slate-600 mb-6">Job &quot;{createdJob.title}&quot; is saved as draft. Select a plan to publish.</p>
         {error && (
@@ -124,9 +122,7 @@ export default function EmployerPostJob() {
 
   return (
     <>
-      <Helmet>
-        <title>Post New Job – Employer – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="Post New Job" description="Create and publish a new job listing." noindex />
       <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">Post New Job</h1>
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{error}</div>

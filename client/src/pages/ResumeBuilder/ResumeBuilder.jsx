@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useSearchParams } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { useAuth } from '../../context/AuthContext';
 import { resumesApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
@@ -110,10 +112,24 @@ export default function ResumeBuilder() {
 
   return (
     <>
-      <Helmet>
-        <title>Resume Builder – EduRozgaar</title>
-        <meta name="description" content="Build a professional CV for jobs, scholarships, and admissions. Multiple templates, AI suggestions, PDF export." />
-      </Helmet>
+      <SeoHead
+        title="Resume Builder – EduRozgaar"
+        description="Build a professional CV for jobs, scholarships, and admissions. Multiple templates, AI suggestions, PDF export."
+        canonical={ROUTES.RESUME_BUILDER}
+        keywords={`resume builder, CV maker, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Resume Builder', url: ROUTES.RESUME_BUILDER },
+          ]),
+          webPageSchema({
+            name: 'Resume Builder – EduRozgaar',
+            description: 'Build a professional CV for jobs, scholarships, and admissions. Multiple templates, AI suggestions, PDF export.',
+            url: ROUTES.RESUME_BUILDER,
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
         <Link to={ROUTES.DASHBOARD} className="text-primary dark:text-mint hover:underline text-sm mb-4 inline-block">← Dashboard</Link>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Resume Builder</h1>

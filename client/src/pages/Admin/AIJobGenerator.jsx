@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { aiJobApi } from '../../services/listingsService';
 import { useToast } from '../../context/ToastContext';
 
@@ -38,9 +38,7 @@ export default function AIJobGenerator() {
 
   return (
     <>
-      <Helmet>
-        <title>AI Job Generator – Admin – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="AI Job Generator" description="Generate SEO-friendly job descriptions with AI." noindex />
       <div className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI Job Description Generator</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Generate SEO-friendly job descriptions. Edit the output before saving to Jobs.</p>

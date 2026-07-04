@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { jobPostingSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { jobsApi, savedApi, recentViewedApi, coverLetterApi, recommendationsApi, applicationsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { useAuth } from '../../context/AuthContext';
@@ -93,30 +94,25 @@ export default function JobDetail() {
   const isExternal = job.applyType === 'external';
   const applicationLink = job.applicationLink || job.sourceUrl;
 
-  const canonicalUrl = `${import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk'}${ROUTES.JOBS}/${job.slug || job._id}`;
-  const jobSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'JobPosting',
-    title: job.title,
-    description: job.description || `${job.title} at ${job.organization || job.company}`,
-    datePosted: job.createdAt,
-    validThrough: job.deadline,
-    hiringOrganization: { '@type': 'Organization', name: job.organization || job.company },
-    jobLocation: job.province || job.location ? { '@type': 'Place', address: { addressRegion: job.province || job.location } } : undefined,
-    employmentType: job.type || 'FULL_TIME',
-  };
+  const canonicalPath = `${ROUTES.JOBS}/${job.slug || job._id}`;
+  const description = job.description || `${job.title} at ${job.organization || job.company}`;
 
   return (
     <>
-      <Helmet>
-        <title>{job.title} – Jobs – EduRozgaar</title>
-        <meta name="description" content={job.description || `${job.title} at ${job.organization || job.company}`} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content={`${job.title} – EduRozgaar`} />
-        <script type="application/ld+json">{JSON.stringify(jobSchema)}</script>
-        <meta property="og:description" content={job.description || `${job.title} at ${job.organization || job.company}`} />
-        <meta property="og:url" content={canonicalUrl} />
-      </Helmet>
+      <SeoHead
+        title={`${job.title} – Jobs`}
+        description={description}
+        canonical={canonicalPath}
+        ogImage={job.image || undefined}
+        jsonLd={combineSchemas(
+          jobPostingSchema(job),
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Jobs', url: ROUTES.JOBS },
+            { name: job.title, url: canonicalPath },
+          ]),
+        )}
+      />
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-6 md:py-8">
         <Link to={ROUTES.JOBS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← Back to Jobs</Link>
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 md:p-8 shadow-sm">

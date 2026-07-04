@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { ROUTES } from '../../constants';
 import { validatePassword } from '../../utils/validation';
 import { authApi } from '../../services/authService';
@@ -50,9 +50,7 @@ export default function ResetPassword() {
   if (success) {
     return (
       <>
-        <Helmet>
-          <title>Password reset – EduRozgaar</title>
-        </Helmet>
+        <SeoHead title="Password reset" noindex />
         <div className="max-w-md mx-auto px-4 sm:px-6 py-8 md:py-12 text-center">
           <Alert variant="success" title="Password reset" className="mb-6">
             Your password has been reset. Redirecting you to login...
@@ -67,10 +65,7 @@ export default function ResetPassword() {
 
   return (
     <>
-      <Helmet>
-        <title>Set new password – EduRozgaar</title>
-        <meta name="description" content="Set a new password for your EduRozgaar account." />
-      </Helmet>
+      <SeoHead title="Set new password" description="Set a new password for your EduRozgaar account." noindex />
       <div className="max-w-md mx-auto px-4 sm:px-6 py-8 md:py-12">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Set new password</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">

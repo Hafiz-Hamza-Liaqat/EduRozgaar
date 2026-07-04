@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useLocation } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, itemListSchema, combineSchemas } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
 import { seoApi } from '../../services/listingsService';
 import { HomeJobCard } from '../../components/listings/HomeListingCard';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
 import { useAuth } from '../../context/AuthContext';
 import { jobsApi, savedApi } from '../../services/listingsService';
-
-const SITE_URL = import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk';
 
 export default function SEOJobsPage() {
   const { slug: paramSlug } = useParams();
@@ -59,49 +58,39 @@ export default function SEOJobsPage() {
     });
   };
 
-  const canonical = meta?.canonical || (isLatestGov ? `${SITE_URL}/latest-government-jobs` : sourceSlug ? `${SITE_URL}/${sourceSlug}-jobs` : isCategory ? `${SITE_URL}/${slug}` : `${SITE_URL}/jobs-in-${slug}`);
+  const canonical = meta?.canonical || (isLatestGov
+    ? '/latest-government-jobs'
+    : sourceSlug
+      ? `/${sourceSlug}-jobs`
+      : isCategory
+        ? `/${slug}`
+        : `/jobs-in-${slug}`);
 
-  const schemaMarkup = meta && jobs.length > 0 ? {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: meta.title?.split('|')[0]?.trim(),
-    description: meta.description,
-    numberOfItems: jobs.length,
-    itemListElement: jobs.slice(0, 10).map((job, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      item: {
-        '@type': 'JobPosting',
-        title: job.title,
-        datePosted: job.createdAt,
-        validThrough: job.deadline,
-        hiringOrganization: { '@type': 'Organization', name: job.organization || job.company },
-      },
-    })),
-  } : null;
+  const pageTitle = meta?.title?.split('|')[0]?.trim() || (isCategory ? slug.replace(/-/g, ' ') : `Jobs in ${slug}`);
+  const description = meta?.description || 'Find jobs in Pakistan.';
 
   return (
     <>
-      {meta && (
-        <Helmet>
-          <title>{meta.title}</title>
-          <meta name="description" content={meta.description} />
-          <link rel="canonical" href={canonical} />
-          <meta property="og:title" content={meta.title} />
-          <meta property="og:description" content={meta.description} />
-          <meta property="og:url" content={canonical} />
-          <meta property="og:type" content="website" />
-          {schemaMarkup && (
-            <script type="application/ld+json">{JSON.stringify(schemaMarkup)}</script>
-          )}
-        </Helmet>
-      )}
+      <SeoHead
+        title={meta?.title || pageTitle}
+        description={description}
+        canonical={canonical}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Jobs', url: ROUTES.JOBS },
+            { name: pageTitle, url: canonical },
+          ]),
+          collectionPageSchema({ name: pageTitle, description, url: canonical }),
+          jobs.length > 0 && itemListSchema({ name: pageTitle, description, items: jobs })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-            {meta?.title?.split('|')[0]?.trim() || (isCategory ? slug.replace(/-/g, ' ') : `Jobs in ${slug}`)}
+            {pageTitle}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{meta?.description}</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
           <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline text-sm mt-2 inline-block">← All jobs</Link>
         </div>
         {loading ? (

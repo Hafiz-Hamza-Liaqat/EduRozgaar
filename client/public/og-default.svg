@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="EduRozgaar  Jobs and Education Portal Pakistan">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#31708E"/>
+      <stop offset="100%" style="stop-color:#1e4d63"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="600" y="280" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="700" fill="#ffffff" text-anchor="middle">EduRozgaar</text>
+  <text x="600" y="360" font-family="Inter, Arial, sans-serif" font-size="36" fill="#8ECAE6" text-anchor="middle">Jobs &amp; Education Portal Pakistan</text>
+  <text x="600" y="430" font-family="Inter, Arial, sans-serif" font-size="24" fill="#ffffff" opacity="0.85" text-anchor="middle">Jobs · Scholarships · Admissions · Exam Prep</text>
+</svg>

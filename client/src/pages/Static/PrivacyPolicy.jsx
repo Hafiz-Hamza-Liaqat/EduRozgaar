@@ -1,14 +1,26 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Privacy Policy';
+const DESCRIPTION = 'EduRozgaar privacy policy: how we collect, use, and protect your data.';
 
 export default function PrivacyPolicy() {
   return (
     <>
-      <Helmet>
-        <title>Privacy Policy – EduRozgaar</title>
-        <meta name="description" content="EduRozgaar privacy policy: how we collect, use, and protect your data." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.PRIVACY_POLICY}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Privacy Policy', url: ROUTES.PRIVACY_POLICY },
+          ]),
+          webPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.PRIVACY_POLICY })
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Privacy Policy</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">Last updated: 2026</p>

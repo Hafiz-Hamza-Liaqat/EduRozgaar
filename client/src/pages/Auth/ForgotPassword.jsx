@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { ROUTES } from '../../constants';
 import { validateEmail } from '../../utils/validation';
 import { authApi } from '../../services/authService';
@@ -40,10 +40,7 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <Helmet>
-        <title>Forgot Password – EduRozgaar</title>
-        <meta name="description" content="Reset your EduRozgaar account password." />
-      </Helmet>
+      <SeoHead title="Forgot password" description="Reset your EduRozgaar account password." noindex />
       <div className="max-w-md mx-auto px-4 sm:px-6 py-8 md:py-12">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Forgot password</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">

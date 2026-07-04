@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { webPageSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { admissionsApi, savedApi, recentViewedApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { SaveButton } from '../../components/listings/SaveButton';
@@ -39,15 +40,25 @@ export default function AdmissionDetail() {
 
   const related = item.related || [];
   const days = daysUntil(item.deadline);
-  const canonicalUrl = `${import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk'}${ROUTES.ADMISSIONS}/${item.slug || item._id}`;
+  const canonicalPath = `${ROUTES.ADMISSIONS}/${item.slug || item._id}`;
+  const description = item.description || `${item.program} at ${item.institution}`;
+
   return (
     <>
-      <Helmet>
-        <title>{item.program} – Admissions – EduRozgaar</title>
-        <meta name="description" content={item.description || `${item.program} at ${item.institution}`} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content={`${item.program} – EduRozgaar`} />
-      </Helmet>
+      <SeoHead
+        title={`${item.program} – Admissions`}
+        description={description}
+        canonical={canonicalPath}
+        ogType="website"
+        jsonLd={combineSchemas(
+          webPageSchema({ name: item.program, description, url: canonicalPath }),
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Admissions', url: ROUTES.ADMISSIONS },
+            { name: item.program, url: canonicalPath },
+          ]),
+        )}
+      />
       <article className="max-w-3xl mx-auto px-4 py-6 md:py-8">
         <Link to={ROUTES.ADMISSIONS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← Back to Admissions</Link>
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 md:p-8">

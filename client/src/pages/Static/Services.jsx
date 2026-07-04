@@ -1,6 +1,10 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
+
+const TITLE = 'Our Services';
+const DESCRIPTION = 'Explore EduRozgaar services: jobs, scholarships, admissions, internships, resume builder, and career resources.';
 
 export default function Services() {
   const services = [
@@ -16,10 +20,18 @@ export default function Services() {
 
   return (
     <>
-      <Helmet>
-        <title>Our Services – EduRozgaar</title>
-        <meta name="description" content="Explore EduRozgaar services: jobs, scholarships, admissions, internships, resume builder, and career resources." />
-      </Helmet>
+      <SeoHead
+        title={TITLE}
+        description={DESCRIPTION}
+        canonical={ROUTES.SERVICES}
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Services', url: ROUTES.SERVICES },
+          ]),
+          webPageSchema({ name: TITLE, description: DESCRIPTION, url: ROUTES.SERVICES })
+        )}
+      />
       <div className="max-w-4xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Our Services</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">

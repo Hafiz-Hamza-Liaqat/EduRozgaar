@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { scholarshipSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
+import { buildCanonicalUrl } from '../../seo/config';
 import { intlScholarshipsApi, savedApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { SaveButton } from '../../components/listings/SaveButton';
@@ -55,12 +57,26 @@ export default function IntlScholarshipDetail() {
     );
   }
 
+  const canonicalPath = `${ROUTES.INTL_SCHOLARSHIPS}/${item.slug || item._id || id}`;
+  const description = `${item.title} - ${item.country}. Deadline ${item.deadline ? formatDate(item.deadline) : 'TBA'}.`;
+  const schema = scholarshipSchema({ ...item, slug: undefined });
+  if (schema) schema.url = buildCanonicalUrl(canonicalPath);
+
   return (
     <>
-      <Helmet>
-        <title>{item.title} – EduRozgaar</title>
-        <meta name="description" content={`${item.title} - ${item.country}. Deadline ${item.deadline ? formatDate(item.deadline) : 'TBA'}.`} />
-      </Helmet>
+      <SeoHead
+        title={item.title}
+        description={description}
+        canonical={canonicalPath}
+        jsonLd={combineSchemas(
+          schema,
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'International Scholarships', url: ROUTES.INTL_SCHOLARSHIPS },
+            { name: item.title, url: canonicalPath },
+          ]),
+        )}
+      />
       <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
         <Link to={ROUTES.INTL_SCHOLARSHIPS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← International Scholarships</Link>
 

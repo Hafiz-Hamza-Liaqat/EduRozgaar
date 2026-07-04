@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { scholarshipsApi, savedApi, recommendationsApi, v1Api } from '../../services/listingsService';
 import { useListings } from '../../hooks/useListings';
 import { ROUTES } from '../../constants';
@@ -48,11 +50,24 @@ export default function Scholarships() {
 
   return (
     <>
-      <Helmet>
-        <title>Scholarships – EduRozgaar Pakistan</title>
-        <meta name="description" content="Scholarship opportunities for Pakistani students. HEC, PEEF, and international scholarships." />
-        <meta property="og:title" content="Scholarships – EduRozgaar Pakistan" />
-      </Helmet>
+      <SeoHead
+        title="Scholarships – EduRozgaar Pakistan"
+        description="Scholarship opportunities for Pakistani students. HEC, PEEF, and international scholarships."
+        canonical={ROUTES.SCHOLARSHIPS}
+        keywords={`scholarships Pakistan, HEC, PEEF, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Scholarships', url: ROUTES.SCHOLARSHIPS },
+          ]),
+          collectionPageSchema({
+            name: 'Scholarships – EduRozgaar Pakistan',
+            description: 'Scholarship opportunities for Pakistani students. HEC, PEEF, and international scholarships.',
+            url: ROUTES.SCHOLARSHIPS,
+          })
+        )}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Scholarships</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Funding opportunities for your education.</p>

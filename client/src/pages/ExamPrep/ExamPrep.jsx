@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
+import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { examsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 
@@ -31,10 +33,24 @@ export default function ExamPrep() {
 
   return (
     <>
-      <Helmet>
-        <title>Exam Preparation – PPSC, FPSC, NTS, CSS, Punjab Police, WAPDA – EduRozgaar</title>
-        <meta name="description" content="Government job exam preparation: syllabus, past papers, MCQs, and practice quizzes for PPSC, FPSC, NTS, Punjab Police, WAPDA." />
-      </Helmet>
+      <SeoHead
+        title="Exam Preparation – PPSC, FPSC, NTS, CSS, Punjab Police, WAPDA – EduRozgaar"
+        description="Government job exam preparation: syllabus, past papers, MCQs, and practice quizzes for PPSC, FPSC, NTS, Punjab Police, WAPDA."
+        canonical={ROUTES.EXAM_PREP}
+        keywords={`PPSC, FPSC, NTS, CSS, exam preparation, ${DEFAULT_KEYWORDS}`}
+        ogType="website"
+        jsonLd={combineSchemas(
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Exam Preparation', url: ROUTES.EXAM_PREP },
+          ]),
+          collectionPageSchema({
+            name: 'Exam Preparation – PPSC, FPSC, NTS, CSS, Punjab Police, WAPDA – EduRozgaar',
+            description: 'Government job exam preparation: syllabus, past papers, MCQs, and practice quizzes for PPSC, FPSC, NTS, Punjab Police, WAPDA.',
+            url: ROUTES.EXAM_PREP,
+          })
+        )}
+      />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Government Job Exam Preparation</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">

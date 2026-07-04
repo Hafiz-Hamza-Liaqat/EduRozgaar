@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
+import { SeoHead } from '../../components/seo';
+import { courseSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { examsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 
@@ -44,12 +45,24 @@ export default function ExamDetail() {
     );
   }
 
+  const canonicalPath = `${ROUTES.EXAM_PREP}/${exam.slug || slug}`;
+  const description = exam.description || `${exam.name} syllabus, past papers, and practice quizzes.`;
+
   return (
     <>
-      <Helmet>
-        <title>{exam.name} – Exam Preparation – EduRozgaar</title>
-        <meta name="description" content={exam.description || `${exam.name} syllabus, past papers, and practice quizzes.`} />
-      </Helmet>
+      <SeoHead
+        title={`${exam.name} – Exam Preparation`}
+        description={description}
+        canonical={canonicalPath}
+        jsonLd={combineSchemas(
+          courseSchema(exam),
+          breadcrumbSchema([
+            { name: 'Home', url: ROUTES.HOME },
+            { name: 'Exam Prep', url: ROUTES.EXAM_PREP },
+            { name: exam.name, url: canonicalPath },
+          ]),
+        )}
+      />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Link to={ROUTES.EXAM_PREP} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← Exam Prep</Link>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{exam.name}</h1>

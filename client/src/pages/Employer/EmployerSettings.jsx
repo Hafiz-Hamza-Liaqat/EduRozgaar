@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import { useEmployerAuth } from '../../context/EmployerAuthContext';
 
 export default function EmployerSettings() {
@@ -6,9 +6,7 @@ export default function EmployerSettings() {
 
   return (
     <>
-      <Helmet>
-        <title>Settings – Employer – EduRozgaar</title>
-      </Helmet>
+      <SeoHead title="Employer Settings" description="Manage your employer account settings." noindex />
       <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">Settings</h1>
       <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 max-w-xl">
         <dl className="space-y-3">

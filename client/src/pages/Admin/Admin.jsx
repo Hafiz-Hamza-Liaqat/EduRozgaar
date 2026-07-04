@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead } from '../../components/seo';
 import axiosInstance from '../../services/axiosBase';
 import { ROUTES } from '../../constants';
 
@@ -28,9 +28,7 @@ export default function Admin() {
 
   return (
     <>
-      <Helmet>
-        <title>Admin – EduRozgaar</title>
-      </Helmet>
+      {isOverview && <SeoHead title="Admin" description="EduRozgaar admin panel." noindex />}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin panel</h1>
         <nav className="flex gap-4 mb-6 border-b border-gray-200 dark:border-gray-700">
