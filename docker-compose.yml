@@ -1,4 +1,6 @@
-version: '3.8'
+# Production Docker Compose — MongoDB/Redis/backend are internal-only (no public ports).
+# Copy .env.template → .env and set JWT_SECRET, SITE_URL, VITE_APP_URL before deploy.
+# For local Docker dev with exposed DB ports, use: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 services:
   mongodb:
@@ -8,8 +10,6 @@ services:
       MONGO_INITDB_DATABASE: edurozgaar
     volumes:
       - mongodb_data:/data/db
-    ports:
-      - "27017:27017"
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -19,8 +19,6 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -34,30 +32,38 @@ services:
       context: ./server
       dockerfile: Dockerfile
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
       PORT: 5000
-      MONGO_URI: mongodb://mongodb:27017/edurozgaar
+      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/edurozgaar}
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env — use openssl rand -hex 32}
+      SITE_URL: ${SITE_URL:?Set SITE_URL in .env e.g. https://yourdomain.com}
+      FRONTEND_URL: ${FRONTEND_URL:-${SITE_URL}}
+      DISABLE_SCRAPER_CRON: ${DISABLE_SCRAPER_CRON:-0}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_PASS: ${MAIL_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-}
     depends_on:
       mongodb:
         condition: service_healthy
       redis:
         condition: service_healthy
-    ports:
-      - "5000:5000"
 
   frontend:
     build:
       context: ./client
       dockerfile: Dockerfile
       args:
-        VITE_APP_URL: ${VITE_APP_URL:-http://localhost}
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
+        VITE_APP_URL: ${VITE_APP_URL:?Set VITE_APP_URL in .env e.g. https://yourdomain.com}
+        VITE_API_URL: ${VITE_API_URL:-/api}
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on:
       - backend
 

@@ -11,17 +11,17 @@ import { getSitemap, getRobots } from './controllers/seoController.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { apiLimiter } from './middleware/rateLimit.js';
+import { getCorsOptions } from './config/cors.js';
+import { validateProductionEnv } from './config/validateEnv.js';
 
-if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'change-me-in-production' || process.env.JWT_SECRET === 'your-super-secret-jwt-key-change-in-production')) {
-  console.warn('⚠️  WARNING: Set a strong JWT_SECRET in .env for production. Auth tokens are insecure otherwise.');
-}
+validateProductionEnv();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
-app.use(cors());
+app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '1mb' }));
 app.use(mongoSanitize());
 app.use(requestLogger);

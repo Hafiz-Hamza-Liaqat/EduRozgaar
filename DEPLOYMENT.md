@@ -280,7 +280,67 @@ No third-party paid APIs are required for the app to run; the backend is self-co
 
 ---
 
-## 9. Quick reference – from zero to running
+## 10. Production deployment (Docker + VPS)
+
+Recommended stack: **VPS + Docker Compose + Caddy (HTTPS)**.
+
+### Quick production steps
+
+1. **VPS setup** (Ubuntu 22.04):
+   ```bash
+   sudo bash deploy/setup-vps.sh
+   ```
+
+2. **Clone and configure env**:
+   ```bash
+   git clone https://github.com/SyedDaniyal31/EduRozgaar.git
+   cd EduRozgaar
+   cp .env.template .env
+   # Edit .env: JWT_SECRET (openssl rand -hex 32), SITE_URL, VITE_APP_URL, MAIL_*
+   ```
+
+3. **Deploy**:
+   ```bash
+   bash deploy/deploy.sh
+   ```
+
+4. **HTTPS** — edit `deploy/Caddyfile` with your domain, then:
+   ```bash
+   sudo cp deploy/Caddyfile /etc/caddy/Caddyfile
+   sudo systemctl reload caddy
+   ```
+
+5. **Seed DB + admin** (set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env`):
+   ```bash
+   bash scripts/production-setup.sh
+   ```
+
+6. **Smoke test**:
+   ```bash
+   SITE_URL=https://yourdomain.com npm run smoke-test
+   ```
+
+### Production security notes
+
+- Production `docker-compose.yml` does **not** expose MongoDB (27017), Redis (6379), or backend (5000) publicly.
+- `JWT_SECRET` must be 32+ characters or the server exits on startup.
+- In production, `ensureAdminUser.js` requires `ADMIN_PASSWORD` — never use default `Admin1234`.
+- CORS is restricted to `SITE_URL` / `FRONTEND_URL` in production.
+- Password reset emails require `MAIL_HOST`, `MAIL_USER`, `MAIL_PASS` in `.env`.
+
+### Local Docker with exposed ports (debugging)
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+### Post-launch checklist
+
+See [docs/POST_LAUNCH.md](docs/POST_LAUNCH.md) for Google Search Console, uptime monitoring, and backups.
+
+---
+
+## 11. Quick reference – from zero to running
 
 ```bash
 # 1. Install

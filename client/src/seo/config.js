@@ -7,7 +7,7 @@ export const DEFAULT_DESCRIPTION =
   "EduRozgaar – Pakistan's job and education portal. Find jobs, scholarships, admissions, internships, and study abroad opportunities.";
 export const DEFAULT_KEYWORDS =
   'jobs Pakistan, scholarships Pakistan, admissions, government jobs, FPSC, PPSC, NTS, education portal, EduRozgaar';
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.svg`;
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
 export const TWITTER_HANDLE = '@EduRozgaar';
 export const THEME_COLOR = '#31708E';
 export const LOCALE_EN = 'en_PK';

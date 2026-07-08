@@ -114,14 +114,22 @@ Frontend is configured to call `http://localhost:5000/api` via Axios.
 
 ## Docker (Phase 6)
 
-From repo root:
+**Production** (internal DB/API only, port 80 exposed):
 
 ```bash
-docker compose up --build
+cp .env.template .env   # set JWT_SECRET, SITE_URL, VITE_APP_URL
+bash deploy/deploy.sh
 ```
 
-- **MongoDB** on 27017, **Redis** on 6379, **Backend** on 5000, **Frontend** (nginx) on 80.
-- Set `JWT_SECRET`, `MONGO_URI`, `REDIS_URL` via env or `.env`. Frontend build uses `VITE_API_URL=/api` so nginx can proxy to backend.
+See **[DEPLOYMENT.md §10](./DEPLOYMENT.md)** and **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** for VPS setup, HTTPS (Caddy), seeding, and post-launch SEO.
+
+**Local Docker debug** (exposes MongoDB 27017, backend 5000):
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+**Smoke test after deploy:** `SITE_URL=https://yourdomain.com npm run smoke-test`
 
 ## Future Roadmap
 

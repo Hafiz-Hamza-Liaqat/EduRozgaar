@@ -2,16 +2,26 @@
  * Ensure an admin user exists. Safe to run anytime (updates existing or creates).
  * Run from server dir: node src/scripts/ensureAdminUser.js
  *
- * Default admin: admin@edurozgaar.pk / Admin1234
- * To use another email: ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=YourPass node src/scripts/ensureAdminUser.js
+ * Development default: admin@edurozgaar.pk / Admin1234
+ * Production: ADMIN_EMAIL and ADMIN_PASSWORD are required (NODE_ENV=production).
+ *
+ * Example:
+ *   ADMIN_EMAIL=admin@yourdomain.com ADMIN_PASSWORD=YourSecurePass node src/scripts/ensureAdminUser.js
  */
 import 'dotenv/config';
 import mongoose from 'mongoose';
 import { User } from '../models/User.js';
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/edurozgaar';
+const isProduction = process.env.NODE_ENV === 'production';
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@edurozgaar.pk').trim().toLowerCase();
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin1234';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (isProduction ? null : 'Admin1234');
+
+if (isProduction && !ADMIN_PASSWORD) {
+  console.error('❌ ADMIN_PASSWORD is required when NODE_ENV=production.');
+  console.error('   Example: ADMIN_EMAIL=admin@yourdomain.com ADMIN_PASSWORD=YourSecurePass node src/scripts/ensureAdminUser.js');
+  process.exit(1);
+}
 
 async function ensureAdmin() {
   await mongoose.connect(MONGO_URI);

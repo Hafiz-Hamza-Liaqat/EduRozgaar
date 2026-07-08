@@ -1,0 +1,25 @@
+# Local Docker overrides — exposes MongoDB, Redis, and backend for debugging.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+services:
+  mongodb:
+    ports:
+      - "27017:27017"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  backend:
+    ports:
+      - "5000:5000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-min-32-characters-long}
+      SITE_URL: ${SITE_URL:-http://localhost}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+
+  frontend:
+    build:
+      args:
+        VITE_APP_URL: ${VITE_APP_URL:-http://localhost}
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}

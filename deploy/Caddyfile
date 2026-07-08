@@ -1,0 +1,7 @@
+# Replace yourdomain.com with your actual domain before deploying.
+# Caddy auto-provisions Let's Encrypt certificates.
+
+yourdomain.com, www.yourdomain.com {
+	encode gzip
+	reverse_proxy localhost:80
+}
