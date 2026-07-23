@@ -6,7 +6,7 @@ import { sanitizeString } from '../utils/sanitize.js';
  * Placeholder: Telegram API integration. Target by province & interest.
  */
 export const sendTelegramAlert = asyncHandler(async (req, res) => {
-  const { province, interest, message, title } = req.body || {};
+  const { province, interest, message: _message, title: _title } = req.body || {};
   const q = {};
   if (province) q.province = new RegExp(sanitizeString(province), 'i');
   if (interest) q.interests = Array.isArray(interest) ? { $in: interest } : sanitizeString(interest);
@@ -23,7 +23,7 @@ export const sendTelegramAlert = asyncHandler(async (req, res) => {
  * Placeholder: WhatsApp Business API. Target by province & interest.
  */
 export const sendWhatsAppAlert = asyncHandler(async (req, res) => {
-  const { province, interest, message, title } = req.body || {};
+  const { province, interest, message: _message, title: _title } = req.body || {};
   const q = {};
   if (province) q.province = new RegExp(sanitizeString(province), 'i');
   if (interest) q.interests = Array.isArray(interest) ? { $in: interest } : sanitizeString(interest);

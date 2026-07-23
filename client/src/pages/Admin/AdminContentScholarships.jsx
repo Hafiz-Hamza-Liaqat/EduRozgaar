@@ -7,7 +7,6 @@ import { useAdminList } from '../../hooks/useAdminList';
 import { AdminRouteGuard } from '../../components/admin/AdminRouteGuard';
 import { AdminDataTable } from '../../components/admin/AdminDataTable';
 import { AdminConfirmDialog } from '../../components/admin/AdminConfirmDialog';
-import { AdminStatusBadge } from '../../components/admin/adminTableUtils';
 import { AdminImageUrlField } from '../../components/admin/AdminImageUrlField';
 import { AdminSelectBare } from '../../components/admin/AdminFormFields';
 import { AdminSlugField } from '../../components/admin/AdminSlugField';

@@ -4,7 +4,6 @@ import { SeoHead } from '../../components/seo';
 import { Link } from 'react-router-dom';
 import { dashboardApi, applicationsApi, referralsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
-import { formatDate } from '../../utils/formatDate';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
 import { Chatbot } from '../../components/chatbot/Chatbot';
 

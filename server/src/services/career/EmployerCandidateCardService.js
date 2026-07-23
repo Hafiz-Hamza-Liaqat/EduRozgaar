@@ -81,7 +81,7 @@ export async function buildCandidateCard(userId, applicationCtx = {}) {
     timeline,
     verifiedSkills,
     opportunityApplication,
-    resumeVersions,
+    _resumeVersions,
   ] = await Promise.all([
     isScoringEnabled()
       ? ScoringService.getLatest(userId, 'career_readiness', { computeIfMissing: false }).catch(() => null)

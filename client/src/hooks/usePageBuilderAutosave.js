@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { adminContentApi } from '../services/adminContentApi';
 import { reindexBlocks } from '@shared/blockSchema.js';
-import { createDraftSnapshot } from '@shared/pageBuilderEditorOps.js';
 import { writeRecoveryDraft, clearRecoveryDraft } from '@shared/pageBuilderRecovery.js';
 
 const DEFAULT_DELAY_MS = 15000;

@@ -4,7 +4,6 @@ import { awardBadge } from './badgesController.js';
 import mongoose from 'mongoose';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { listResponse, paginate } from '../utils/apiResponse.js';
-import { sanitizeString } from '../utils/sanitize.js';
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;

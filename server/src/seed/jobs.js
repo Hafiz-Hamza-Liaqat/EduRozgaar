@@ -1,17 +1,6 @@
 import { Job } from '../models/Job.js';
 import { slugify } from '../utils/slugify.js';
 
-const PROVINCES = ['Punjab', 'Sindh', 'Khyber Pakhtunkhwa', 'Balochistan', 'Islamabad', 'Gilgit-Baltistan', 'AJK'];
-const CITIES = {
-  Punjab: ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan', 'Gujranwala', 'Sialkot'],
-  Sindh: ['Karachi', 'Hyderabad', 'Sukkur', 'Larkana'],
-  'Khyber Pakhtunkhwa': ['Peshawar', 'Abbottabad', 'Mardan', 'Swat'],
-  Balochistan: ['Quetta', 'Gwadar', 'Turbat'],
-  Islamabad: ['Islamabad'],
-  'Gilgit-Baltistan': ['Gilgit', 'Skardu'],
-  AJK: ['Muzaffarabad', 'Mirpur'],
-};
-
 function addDays(d, days) {
   const out = new Date(d);
   out.setDate(out.getDate() + days);
@@ -89,5 +78,4 @@ export async function seedJobs() {
     await job.save();
   }
   console.log(`Jobs: seeded ${jobSeedData.length} documents.`);
-  console.log(`Jobs: seeded ${toInsert.length} documents.`);
 }

@@ -1,5 +1,4 @@
 import { User } from '../models/User.js';
-import { Application } from '../models/Application.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ensureReferralCode } from '../utils/referralCode.js';
 

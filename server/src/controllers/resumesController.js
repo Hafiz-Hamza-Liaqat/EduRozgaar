@@ -117,7 +117,7 @@ function extractKeywords(text) {
   if (!text || typeof text !== 'string') return [];
   const stop = new Set(['the', 'and', 'for', 'with', 'years', 'year', 'experience', 'required', 'preferred', 'ability', 'knowledge', 'good', 'strong', 'etc', 'e.g', 'i.e']);
   const tokens = text
-    .replace(/[,.\-;:()\[\]\/]/g, ' ')
+    .replace(/[,.\-;:()[\]/]/g, ' ')
     .split(/\s+/)
     .map((t) => t.trim().toLowerCase())
     .filter((t) => t.length > 1 && !stop.has(t) && !/^\d+$/.test(t));

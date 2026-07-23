@@ -1,8 +1,8 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AdHost } from '../../ads/AdHost';
 import { NewsletterSubscribe } from '../../newsletter/NewsletterSubscribe';
 import { FormRenderer } from '../../forms/FormRenderer';
-import { ROUTES } from '../../../constants';
 import { sanitizeHtmlForRender } from '../../../utils/sanitizeHtml';
 import { parseJsonArray } from '@shared/blockValidation.js';
 import { resolveBlockGridSettings, resolveResponsiveGridClasses } from '@shared/pageBuilderLayout.js';
@@ -218,7 +218,6 @@ export function GalleryBlock({ block }) {
     altText,
     caption,
     imagesJson,
-    layout = 'grid-3',
     lazyLoad = true,
   } = block.config || {};
 
@@ -316,14 +315,6 @@ export function AdPlacementBlock({ block }) {
       <AdHost placementId={String(placementId)} variant={variant} />
     </div>
   );
-}
-
-function extractList(res) {
-  const payload = res?.data;
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.items)) return payload.items;
-  return [];
 }
 
 export function FeaturedJobsBlock(props) {

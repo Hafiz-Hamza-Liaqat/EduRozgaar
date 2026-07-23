@@ -30,7 +30,7 @@ export default function Jobs() {
   const { isAuthenticated } = useAuth();
   const [savedIds, setSavedIds] = useState(new Set());
   const [recommendedJobs, setRecommendedJobs] = useState([]);
-  const [loadingRecommended, setLoadingRecommended] = useState(false);
+  const [, setLoadingRecommended] = useState(false);
 
   const location = useLocation();
   const initialParams = {

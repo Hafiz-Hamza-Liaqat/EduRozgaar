@@ -6,7 +6,6 @@ import { sanitizeString } from '../../utils/sanitize.js';
 import { parseStringArray } from '../../utils/adminContentHelpers.js';
 import { logAudit, auditFromRequest } from '../../services/auditService.js';
 import { applyResolvedSlug, slugErrorResponse } from '../../utils/adminSlugHelpers.js';
-import { invalidateDynamicContentForEntity } from '../../utils/dynamicContentCache.js';
 import { onContentSaved, onContentDeleted, onContentBulkDeleted, onContentBulkUpdated } from '../../utils/contentIntegration.js';
 
 const DEFAULT_LIMIT = 20;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { AdminSelectBare, adminFieldClass } from '../../components/admin/AdminFormFields';
+import { AdminSelectBare } from '../../components/admin/AdminFormFields';
 import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { adminImportApi } from '../../services/publicProfilesService';

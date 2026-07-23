@@ -4,7 +4,6 @@ import { PastPaper } from '../models/PastPaper.js';
 import { Quiz } from '../models/Quiz.js';
 import { Mcq } from '../models/Mcq.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { examSlug } from '../utils/slugify.js';
 
 export const listExams = asyncHandler(async (req, res) => {
   const exams = await Exam.find({ status: 'active' }).sort({ name: 1 }).lean();

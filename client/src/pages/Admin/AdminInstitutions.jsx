@@ -26,7 +26,7 @@ export default function AdminInstitutions() {
   const { can } = usePermissions();
   const canEdit = can(PERMISSIONS.CONTENT_ADMISSIONS);
 
-  const { data, pagination, filters, setFilters, loading, error, setPage, refetch } = useAdminList('/admin/institutions');
+  const { data, pagination, loading, error, setPage, refetch } = useAdminList('/admin/institutions');
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
   const [editingId, setEditingId] = useState(null);

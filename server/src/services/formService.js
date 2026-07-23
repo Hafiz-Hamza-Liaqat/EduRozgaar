@@ -131,7 +131,7 @@ export async function duplicateFormDefinition(id, userId) {
     n += 1;
     slug = `${baseSlug}-${n}`;
   }
-  const { _id, createdAt, updatedAt, ...rest } = source;
+  const { _id, createdAt: _createdAt, updatedAt: _updatedAt, ...rest } = source;
   const doc = await FormDefinition.create({
     ...rest,
     name: `${source.name} (Copy)`,

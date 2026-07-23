@@ -151,10 +151,6 @@ export function AdminBlockEditor({ blocks, onChange, globalMap = new Map() }) {
     if (dragAnnounceRef.current) dragAnnounceRef.current.textContent = message;
   }, []);
 
-  const setBlocks = useCallback((next) => {
-    onChange(reindexBlocks(next));
-  }, [onChange]);
-
   const insertBlock = useCallback((created) => {
     if (!created) return;
     created.order = sorted.length;

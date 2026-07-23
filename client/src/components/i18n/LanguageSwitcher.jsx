@@ -4,7 +4,7 @@ import { LANGUAGES } from '../../i18n/config.js';
 import { useLanguage } from '../../context/LanguageContext';
 import { localizedPathFor } from '../../utils/localeNavigation';
 
-export function LanguageSwitcher({ className = '', compact = false }) {
+export function LanguageSwitcher({ className = '' }) {
   const { lang, setLang } = useLanguage();
   const { t } = useTranslation('navbar');
   const navigate = useNavigate();

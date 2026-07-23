@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AdminSelectBare, adminFieldClass } from '../../components/admin/AdminFormFields';
+import { AdminSelectBare } from '../../components/admin/AdminFormFields';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../../context/ToastContext';
 import { AdminRouteGuard } from '../../components/admin/AdminRouteGuard';

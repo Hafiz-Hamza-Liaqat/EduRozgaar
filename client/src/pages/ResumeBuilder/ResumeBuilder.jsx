@@ -33,7 +33,7 @@ export default function ResumeBuilder() {
   const optimizeRequested = useRef(false);
   const { toast } = useToast();
 
-  const [resumeSource, setResumeSource] = useState(null);
+  const [, setResumeSource] = useState(null);
 
   const mapViewToResume = (r) => ({
     title: r.title || t('resume:defaultTitle'),

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
-import { breadcrumbSchema, combineSchemas, organizationSchema } from '../../seo/schemas';
+import { breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { publicProfilesApi } from '../../services/publicProfilesService';
 import { ROUTES } from '../../constants';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';

@@ -313,7 +313,7 @@ export async function checkSlugAvailability({
 }
 
 /** Delegate for bulkUpsert compatibility */
-export async function ensureSlugUniqueLegacy(Model, baseSlug, field = 'slug') {
+export async function ensureSlugUniqueLegacy(Model, baseSlug, _field = 'slug') {
   const result = await ensureSlugUnique(Model, baseSlug);
   return result.slug;
 }

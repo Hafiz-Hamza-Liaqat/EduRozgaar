@@ -26,7 +26,7 @@ import {
 } from '../utils/slugify.js';
 import { ensureSlugUnique } from '../utils/bulkUpsert.js';
 import {
-  PK_COMPANIES, PK_UNIVERSITIES, SCHOLARSHIP_PROVIDERS, JOB_TYPES, JOB_CATEGORIES,
+  PK_COMPANIES, PK_UNIVERSITIES, SCHOLARSHIP_PROVIDERS, JOB_CATEGORIES,
   WORK_MODES, EXPERIENCE_LEVELS, JOB_TITLE_TEMPLATES, PK_CITIES, DEGREE_PROGRAMS,
   FOREIGN_COUNTRIES, EXAM_NAMES, MCQ_SUBJECTS, CAREER_CATEGORIES, BLOG_CATEGORIES,
   RESUME_TEMPLATES, pick, futureDate, pastDate,
@@ -258,8 +258,6 @@ async function seedAdmissions() {
     const uni = pick(PK_UNIVERSITIES, i);
     const program = pick(DEGREE_PROGRAMS, i);
     const session = `Fall ${2024 + (i % 2)}`;
-    const externalId = `${SEED_TAG}-admission-${i}`;
-
     const existing = await Admission.findOne({ program, institution: uni.name, session });
     if (existing) { skipped++; continue; }
 
@@ -295,7 +293,6 @@ async function seedBlogs() {
   for (let i = 0; i < TARGETS.blogs; i++) {
     const category = pick(BLOG_CATEGORIES, i);
     const title = `${category}: Guide for Pakistani Students #${i + 1}`;
-    const externalId = `${SEED_TAG}-blog-${i}`;
 
     const existing = await Blog.findOne({ title });
     if (existing) { skipped++; continue; }
@@ -356,7 +353,6 @@ async function seedForeignStudies() {
     const country = pick(FOREIGN_COUNTRIES, i);
     const program = pick(DEGREE_PROGRAMS, i);
     const level = pick(['Undergraduate', 'Graduate', 'PhD'], i);
-    const title = `${program} in ${country}`;
     const existing = await ForeignStudy.findOne({ country, program, level });
     if (existing) { skipped++; continue; }
 

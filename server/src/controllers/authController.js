@@ -305,7 +305,7 @@ export const resendVerification = asyncHandler(async (req, res) => {
   await user.save({ validateBeforeSave: false });
 
   const verifyUrl = `${FRONTEND_BASE.replace(/\/$/, '')}/auth/verify-email?token=${verifyToken}`;
-  const queueResult = await queueEmail({
+  await queueEmail({
     to: user.email,
     templateKey: 'emailVerification',
     vars: { name: user.name, url: verifyUrl },

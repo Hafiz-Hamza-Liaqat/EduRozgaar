@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { validateSubmission } from '@shared/formSchema.js';
-import { validateFieldValue } from '@shared/formSchema.js';
 import { formsApi } from '../../services/formsApi';
 import { talentApi } from '../../services/talentApi';
 import { shouldUseTalentProfileApi } from '../../config/careerFeatureFlags';

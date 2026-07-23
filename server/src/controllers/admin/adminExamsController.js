@@ -3,7 +3,6 @@ import { PastPaper } from '../../models/PastPaper.js';
 import { Quiz } from '../../models/Quiz.js';
 import { Mcq } from '../../models/Mcq.js';
 import { QuizAttempt } from '../../models/QuizAttempt.js';
-import mongoose from 'mongoose';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { sanitizeString } from '../../utils/sanitize.js';
 import { examSlug } from '../../utils/slugify.js';

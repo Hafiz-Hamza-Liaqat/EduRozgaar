@@ -1,7 +1,6 @@
 /**
  * Translation relationship service (C.7.0.8).
  */
-import mongoose from 'mongoose';
 import { randomUUID } from 'crypto';
 import { TRANSLATABLE_ENTITY_TYPES } from '../../../../shared/localization/localeConfig.js';
 import { normalizeLocale } from '../../../../shared/localization/localeResolver.js';

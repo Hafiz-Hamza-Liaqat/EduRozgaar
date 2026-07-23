@@ -12,7 +12,7 @@ const CACHE_PREFIX = 'resume:match:';
 /**
  * Placeholder NLP extraction. In production use pdf-parse + mammoth for DOCX + NLP/lib for skills.
  */
-function extractFromFile(buffer, mimetype) {
+function extractFromFile(_buffer, _mimetype) {
   const skills = ['Communication', 'Teamwork', 'Microsoft Office', 'Problem Solving', 'Leadership', 'Project Management', 'Data Analysis', 'Writing'];
   const education = ['Bachelor\'s degree', 'Relevant field'];
   const experience = ['2+ years experience', 'Relevant industry'];

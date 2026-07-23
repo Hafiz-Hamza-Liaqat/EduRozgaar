@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../constants';
 
-export function SaveButton({ type, id, saved: initialSaved, onToggle }) {
+export function SaveButton({ id, saved: initialSaved, onToggle }) {
   const { isAuthenticated } = useAuth();
   const [saved, setSaved] = useState(!!initialSaved);
   const [loading, setLoading] = useState(false);

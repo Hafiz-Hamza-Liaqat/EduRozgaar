@@ -1,7 +1,6 @@
 import { Payment } from '../../models/Payment.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { listResponse, paginate } from '../../utils/apiResponse.js';
-import { sanitizeString } from '../../utils/sanitize.js';
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;

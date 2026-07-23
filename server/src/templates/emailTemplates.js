@@ -192,7 +192,7 @@ const TEMPLATES = {
       html: layout({ title: 'Support', bodyHtml: `<p>Hi ${name || 'there'},</p><p>Your support ticket <strong>${ticketNumber}</strong> (${subject}) has been updated.</p>${btn(`${process.env.SITE_URL || ''}/support/tickets`, 'View ticket')}` }),
       text: `Ticket ${ticketNumber} updated`,
     }),
-    ur: ({ name, ticketNumber, subject }) => ({
+    ur: ({ name, ticketNumber, subject: _subject }) => ({
       subject: `${BRAND} – ٹکٹ ${ticketNumber} اپ ڈیٹ`,
       html: layout({ lang: 'ur', title: 'سپورٹ', bodyHtml: `<p>${name || ''}، ٹکٹ <strong>${ticketNumber}</strong> اپ ڈیٹ ہو گئی۔</p>` }),
       text: `ٹکٹ اپ ڈیٹ`,

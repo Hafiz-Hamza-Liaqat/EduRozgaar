@@ -52,7 +52,7 @@ const FIELD_TYPE_LABELS = {
   consent: 'Consent',
 };
 
-function SortableFieldRow({ field, index, selected, onSelect, onToggleCollapse, onDuplicate, onRemove, onPatch }) {
+function SortableFieldRow({ field, selected, onSelect, onToggleCollapse, onDuplicate, onRemove, onPatch }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: field.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
@@ -309,11 +309,10 @@ export default function AdminFormEditor() {
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
               <SortableContext items={fieldIds} strategy={verticalListSortingStrategy}>
                 <div className="space-y-2">
-                  {(form.fields || []).map((field, i) => (
+                  {(form.fields || []).map((field) => (
                     <SortableFieldRow
                       key={field.id}
                       field={field}
-                      index={i}
                       selected={selectedId === field.id}
                       onSelect={setSelectedId}
                       onToggleCollapse={toggleCollapse}

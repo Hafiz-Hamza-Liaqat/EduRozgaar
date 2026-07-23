@@ -6,7 +6,6 @@ import { Mcq } from '../models/Mcq.js';
 import { CareerArticle } from '../models/CareerArticle.js';
 import { ForeignStudy } from '../models/ForeignStudy.js';
 import { Exam } from '../models/Exam.js';
-import { Quiz } from '../models/Quiz.js';
 import {
   jobSlug, scholarshipSlug, admissionSlug, blogSlug,
   foreignStudySlug, careerArticleSlug,

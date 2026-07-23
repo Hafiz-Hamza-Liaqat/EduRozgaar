@@ -17,7 +17,7 @@ import {
   TYPOGRAPHY_WEIGHT_KEYS,
 } from '@shared/designTokens.js';
 import { mergeBlockLayoutSettings, getBlockLayoutSettings } from '@shared/pageBuilderLayout.js';
-import { adminFieldClass, AdminImageUrlField } from '../admin/AdminImageUrlField';
+import { AdminImageUrlField } from '../admin/AdminImageUrlField';
 import { AdminSelectBare } from '../admin/AdminFormFields';
 import { BlockConfigFields } from './BlockConfigFields';
 

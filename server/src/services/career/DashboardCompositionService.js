@@ -34,7 +34,7 @@ import { platformCacheGet, platformCacheSet, platformCacheInvalidateNamespace } 
 const CACHE_NS = 'career';
 const CACHE_TTL_MS = 120_000;
 
-function computeCompletionPercent(profile, hints) {
+function computeCompletionPercent(profile, _hints) {
   if (!profile) return 0;
   return evaluateProfileCompleteness(profile).score;
 }

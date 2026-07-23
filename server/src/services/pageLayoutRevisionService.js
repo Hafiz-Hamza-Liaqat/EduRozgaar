@@ -2,7 +2,6 @@ import { CmsPageLayout } from '../models/CmsPageLayout.js';
 import { CmsPageLayoutRevision } from '../models/CmsPageLayoutRevision.js';
 import { logAudit } from './auditService.js';
 import {
-  REVISION_ACTIONS,
   REVISION_TIMELINES,
   buildRevisionSnapshot,
 } from '../../../shared/pageBuilderRevisionDiff.js';

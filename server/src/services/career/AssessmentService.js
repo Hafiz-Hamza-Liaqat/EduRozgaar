@@ -162,7 +162,7 @@ export const AssessmentService = {
     return assessment;
   },
 
-  async createAssessment(body, actor) {
+  async createAssessment(body, _actor) {
     if (!isAssessmentsEnabled()) disabledError();
     const parsed = parseAssessmentInput(body);
     const errors = validateAssessmentInput(parsed);

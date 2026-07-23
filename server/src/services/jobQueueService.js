@@ -8,9 +8,10 @@ import {
   notifyEmployer,
   createUserNotification,
 } from './notificationService.js';
-import { processScheduledWorkflowJob, processDueScheduledWorkflows } from '../services/workflow/workflowSchedulerService.js';
+import { processScheduledWorkflowJob } from '../services/workflow/workflowSchedulerService.js';
 import { scheduleAnalyticsEvent } from './analytics/AnalyticsEventService.js';
 import { NewsletterLog } from '../models/NewsletterLog.js';
+import { NewsletterSubscriber } from '../models/NewsletterSubscriber.js';
 import { acquireQueueLock, releaseQueueLock } from './queueLock.js';
 
 const BATCH_SIZE = 20;

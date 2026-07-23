@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { translationFieldDefinition, applySlugLocaleIndex, ensureTranslationGroupHook } from './mixins/translationFields.js';
+import { translationFieldDefinition, ensureTranslationGroupHook } from './mixins/translationFields.js';
 
 const fieldOptionSchema = new mongoose.Schema(
   { value: String, label: String },

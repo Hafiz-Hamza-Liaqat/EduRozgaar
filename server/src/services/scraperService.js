@@ -2,7 +2,6 @@
  * Smart Job Scraper – runs modular scrapers with rate limiting, dedup, and config.
  */
 import { Job } from '../models/Job.js';
-import { Admission } from '../models/Admission.js';
 import { ScraperRun } from '../models/ScraperRun.js';
 import { ScraperConfig } from '../models/ScraperConfig.js';
 import { jobSlug } from '../utils/slugify.js';
@@ -25,7 +24,7 @@ async function getEnabledSourceKeys() {
 }
 
 export async function runScraper(options = {}) {
-  const { onlySources = null, skipAdmissions = true } = options;
+  const { onlySources = null, skipAdmissions: _skipAdmissions = true } = options;
   const run = await ScraperRun.create({
     status: 'running',
     sources: onlySources || Object.keys(SCRAPER_REGISTRY),
@@ -127,11 +126,6 @@ export async function runScraper(options = {}) {
   await run.save();
 
   return { run, jobsAdded, admissionsAdded, jobsSkipped, errors };
-}
-
-/** Legacy: fetchFromSource not used; scrapers are in ./scrapers/ */
-function fetchFromSource() {
-  return { jobs: [], admissions: [] };
 }
 
 export function getScraperSources() {

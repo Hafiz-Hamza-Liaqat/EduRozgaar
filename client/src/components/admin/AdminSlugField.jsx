@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AdminInput, adminFieldClass } from './AdminFormFields.jsx';
+import { AdminInput } from './AdminFormFields.jsx';
 import { adminContentApi } from '../../services/adminContentApi';
 
 const APP_BASE = (import.meta.env.VITE_APP_URL || window.location.origin).replace(/\/$/, '');

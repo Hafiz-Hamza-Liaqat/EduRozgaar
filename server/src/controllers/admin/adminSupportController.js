@@ -85,15 +85,6 @@ export const reply = asyncHandler(async (req, res) => {
   if (doc.status === 'open') doc.status = 'in_progress';
   await doc.save();
 
-  const payload = {
-    category: 'support',
-    type: 'support.reply',
-    title: `Reply on ticket ${doc.ticketNumber}`,
-    body: doc.subject,
-    link: '/support',
-    metadata: { ticketId: doc._id },
-  };
-
   onSupportTicketUpdate({
     ticketId: doc._id,
     ticketNumber: doc.ticketNumber,

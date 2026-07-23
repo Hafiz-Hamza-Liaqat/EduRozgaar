@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { searchApi } from '../../services/searchApi';
 import { entityTypeLabel } from '@shared/search/entityTypes.js';
 import { ROUTES } from '../../constants';
@@ -22,7 +21,6 @@ const TYPE_ICONS = {
 };
 
 export default function AdminGlobalSearch() {
-  const { t } = useTranslation('admin');
   const [q, setQ] = useState('');
   const [type, setType] = useState('');
   const [results, setResults] = useState([]);

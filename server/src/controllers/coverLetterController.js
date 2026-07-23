@@ -3,7 +3,6 @@ import { ResumeScan } from '../models/ResumeScan.js';
 import { User } from '../models/User.js';
 import mongoose from 'mongoose';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { sanitizeString } from '../utils/sanitize.js';
 
 /**
  * AI placeholder: generate cover letter from job + user profile.

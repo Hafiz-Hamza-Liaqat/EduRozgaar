@@ -109,7 +109,7 @@ export async function sendContactAdminAlertEmail({ name, email, subject, message
   });
 }
 
-export async function sendFormAdminAlertEmail({ to, subject, formName, submissionId, summary }) {
+export async function sendFormAdminAlertEmail({ to, subject, formName, submissionId: _submissionId, summary }) {
   if (!to) return { sent: false };
   const site = process.env.SITE_URL || '';
   return sendEmail({

@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import mongoose from 'mongoose';
 import { getRedisClient } from '../config/redis.js';
 import { getMongoHealth } from '../config/db.js';
 import { collectMetrics, metricsPrometheusText } from '../config/metrics.js';

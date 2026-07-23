@@ -25,7 +25,7 @@ export default function Internships() {
   const [savedIds, setSavedIds] = useState(new Set());
 
   const initialParams = { limit: PER_PAGE, page: 1 };
-  const { data, total, totalPages, loading, error, params, setPage, setFilters } = useListings(internshipsApi.list, initialParams);
+  const { data, totalPages, loading, error, params, setPage, setFilters } = useListings(internshipsApi.list, initialParams);
 
   useEffect(() => {
     if (!isAuthenticated) return;
