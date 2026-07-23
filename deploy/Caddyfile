@@ -1,7 +1,21 @@
-# Replace yourdomain.com with your actual domain before deploying.
-# Caddy auto-provisions Let's Encrypt certificates.
+# EduRozgaar TLS front door (L.2)
+# 1. Replace yourdomain.com with the real hostname (DNS A/AAAA → this host).
+# 2. Ensure docker frontend publishes on localhost:80 (FRONTEND_PORT=80).
+# 3. Install Caddy (deploy/setup-vps.sh) and:
+#      sudo cp deploy/Caddyfile /etc/caddy/Caddyfile
+#      sudo systemctl reload caddy
+# Caddy auto-provisions Let's Encrypt certificates (ports 80/443 must be open).
 
 yourdomain.com, www.yourdomain.com {
 	encode gzip
+	# Forward real scheme/IP for backend SITE_URL / rate limits
+	header_up X-Forwarded-Proto {scheme}
+	header_up X-Real-IP {remote}
 	reverse_proxy localhost:80
 }
+
+# Staging example (optional second host):
+# staging.yourdomain.com {
+# 	encode gzip
+# 	reverse_proxy localhost:8080
+# }

@@ -1,0 +1,33 @@
+{
+  "title": "Documents",
+  "credentialsTitle": "Credentials",
+  "loadError": "Could not load documents.",
+  "empty": "No documents yet.",
+  "featureDisabled": "Document platform is not available.",
+  "types": {
+    "resume": "Resume",
+    "cv": "CV",
+    "cover_letter": "Cover letter",
+    "transcript": "Transcript",
+    "degree": "Degree",
+    "passport": "Passport",
+    "visa": "Visa",
+    "portfolio": "Portfolio",
+    "certificate": "Certificate",
+    "other": "Other"
+  },
+  "visibility": {
+    "private": "Private",
+    "employer_scoped": "Employers only",
+    "public": "Public"
+  },
+  "credentialStatus": {
+    "pending_verification": "Pending verification",
+    "active": "Verified",
+    "expired": "Expired",
+    "revoked": "Revoked"
+  },
+  "expiresNever": "Never",
+  "issuedBy": "Issued by {{issuer}}",
+  "scoreLabel": "{{score}}%"
+}

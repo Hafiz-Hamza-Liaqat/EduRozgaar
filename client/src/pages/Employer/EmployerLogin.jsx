@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { useEmployerAuth } from '../../context/EmployerAuthContext';
 import { ROUTES } from '../../constants';
 
 export default function EmployerLogin() {
+  const { t } = useTranslation(['employer', 'common', 'forms']);
   const navigate = useNavigate();
   const location = useLocation();
   const { login, error: ctxError, setError: setCtxError } = useEmployerAuth();
@@ -22,7 +24,7 @@ export default function EmployerLogin() {
       await login(email.trim().toLowerCase(), password);
       navigate(from, { replace: true });
     } catch (err) {
-      setCtxError?.(err.response?.data?.error || 'Login failed');
+      setCtxError?.(err.response?.data?.error || t('employer:loginFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -30,18 +32,18 @@ export default function EmployerLogin() {
 
   return (
     <>
-      <SeoHead title="Employer Login" description="Sign in to manage your job posts." noindex />
+      <SeoHead title={t('employer:loginTitle')} description={t('forms:employerLogin.seoDescription')} noindex />
       <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm p-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A]">Employer login</h1>
-            <p className="text-slate-600 mt-1 mb-6">Sign in to manage your job posts.</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A]">{t('employer:loginHeading')}</h1>
+            <p className="text-slate-600 mt-1 mb-6">{t('employer:loginSubtitle')}</p>
             {ctxError && (
               <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{ctxError}</div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-1">Email</label>
+                <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('common:email')}</label>
                 <input
                   type="email"
                   value={email}
@@ -51,7 +53,7 @@ export default function EmployerLogin() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-1">Password</label>
+                <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('common:password')}</label>
                 <input
                   type="password"
                   value={password}
@@ -65,19 +67,19 @@ export default function EmployerLogin() {
                 disabled={submitting}
                 className="w-full py-2.5 bg-[#635BFF] hover:bg-[#4F46E5] text-white font-medium rounded-lg disabled:opacity-50"
               >
-                {submitting ? 'Signing in...' : 'Sign in'}
+                {submitting ? t('common:signingIn') : t('common:signIn')}
               </button>
             </form>
             <p className="mt-6 text-center text-sm text-slate-600">
-              Don&apos;t have an employer account?{' '}
+              {t('employer:noEmployerAccount')}{' '}
               <Link to={ROUTES.EMPLOYER_REGISTER} className="text-[#635BFF] font-medium hover:underline">
-                Register
+                {t('common:register')}
               </Link>
             </p>
           </div>
           <p className="mt-4 text-center">
             <Link to={ROUTES.HOME} className="text-sm text-slate-500 hover:text-[#635BFF]">
-              ← Back to EduRozgaar
+              {t('employer:backToEduRozgaar')}
             </Link>
           </p>
         </div>

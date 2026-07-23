@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const personalInfoSchema = new mongoose.Schema(
   {
     fullName: { type: String, trim: true, default: '' },
+    professionalTitle: { type: String, trim: true, default: '' },
     email: { type: String, trim: true, default: '' },
     phone: { type: String, trim: true, default: '' },
     city: { type: String, trim: true, default: '' },
@@ -53,6 +54,57 @@ const projectEntrySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const referenceEntrySchema = new mongoose.Schema(
+  {
+    name: { type: String, trim: true, default: '' },
+    title: { type: String, trim: true, default: '' },
+    company: { type: String, trim: true, default: '' },
+    email: { type: String, trim: true, default: '' },
+    phone: { type: String, trim: true, default: '' },
+  },
+  { _id: false }
+);
+
+const awardEntrySchema = new mongoose.Schema(
+  {
+    title: { type: String, trim: true, default: '' },
+    issuer: { type: String, trim: true, default: '' },
+    year: { type: String, trim: true, default: '' },
+    description: { type: String, trim: true, default: '' },
+  },
+  { _id: false }
+);
+
+const volunteerEntrySchema = new mongoose.Schema(
+  {
+    organization: { type: String, trim: true, default: '' },
+    role: { type: String, trim: true, default: '' },
+    duration: { type: String, trim: true, default: '' },
+    description: { type: String, trim: true, default: '' },
+  },
+  { _id: false }
+);
+
+const publicationEntrySchema = new mongoose.Schema(
+  {
+    title: { type: String, trim: true, default: '' },
+    publisher: { type: String, trim: true, default: '' },
+    year: { type: String, trim: true, default: '' },
+    url: { type: String, trim: true, default: '' },
+    description: { type: String, trim: true, default: '' },
+  },
+  { _id: false }
+);
+
+const membershipEntrySchema = new mongoose.Schema(
+  {
+    organization: { type: String, trim: true, default: '' },
+    role: { type: String, trim: true, default: '' },
+    since: { type: String, trim: true, default: '' },
+  },
+  { _id: false }
+);
+
 const resumeSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -66,6 +118,12 @@ const resumeSchema = new mongoose.Schema(
     projects: [projectEntrySchema],
     certifications: [{ type: String, trim: true }],
     languages: [{ type: String, trim: true }],
+    references: [referenceEntrySchema],
+    awards: [awardEntrySchema],
+    volunteerExperience: [volunteerEntrySchema],
+    publications: [publicationEntrySchema],
+    interests: [{ type: String, trim: true }],
+    professionalMemberships: [membershipEntrySchema],
   },
   { timestamps: true }
 );

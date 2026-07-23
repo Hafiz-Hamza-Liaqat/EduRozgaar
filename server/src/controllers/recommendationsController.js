@@ -5,6 +5,7 @@ import { User } from '../models/User.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { cacheGet, cacheSet } from '../config/redis.js';
 import { CACHE_KEYS } from '../utils/cacheKeys.js';
+import { TalentProfileReadService } from '../services/career/TalentProfileReadService.js';
 
 const RECOMMEND_LIMIT = 8;
 const CACHE_TTL = 600; // 10 min
@@ -56,6 +57,13 @@ export const getRecommendations = asyncHandler(async (req, res) => {
     .lean();
   if (!user) return res.status(404).json({ error: 'User not found' });
 
+  const targeting = await TalentProfileReadService.getCareerTargetingContext(userId);
+  const scoringUser = {
+    ...user,
+    province: targeting.province || user.province,
+    interests: targeting.interests?.length ? targeting.interests : (user.interests || []),
+  };
+
   const excludeJobs = [...(user.savedJobs || []), ...(user.recentlyViewedJobs || [])].map((id) => id.toString());
   const excludeScholarships = [...(user.savedScholarships || []), ...(user.recentlyViewedScholarships || [])].map((id) => id.toString());
   const excludeAdmissions = [...(user.savedAdmissions || []), ...(user.recentlyViewedAdmissions || [])].map((id) => id.toString());
@@ -68,26 +76,26 @@ export const getRecommendations = asyncHandler(async (req, res) => {
 
   const jobs = allJobs
     .filter((j) => !excludeJobs.includes(j._id.toString()))
-    .map((j) => ({ ...j, _score: scoreJob(j, user) }))
+    .map((j) => ({ ...j, _score: scoreJob(j, scoringUser) }))
     .sort((a, b) => b._score - a._score)
     .slice(0, RECOMMEND_LIMIT)
     .map(({ _score, ...j }) => j);
 
   const scholarships = allScholarships
     .filter((s) => !excludeScholarships.includes(s._id.toString()))
-    .map((s) => ({ ...s, _score: scoreScholarship(s, user) }))
+    .map((s) => ({ ...s, _score: scoreScholarship(s, scoringUser) }))
     .sort((a, b) => b._score - a._score)
     .slice(0, RECOMMEND_LIMIT)
     .map(({ _score, ...s }) => s);
 
   const admissions = allAdmissions
     .filter((a) => !excludeAdmissions.includes(a._id.toString()))
-    .map((a) => ({ ...a, _score: scoreAdmission(a, user) }))
+    .map((a) => ({ ...a, _score: scoreAdmission(a, scoringUser) }))
     .sort((a, b) => b._score - a._score)
     .slice(0, RECOMMEND_LIMIT)
     .map(({ _score, ...a }) => a);
 
-  const payload = { jobs, scholarships, admissions };
+  const payload = { jobs, scholarships, admissions, careerSource: targeting.source };
   await cacheSet(cacheKey, payload, CACHE_TTL);
   res.json(payload);
 });

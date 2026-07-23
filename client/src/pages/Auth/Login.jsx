@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../constants';
 import { validateEmail, validatePassword } from '../../utils/validation';
+import { translateValidationError } from '../../utils/validationI18n';
 import { Button } from '../../components/common/Button';
 import { SocialAuthButton } from '../../components/auth/SocialAuthButton';
 import { FormField } from '../../components/common/FormField';
@@ -13,6 +15,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, error, setError } = useAuth();
+  const { t } = useTranslation(['forms', 'common', 'validation']);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -24,8 +27,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    const emailErr = validateEmail(email);
-    const passwordErr = validatePassword(password, false);
+    const emailErr = translateValidationError(validateEmail(email), t);
+    const passwordErr = translateValidationError(validatePassword(password, false), t);
     if (emailErr || passwordErr) {
       setErrors({ email: emailErr, password: passwordErr });
       return;
@@ -33,11 +36,18 @@ export default function Login() {
     setErrors({});
     setSubmitting(true);
     try {
-      await login(email.trim().toLowerCase(), password);
-      navigate(from, { replace: true });
+      const result = await login(email.trim().toLowerCase(), password);
+      if (result?.mustChangePassword) {
+        navigate(ROUTES.PROFILE, { replace: true, state: { mustChangePassword: true } });
+      } else if (from === ROUTES.HOME || from === ROUTES.LOGIN || from === ROUTES.REGISTER) {
+        const seen = typeof window !== 'undefined' && localStorage.getItem('edur_onboarding_done') === '1';
+        navigate(seen ? ROUTES.DASHBOARD : `${ROUTES.TALENT_PROFILE}?onboarding=1`, { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       const data = err.response?.data;
-      const msg = data?.error || 'Login failed. Please try again.';
+      const msg = data?.error || t('forms:login.failed');
       const details = data?.details || {};
       setError(msg);
       setErrors({ email: details.email || null, password: details.password || null });
@@ -47,29 +57,26 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    // Placeholder: redirect to backend OAuth or open Google popup
-    setError('Google sign-in will be available in a future update.');
+    setError(t('forms:login.googleSoon'));
   };
 
   return (
     <>
-      <SeoHead title="Login" description="Login to EduRozgaar account." noindex />
+      <SeoHead title={t('forms:login.title')} description={t('forms:login.seoDescription')} noindex />
       <div className="max-w-md mx-auto px-4 sm:px-6 py-8 md:py-12">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Login</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('forms:login.title')}</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          {isFromAdmin
-            ? 'Sign in with an admin account to access the admin panel.'
-            : 'Sign in to access your profile and saved items.'}
+          {isFromAdmin ? t('forms:login.adminSubtitle') : t('forms:login.subtitle')}
         </p>
 
         {error && (
-          <Alert variant="error" title="Error" className="mb-6">
+          <Alert variant="error" title={t('common:error')} className="mb-6">
             {error}
           </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <FormField label="Email" id="login-email" error={errors.email}>
+          <FormField label={t('common:email')} id="login-email" error={errors.email}>
             <input
               id="login-email"
               type="email"
@@ -77,10 +84,10 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow duration-200"
-              placeholder="you@example.com"
+              placeholder={t('common:emailPlaceholder')}
             />
           </FormField>
-          <FormField label="Password" id="login-password" error={errors.password}>
+          <FormField label={t('common:password')} id="login-password" error={errors.password}>
             <input
               id="login-password"
               type="password"
@@ -88,28 +95,28 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow duration-200"
-              placeholder="••••••••"
+              placeholder={t('common:passwordPlaceholder')}
             />
           </FormField>
           <div className="flex justify-end">
             <Link to={ROUTES.FORGOT_PASSWORD} className="text-sm text-primary dark:text-mint hover:underline link-hover">
-              Forgot password?
+              {t('common:forgotPassword')}
             </Link>
           </div>
           <Button type="submit" disabled={submitting} className="w-full">
-            {submitting ? 'Signing in...' : 'Sign in'}
+            {submitting ? t('forms:login.signingIn') : t('forms:login.signIn')}
           </Button>
         </form>
 
         <div className="mt-6 animate-fade-in">
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">Or continue with</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">{t('common:continueWith')}</p>
           <SocialAuthButton provider="Google" onClick={handleGoogleLogin} comingSoon />
         </div>
 
         <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          Don&apos;t have an account?{' '}
+          {t('common:dontHaveAccount')}{' '}
           <Link to={ROUTES.REGISTER} className="text-primary dark:text-mint font-medium hover:underline link-hover">
-            Register
+            {t('common:register')}
           </Link>
         </p>
       </div>

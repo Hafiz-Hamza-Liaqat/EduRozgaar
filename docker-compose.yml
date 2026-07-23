@@ -1,6 +1,7 @@
-# Production Docker Compose — MongoDB/Redis/backend are internal-only (no public ports).
-# Copy .env.template → .env and set JWT_SECRET, SITE_URL, VITE_APP_URL before deploy.
-# For local Docker dev with exposed DB ports, use: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Production Docker Compose (C.7.0.9 / L.2)
+# Copy docker/.env.production.example → .env before deploy.
+# Staging: docker compose -f docker-compose.yml -f docker-compose.staging.yml --env-file .env.staging up -d --build
+# Dev with exposed ports: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 services:
   mongodb:
@@ -19,6 +20,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
     healthcheck:
@@ -29,44 +31,93 @@ services:
 
   backend:
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile.server
     restart: unless-stopped
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       NODE_ENV: production
+      APP_ENV: ${APP_ENV:-production}
       PORT: 5000
       MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/edurozgaar}
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env — use openssl rand -hex 32}
-      SITE_URL: ${SITE_URL:?Set SITE_URL in .env e.g. https://yourdomain.com}
+      REQUIRE_REDIS: ${REQUIRE_REDIS:-1}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      SITE_URL: ${SITE_URL:?Set SITE_URL in .env}
       FRONTEND_URL: ${FRONTEND_URL:-${SITE_URL}}
-      DISABLE_SCRAPER_CRON: ${DISABLE_SCRAPER_CRON:-0}
+      DISABLE_QUEUE_CRON: ${DISABLE_QUEUE_CRON:-1}
+      DISABLE_REMINDER_CRON: ${DISABLE_REMINDER_CRON:-1}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      MEDIA_STORAGE_PROVIDER: ${MEDIA_STORAGE_PROVIDER:-local}
+      CMS_SEED_ON_START: ${CMS_SEED_ON_START:-0}
       MAIL_HOST: ${MAIL_HOST:-}
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_USER: ${MAIL_USER:-}
       MAIL_PASS: ${MAIL_PASS:-}
       MAIL_FROM: ${MAIL_FROM:-}
+      AWS_S3_CDN_URL: ${AWS_S3_CDN_URL:-}
+      SUPABASE_CDN_URL: ${SUPABASE_CDN_URL:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+    volumes:
+      - media_uploads:/app/uploads
     depends_on:
       mongodb:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5000/api/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.server
+    restart: unless-stopped
+    command: ["node", "src/worker.js"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: production
+      APP_ENV: ${APP_ENV:-production}
+      WORKER_ONLY: "1"
+      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/edurozgaar}
+      REDIS_URL: redis://redis:6379
+      REQUIRE_REDIS: ${REQUIRE_REDIS:-1}
+      WORKER_POLL_INTERVAL_MS: ${WORKER_POLL_INTERVAL_MS:-15000}
+      DISABLE_REMINDER_CRON: ${DISABLE_REMINDER_CRON:-0}
+      MEDIA_STORAGE_PROVIDER: ${MEDIA_STORAGE_PROVIDER:-local}
+    volumes:
+      - media_uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
 
   frontend:
     build:
-      context: ./client
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile.client
       args:
-        VITE_APP_URL: ${VITE_APP_URL:?Set VITE_APP_URL in .env e.g. https://yourdomain.com}
+        VITE_APP_URL: ${VITE_APP_URL:?Set VITE_APP_URL in .env}
         VITE_API_URL: ${VITE_API_URL:-/api}
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-80}:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   mongodb_data:
   redis_data:
+  media_uploads:

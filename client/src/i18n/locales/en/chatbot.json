@@ -1,0 +1,14 @@
+{
+  "title": "Career counseling",
+  "loginRequired": "Log in to use the career counseling chatbot.",
+  "greeting": "Ask about job search, scholarships, exam prep, internships, or webinars.",
+  "placeholder": "Ask about jobs, scholarships, exams...",
+  "send": "Send",
+  "typing": "Typing...",
+  "loading": "Loading…",
+  "close": "Close chatbot",
+  "noResponse": "No response.",
+  "error": "Something went wrong. Try again.",
+  "suggestions": "Suggestions",
+  "history": "Chat history"
+}

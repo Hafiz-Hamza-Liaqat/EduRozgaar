@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { employerApi } from '../../services/employerService';
 import { ROUTES } from '../../constants';
+import { VerificationBadge } from '../../components/common/VerificationBadge';
 
 const Card = ({ title, value, sub }) => (
   <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 shadow-sm">
@@ -13,6 +15,7 @@ const Card = ({ title, value, sub }) => (
 );
 
 export default function EmployerDashboard() {
+  const { t } = useTranslation(['employer', 'common']);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,24 +39,27 @@ export default function EmployerDashboard() {
 
   return (
     <>
-      <SeoHead title="Employer Dashboard" description="Manage your job posts and applications." noindex />
-      <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">Dashboard</h1>
+      <SeoHead title={t('employer:dashboard')} description={t('employer:dashboardSeoDesc')} noindex />
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A]">{t('employer:dashboardHeading')}</h1>
+        <VerificationBadge level={data?.verificationLevel} verified={data?.verified} />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card title="Active Jobs" value={data?.activeJobs ?? 0} />
-        <Card title="Total Applications" value={data?.totalApplications ?? 0} />
-        <Card title="Total Views" value={data?.totalViews ?? 0} />
-        <Card title="Shortlisted" value={data?.shortlistedCandidates ?? 0} />
+        <Card title={t('employer:activeJobsCard')} value={data?.activeJobs ?? 0} />
+        <Card title={t('employer:totalApplicationsCard')} value={data?.totalApplications ?? 0} />
+        <Card title={t('employer:totalViewsCard')} value={data?.totalViews ?? 0} />
+        <Card title={t('employer:shortlistedCard')} value={data?.shortlistedCandidates ?? 0} />
       </div>
       <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
         <div className="px-5 py-4 border-b border-[#E5E7EB]">
-          <h2 className="font-semibold text-[#0F172A]">Recent Job Posts</h2>
+          <h2 className="font-semibold text-[#0F172A]">{t('employer:recentJobPosts')}</h2>
         </div>
         <div className="divide-y divide-[#E5E7EB]">
           {(data?.jobs || []).length === 0 ? (
             <div className="p-8 text-center text-slate-600">
-              No jobs yet.{' '}
+              {t('employer:noJobsYet')}{' '}
               <Link to={ROUTES.EMPLOYER_POST_JOB} className="text-[#635BFF] hover:text-[#4F46E5] font-medium">
-                Post your first job
+                {t('employer:postFirstJob')}
               </Link>
             </div>
           ) : (
@@ -67,7 +73,11 @@ export default function EmployerDashboard() {
                     {j.title}
                   </Link>
                   <p className="text-sm text-slate-600 mt-0.5">
-                    Views: {j.views} · Applications: {j.applications} · Shortlisted: {j.shortlisted}
+                    {t('employer:jobStats', {
+                      views: j.views,
+                      applications: j.applications,
+                      shortlisted: j.shortlisted,
+                    })}
                   </p>
                 </div>
               </div>

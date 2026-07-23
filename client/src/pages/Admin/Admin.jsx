@@ -1,62 +1,52 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
-import axiosInstance from '../../services/axiosBase';
+import { AdminSidebar } from '../../components/admin/AdminSidebar';
 import { ROUTES } from '../../constants';
-
-const TABS = [
-  { path: ROUTES.ADMIN, label: 'Overview' },
-  { path: `${ROUTES.ADMIN}/growth-dashboard`, label: 'Growth' },
-  { path: `${ROUTES.ADMIN}/ai-job-generator`, label: 'AI Job Generator' },
-  { path: `${ROUTES.ADMIN}/analytics`, label: 'Analytics' },
-  { path: `${ROUTES.ADMIN}/alerts`, label: 'Alerts' },
-];
+import { usePermissions } from '../../hooks/usePermissions';
 
 export default function Admin() {
+  const { t } = useTranslation(['admin', 'common']);
   const location = useLocation();
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const { can, role, loading: permLoading } = usePermissions();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    axiosInstance
-      .get('/admin')
-      .then((res) => setData(res.data))
-      .catch((err) => setError(err.response?.data?.error || err.message));
-  }, []);
-
-  const isOverview = location.pathname === ROUTES.ADMIN || location.pathname === `${ROUTES.ADMIN}/`;
+  const isOverview =
+    location.pathname === ROUTES.ADMIN || location.pathname === `${ROUTES.ADMIN}/`;
 
   return (
     <>
-      {isOverview && <SeoHead title="Admin" description="EduRozgaar admin panel." noindex />}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin panel</h1>
-        <nav className="flex gap-4 mb-6 border-b border-gray-200 dark:border-gray-700">
-          {TABS.map(({ path, label }) => (
-            <Link
-              key={path}
-              to={path}
-              className={`pb-2 px-1 text-sm font-medium border-b-2 -mb-px ${
-                (path === ROUTES.ADMIN ? isOverview : location.pathname === path)
-                  ? 'border-primary text-primary dark:text-mint'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-        {error && (
-          <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800 mb-6">
-            {error}
+      {isOverview && (
+        <SeoHead title={t('admin:seoTitle')} description={t('admin:seoDescription')} noindex />
+      )}
+
+      <div className="flex flex-col lg:flex-row min-w-0 w-full gap-0 lg:gap-0 -mx-4 sm:mx-0">
+        <AdminSidebar
+          mobileOpen={mobileOpen}
+          onMobileOpen={() => setMobileOpen(true)}
+          onMobileClose={() => setMobileOpen(false)}
+          can={can}
+        />
+
+        <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="max-w-6xl mx-auto w-full">
+            <div className="hidden lg:flex flex-wrap items-center justify-between gap-2 mb-6">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                {t('admin:title')}
+              </h1>
+              {!permLoading && role && (
+                <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                  {role}
+                </span>
+              )}
+            </div>
+
+            <div className="min-w-0">
+              <Outlet />
+            </div>
           </div>
-        )}
-        {isOverview && data && (
-          <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <pre className="text-sm text-gray-700 dark:text-gray-300">{JSON.stringify(data, null, 2)}</pre>
-          </div>
-        )}
-        {!isOverview && <Outlet />}
+        </div>
       </div>
     </>
   );

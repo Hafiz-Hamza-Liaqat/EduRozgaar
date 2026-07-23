@@ -2,9 +2,10 @@ import { Job } from '../models/Job.js';
 import { ResumeScan } from '../models/ResumeScan.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { cacheGet, cacheSet } from '../config/redis.js';
+import { onResumeAnalysisComplete } from '../services/automationService.js';
+import { validateResumeBuffer } from '../utils/fileValidation.js';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_MIMES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 const CACHE_TTL = 300;
 const CACHE_PREFIX = 'resume:match:';
 
@@ -58,8 +59,7 @@ function buildSuggestions(extracted, jobs, matchedSkills) {
 
 export const analyzeResume = asyncHandler(async (req, res) => {
   if (!req.file || !req.file.buffer) return res.status(400).json({ error: 'No file uploaded' });
-  const mimetype = req.file.mimetype || '';
-  if (!ALLOWED_MIMES.includes(mimetype)) return res.status(400).json({ error: 'Only PDF and DOCX files are allowed' });
+  const mimetype = await validateResumeBuffer(req.file.buffer, req.file.mimetype);
   if (req.file.size > MAX_FILE_SIZE) return res.status(400).json({ error: 'File too large (max 5MB)' });
 
   const userId = req.user?.userId;
@@ -86,7 +86,7 @@ export const analyzeResume = asyncHandler(async (req, res) => {
   const suggestions = buildSuggestions(extracted, jobs, matchedSkills);
 
   if (userId) {
-    await ResumeScan.create({
+    const scan = await ResumeScan.create({
       userId,
       type: 'scan',
       extracted: { skills: extracted.skills, education: extracted.education, experience: extracted.experience },
@@ -94,6 +94,7 @@ export const analyzeResume = asyncHandler(async (req, res) => {
       matchedSkills: matchedSkills.map((m) => ({ jobId: m.jobId, matched: m.matched })),
       suggestions,
     });
+    onResumeAnalysisComplete({ userId, scanId: scan._id, score: null }).catch(() => {});
   }
 
   res.json({

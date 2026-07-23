@@ -9,6 +9,10 @@ const notificationSchema = new mongoose.Schema(
     target_interest: { type: String },
     delivered: { type: Boolean, default: false },
     link: { type: String },
+    audience: { type: String, default: 'all' },
+    channel: { type: String, enum: ['in_app', 'email', 'whatsapp', 'push'], default: 'in_app' },
+    scheduledAt: { type: Date },
+    status: { type: String, enum: ['draft', 'scheduled', 'sent'], default: 'sent' },
   },
   { timestamps: true }
 );

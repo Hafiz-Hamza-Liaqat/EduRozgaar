@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requireUserAuth } from '../middleware/auth.js';
 import {
   createResume,
   getMyResumes,
@@ -12,10 +12,10 @@ import {
 
 export const resumesRouter = Router();
 
-resumesRouter.post('/resumes', requireAuth, createResume);
-resumesRouter.get('/resumes/user', requireAuth, getMyResumes);
-resumesRouter.post('/resumes/ai-suggest', requireAuth, aiSuggest);
-resumesRouter.post('/resumes/optimize-for-job', requireAuth, optimizeForJob);
-resumesRouter.get('/resumes/:id', requireAuth, getResumeById);
-resumesRouter.put('/resumes/:id', requireAuth, updateResume);
-resumesRouter.delete('/resumes/:id', requireAuth, deleteResume);
+resumesRouter.post('/resumes', requireAuth, requireUserAuth, createResume);
+resumesRouter.get('/resumes/user', requireAuth, requireUserAuth, getMyResumes);
+resumesRouter.post('/resumes/ai-suggest', requireAuth, requireUserAuth, aiSuggest);
+resumesRouter.post('/resumes/optimize-for-job', requireAuth, requireUserAuth, optimizeForJob);
+resumesRouter.get('/resumes/:id', requireAuth, requireUserAuth, getResumeById);
+resumesRouter.put('/resumes/:id', requireAuth, requireUserAuth, updateResume);
+resumesRouter.delete('/resumes/:id', requireAuth, requireUserAuth, deleteResume);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, collectionPageSchema, itemListSchema, combineSchemas } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
@@ -10,6 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 import { scholarshipsApi, savedApi } from '../../services/listingsService';
 
 export default function SEOScholarshipsPage() {
+  const { t } = useTranslation(['scholarships', 'navbar']);
   const { country } = useParams();
   const { isAuthenticated } = useAuth();
   const [meta, setMeta] = useState(null);
@@ -24,9 +26,9 @@ export default function SEOScholarshipsPage() {
         setMeta(data.meta);
         setScholarships(data.data || []);
       })
-      .catch(() => setMeta({ title: 'Scholarships – EduRozgaar', description: 'Find scholarships.' }))
+      .catch(() => setMeta({ title: t('scholarships:seoTitle'), description: t('scholarships:subtitle') }))
       .finally(() => setLoading(false));
-  }, [country]);
+  }, [country, t]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -45,8 +47,8 @@ export default function SEOScholarshipsPage() {
   };
 
   const canonical = meta?.canonical || `/scholarships-in-${country}`;
-  const pageTitle = meta?.title?.split('|')[0]?.trim() || `Scholarships in ${country}`;
-  const description = meta?.description || 'Find scholarships.';
+  const pageTitle = meta?.title?.split('|')[0]?.trim() || `${t('scholarships:title')} ${country}`;
+  const description = meta?.description || t('scholarships:subtitle');
 
   return (
     <>
@@ -56,8 +58,8 @@ export default function SEOScholarshipsPage() {
         canonical={canonical}
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Scholarships', url: ROUTES.SCHOLARSHIPS },
+            { name: t('navbar:home'), url: ROUTES.HOME },
+            { name: t('scholarships:title'), url: ROUTES.SCHOLARSHIPS },
             { name: pageTitle, url: canonical },
           ]),
           collectionPageSchema({ name: pageTitle, description, url: canonical }),
@@ -75,7 +77,7 @@ export default function SEOScholarshipsPage() {
             {pageTitle}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
-          <Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint hover:underline text-sm mt-2 inline-block">← All scholarships</Link>
+          <Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint hover:underline text-sm mt-2 inline-block">{t('scholarships:allScholarships')}</Link>
         </div>
         {loading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -88,7 +90,10 @@ export default function SEOScholarshipsPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">No scholarships found. <Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint">Browse all scholarships</Link></p>
+          <p className="text-gray-500 dark:text-gray-400">
+            {t('scholarships:noScholarshipsFound')}{' '}
+            <Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint">{t('scholarships:browseAllScholarships')}</Link>
+          </p>
         )}
       </div>
     </>

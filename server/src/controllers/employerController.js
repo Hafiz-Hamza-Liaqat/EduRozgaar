@@ -1,10 +1,15 @@
 import mongoose from 'mongoose';
 import { Job } from '../models/Job.js';
 import { Application } from '../models/Application.js';
+import { onApplicationStatusChange } from '../services/automationService.js';
 import { Employer } from '../models/Employer.js';
 import { JobPlan } from '../models/JobPlan.js';
+import { verifyPaymentForActivation } from '../services/paymentService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { jobSlug } from '../utils/slugify.js';
+import { sanitizeString } from '../utils/sanitize.js';
+import { stripAllHtml } from '../utils/htmlSanitize.js';
+import { TalentProfileReadService } from '../services/career/TalentProfileReadService.js';
 
 /** GET /employer/dashboard - Stats for employer dashboard */
 export const getDashboard = asyncHandler(async (req, res) => {
@@ -29,11 +34,14 @@ export const getDashboard = asyncHandler(async (req, res) => {
   ]);
   const totalViews = jobsWithCounts.reduce((s, j) => s + (j.views || 0), 0);
   const shortlistedCandidates = jobsWithCounts.reduce((s, j) => s + (j.shortlisted || 0), 0);
+  const employer = await Employer.findById(employerId).select('verificationLevel verified companyName').lean();
   res.json({
     activeJobs,
     totalApplications,
     totalViews,
     shortlistedCandidates,
+    verificationLevel: employer?.verificationLevel || 'basic',
+    verified: employer?.verified || false,
     jobs: jobsWithCounts.slice(0, 10).map((j) => ({
       _id: j._id,
       title: j.title,
@@ -92,7 +100,7 @@ export const createJob = asyncHandler(async (req, res) => {
     applyType: body.applyLink || body.applyEmail ? 'external' : 'internal',
     applicationLink: body.applyLink || null,
     applyEmail: body.applyEmail || null,
-    description: body.jobDescription || body.description,
+    description: stripAllHtml(body.jobDescription || body.description),
     requirements: body.requirements || [],
     salaryRange: body.salaryRange,
     skillsRequired: body.skillsRequired || [],
@@ -124,9 +132,10 @@ export const updateJob = asyncHandler(async (req, res) => {
   ];
   allowed.forEach((key) => {
     if (body[key] !== undefined) {
-      if (key === 'jobTitle') job.title = body[key];
-      else if (key === 'companyName') job.company = job.organization = body[key];
-      else if (key === 'jobDescription') job.description = body[key];
+      if (key === 'jobTitle') job.title = sanitizeString(body[key]);
+      else if (key === 'companyName') job.company = job.organization = sanitizeString(body[key]);
+      else if (key === 'jobDescription') job.description = stripAllHtml(body[key]);
+      else if (key === 'description') job.description = stripAllHtml(body[key]);
       else if (key === 'applyLink') job.applicationLink = body[key];
       else if (key === 'applicationDeadline') job.deadline = body[key] ? new Date(body[key]) : null;
       else job[key] = body[key];
@@ -144,7 +153,7 @@ export const getPlans = asyncHandler(async (_req, res) => {
   res.json({ data: plans });
 });
 
-/** POST /employer/jobs/:id/activate - After payment: set plan and activate job */
+/** POST /employer/jobs/:id/activate - Activate job (free or after verified payment) */
 export const activateJob = asyncHandler(async (req, res) => {
   const employerId = req.employer.employerId;
   const job = await Job.findOne({ _id: req.params.id, employerId });
@@ -153,7 +162,24 @@ export const activateJob = asyncHandler(async (req, res) => {
 
   const { planId, paymentId } = req.body;
   const plan = planId ? await JobPlan.findById(planId) : null;
-  const planType = job.planType === 'free' ? 'free' : (plan?.slug || 'standard');
+  const isFreeJob = job.planType === 'free';
+
+  if (!isFreeJob) {
+    if (!plan) return res.status(400).json({ error: 'planId is required for paid activation' });
+    if (plan.price > 0) {
+      const verification = await verifyPaymentForActivation({
+        paymentId,
+        employerId,
+        jobId: job._id,
+        planId: plan._id,
+      });
+      if (!verification.ok) {
+        return res.status(402).json({ error: verification.error });
+      }
+    }
+  }
+
+  const planType = isFreeJob ? 'free' : (plan?.slug || 'standard');
   let expiresAt = null;
   if (plan?.durationDays) {
     expiresAt = new Date();
@@ -161,11 +187,11 @@ export const activateJob = asyncHandler(async (req, res) => {
   }
 
   job.status = 'active';
-  job.planId = plan?._id;
+  job.planId = plan?._id || job.planId;
   job.planType = planType;
   job.expiresAt = expiresAt;
   job.paidUntil = expiresAt;
-  job.approvalStatus = 'pending'; // admin must approve
+  job.approvalStatus = 'pending';
   await job.save();
 
   res.json({ job, message: 'Job activated. It will appear after admin approval.' });
@@ -180,7 +206,21 @@ export const getJobApplications = asyncHandler(async (req, res) => {
     .populate('userId', 'name email')
     .sort({ appliedDate: -1 })
     .lean();
-  res.json({ data: applications });
+
+  const enriched = await Promise.all(
+    applications.map(async (app) => {
+      const userId = app.userId?._id || app.userId;
+      const candidate = userId
+        ? await TalentProfileReadService.getCandidateCardForUser(userId)
+        : null;
+      return {
+        ...app,
+        candidate,
+      };
+    })
+  );
+
+  res.json({ data: enriched });
 });
 
 /** PATCH /employer/applications/:id - Update application status (shortlist, reject, interview, hired) */
@@ -197,6 +237,14 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
   }
   application.status = status;
   await application.save();
+  onApplicationStatusChange({
+    applicationId: application._id,
+    userId: application.userId,
+    status,
+    jobTitle: application.jobId?.title || 'Job',
+    interviewWhen: req.body?.interviewWhen,
+    interviewLink: req.body?.interviewLink,
+  }).catch(() => {});
   res.json({ application });
 });
 

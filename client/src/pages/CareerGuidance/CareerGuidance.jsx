@@ -1,193 +1,247 @@
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, combineSchemas, webPageSchema } from '../../seo/schemas';
 import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../constants';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
+import { careerArticlesApi } from '../../services/listingsService';
+import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
+import { AdHost } from '../../components/ads';
+import { DEGREE_ROADMAPS } from '@shared/career/degreeRoadmaps.js';
 
-const CAREER_PATHS_BY_DEGREE = [
-  {
-    degree: 'Computer Science',
-    careers: ['Software Engineer', 'Data Scientist', 'AI / ML Engineer', 'DevOps Engineer', 'Product Manager', 'Cybersecurity Analyst'],
-  },
-  {
-    degree: 'Business',
-    careers: ['Accountant', 'Marketing Manager', 'HR Specialist', 'Business Analyst', 'Financial Analyst', 'Consultant'],
-  },
-  {
-    degree: 'Engineering',
-    careers: ['Civil Engineer', 'Mechanical Engineer', 'Electrical Engineer', 'Project Manager', 'Quality Engineer', 'Design Engineer'],
-  },
-  {
-    degree: 'Medical',
-    careers: ['Doctor', 'Nurse', 'Pharmacist', 'Medical Researcher', 'Healthcare Administrator', 'Lab Technologist'],
-  },
-  {
-    degree: 'Arts & Humanities',
-    careers: ['Content Writer', 'Journalist', 'Teacher', 'Social Worker', 'Graphic Designer', 'Public Relations'],
-  },
-];
-
-const SKILL_DEVELOPMENT = [
-  { skill: 'Web Development', to: ROUTES.BLOG, tag: 'web', description: 'Frontend, backend, and full-stack skills for building modern web apps.' },
-  { skill: 'Data Science', to: ROUTES.BLOG, tag: 'data', description: 'Python, statistics, and ML for data-driven roles.' },
-  { skill: 'AI & Machine Learning', to: ROUTES.BLOG, tag: 'ai', description: 'Fundamentals and tools for AI/ML careers.' },
-  { skill: 'Cybersecurity', to: ROUTES.BLOG, tag: 'security', description: 'Security fundamentals and certifications.' },
-  { skill: 'Cloud Computing', to: ROUTES.BLOG, tag: 'cloud', description: 'AWS, Azure, and cloud architecture.' },
-];
-
-const RESUME_INTERVIEW_ARTICLES = [
-  { title: 'Best CV format for fresh graduates', to: ROUTES.BLOG, description: 'Structure and sections that get shortlisted.' },
-  { title: 'How to pass job interviews', to: ROUTES.BLOG, description: 'Common questions, STAR method, and body language.' },
-  { title: 'Resume mistakes to avoid', to: ROUTES.BLOG, description: 'Spelling, length, and tailoring tips.' },
-];
-
-const CAREER_ARTICLES = [
-  { title: 'Choosing the Right Career Path', description: 'Understand your interests, skills, and market demand to decide your field.', to: ROUTES.BLOG, tag: 'Career' },
-  { title: 'Skills That Employers Look For', description: 'Technical and soft skills that increase your employability in Pakistan.', to: ROUTES.BLOG, tag: 'Skills' },
-  { title: 'How to Prepare for Job Interviews', description: 'Common questions, body language, and follow-up tips.', to: ROUTES.BLOG, tag: 'Jobs' },
-  { title: 'FPSC & PPSC Exam Preparation', description: 'Syllabus, past papers, and time management for government exams.', to: ROUTES.EXAM_PREP, tag: 'Exam Prep' },
-  { title: 'Building a Professional Network', description: 'LinkedIn, alumni networks, and industry events.', to: ROUTES.BLOG, tag: 'Career' },
-  { title: 'First Job: What to Expect', description: 'Transition from student to professional life.', to: ROUTES.BLOG, tag: 'Career' },
-];
-
-const JOB_PREP_TIPS = [
-  'Tailor your CV to each job description.',
-  'Research the company before the interview.',
-  'Prepare STAR (Situation, Task, Action, Result) examples.',
-  'Follow up with a thank-you email after the interview.',
-  'Keep learning: short courses and certifications help.',
+const SKILL_KEYS = [
+  { key: 'webDev', to: `${ROUTES.ASSESSMENTS}/programming-fundamentals` },
+  { key: 'dataScience', to: `${ROUTES.ASSESSMENTS}/numerical-reasoning-basics` },
+  { key: 'aiMl', to: `${ROUTES.ASSESSMENTS}/problem-solving-basics` },
+  { key: 'cybersecurity', to: `${ROUTES.ASSESSMENTS}/computer-fundamentals` },
+  { key: 'cloud', to: `${ROUTES.ASSESSMENTS}/computer-fundamentals` },
 ];
 
 export default function CareerGuidance() {
+  const { t } = useTranslation(['career', 'common']);
+  const [articles, setArticles] = useState([]);
+  const [totalArticles, setTotalArticles] = useState(0);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [expanded, setExpanded] = useState(DEGREE_ROADMAPS[0]?.id || null);
+
+  const prepTips = t('career:prepTips', { returnObjects: true });
+
+  useEffect(() => {
+    careerArticlesApi.list({ limit: 12, page: 1 })
+      .then(({ data }) => {
+        setArticles(data.data || []);
+        setTotalArticles(data.pagination?.total ?? data.data?.length ?? 0);
+      })
+      .catch(() => setArticles([]))
+      .finally(() => setArticlesLoading(false));
+  }, []);
+
   return (
     <>
       <SeoHead
-        title="Career Guidance – EduRozgaar"
-        description="Career paths by degree, skill development, and resume & interview tips for Pakistani students."
+        title={t('career:seoTitle')}
+        description={t('career:seoDescription')}
         canonical={ROUTES.CAREER_GUIDANCE}
         keywords={`career guidance, career paths, interview tips, ${DEFAULT_KEYWORDS}`}
         ogType="website"
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Career Guidance', url: ROUTES.CAREER_GUIDANCE },
+            { name: t('career:breadcrumbHome'), url: ROUTES.HOME },
+            { name: t('career:title'), url: ROUTES.CAREER_GUIDANCE },
           ]),
           webPageSchema({
-            name: 'Career Guidance – EduRozgaar',
-            description: 'Career paths by degree, skill development, and resume & interview tips for Pakistani students.',
+            name: t('career:seoTitle'),
+            description: t('career:seoDescription'),
             url: ROUTES.CAREER_GUIDANCE,
           })
         )}
       />
       <div className="max-w-5xl mx-auto px-4 py-8 md:py-10">
-        <Link to={ROUTES.DASHBOARD} className="text-edur-steel dark:text-edur-sky hover:underline text-sm mb-6 inline-block">← Dashboard</Link>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">Career Guidance</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-10">
-          Choose your path, build in-demand skills, and get ready for jobs and interviews.
-        </p>
+        <Link to={ROUTES.DASHBOARD} className="text-edur-steel dark:text-edur-sky hover:underline text-sm mb-6 inline-block">{t('career:backToDashboard')}</Link>
+        <AdHost placementId="career-guidance-header" className="mb-6" />
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">{t('career:title')}</h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">{t('career:subtitle')}</p>
 
-        {/* Career Paths by Degree */}
+        <div className="flex flex-wrap gap-2 mb-10">
+          {[
+            { to: ROUTES.JOBS, label: t('navbar:jobs', { defaultValue: 'Jobs' }) },
+            { to: ROUTES.SCHOLARSHIPS, label: t('navbar:scholarships', { defaultValue: 'Scholarships' }) },
+            { to: ROUTES.INTERNSHIPS, label: t('navbar:internships', { defaultValue: 'Internships' }) },
+            { to: ROUTES.ADMISSIONS, label: t('navbar:admissions', { defaultValue: 'Admissions' }) },
+            { to: ROUTES.ASSESSMENTS, label: t('career:assessmentsLink', { defaultValue: 'Assessments' }) },
+          ].map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-edur-steel dark:text-edur-sky hover:border-edur-blue"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
         <ScrollReveal as="section" className="mb-14">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Career Paths by Degree</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {CAREER_PATHS_BY_DEGREE.map(({ degree, careers }) => (
-              <div
-                key={degree}
-                className="p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-lg hover:border-edur-blue/50 dark:hover:border-edur-sky/50 transition-all duration-200 card-hover"
-              >
-                <h3 className="font-semibold text-edur-steel dark:text-edur-sky text-lg mb-3">{degree}</h3>
-                <ul className="space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
-                  {careers.map((c) => (
-                    <li key={c}>• {c}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('career:pathsByDegree')}</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            {t('career:roadmapsIntro', {
+              defaultValue: 'Expand a major for roadmaps, skills, Pakistan salary orientation, certifications, and next steps.',
+            })}
+          </p>
+          <div className="space-y-4">
+            {DEGREE_ROADMAPS.map((degree) => {
+              const open = expanded === degree.id;
+              return (
+                <div
+                  key={degree.id}
+                  className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    className="w-full text-left px-5 py-4 flex items-center justify-between gap-3"
+                    onClick={() => setExpanded(open ? null : degree.id)}
+                    aria-expanded={open}
+                  >
+                    <h3 className="font-semibold text-edur-steel dark:text-edur-sky text-lg">{degree.title}</h3>
+                    <span className="text-sm text-gray-500">{open ? 'Hide' : 'View roadmap'}</span>
+                  </button>
+                  {open ? (
+                    <div className="px-5 pb-5 space-y-4 border-t border-gray-100 dark:border-gray-700 pt-4 text-sm text-gray-700 dark:text-gray-300">
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">Related degrees</h4>
+                        <p>{degree.relatedDegrees.join(' · ')}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">Common roles</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {degree.roles.map((r) => <li key={r}>{r}</li>)}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">Required skills</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {degree.requiredSkills.map((s) => <li key={s}>{s}</li>)}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">Salary orientation (Pakistan)</h4>
+                        <p>Junior: {degree.salaryPakistanPkr.junior} · Mid: {degree.salaryPakistanPkr.mid}</p>
+                        <p className="text-xs text-gray-500 mt-1">{degree.salaryPakistanPkr.note}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">Certifications</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {degree.certifications.map((c) => <li key={c}>{c}</li>)}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">Career progression</h4>
+                        <p>{degree.progression.join(' → ')}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">Learning resources</h4>
+                        <ul className="space-y-1">
+                          {degree.learning.map((l) => (
+                            <li key={l.href}>
+                              {l.external ? (
+                                <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{l.label}</a>
+                              ) : (
+                                <Link to={l.href} className="text-primary hover:underline">{l.label}</Link>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        <Link to={degree.links.jobs} className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium">Jobs</Link>
+                        <Link to={degree.links.scholarships} className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium">Scholarships</Link>
+                        <Link to={degree.links.internships} className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium">Internships</Link>
+                        <Link to={degree.links.admissions} className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium">Admissions</Link>
+                        <Link to={degree.links.assessments} className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium">Assessments</Link>
+                      </div>
+                      {degree.faq?.length ? (
+                        <div>
+                          <h4 className="font-medium text-gray-900 dark:text-white mb-1">FAQ</h4>
+                          <ul className="space-y-2">
+                            {degree.faq.map((f) => (
+                              <li key={f.q}>
+                                <p className="font-medium">{f.q}</p>
+                                <p className="text-gray-600 dark:text-gray-400">{f.a}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
         </ScrollReveal>
 
-        {/* Skill Development */}
         <ScrollReveal as="section" className="mb-14">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Skill Development</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">Trending skills: what they are, why they matter, and how to learn.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('career:skillDevelopment')}</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{t('career:skillDevelopmentDesc')}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SKILL_DEVELOPMENT.map(({ skill, to, description }) => (
+            {SKILL_KEYS.map(({ key, to }) => (
               <Link
-                key={skill}
+                key={key}
                 to={to}
                 className="block p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-lg hover:border-edur-blue/50 dark:hover:border-edur-sky/50 transition-all duration-200 card-hover"
               >
-                <h3 className="font-semibold text-gray-900 dark:text-white">{skill}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{description}</p>
-                <span className="text-xs font-medium text-edur-steel dark:text-edur-sky mt-2 inline-block">Learn more →</span>
+                <h3 className="font-semibold text-gray-900 dark:text-white">{t(`career:skills.${key}.title`)}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{t(`career:skills.${key}.description`)}</p>
+                <span className="text-xs font-medium text-edur-steel dark:text-edur-sky mt-2 inline-block">{t('career:takeAssessment', { defaultValue: 'Take related assessment' })}</span>
               </Link>
             ))}
           </div>
         </ScrollReveal>
 
-        {/* Resume & Interview Tips */}
         <ScrollReveal as="section" className="mb-14">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Resume & Interview Tips</h2>
-          <div className="grid md:grid-cols-3 gap-4 mb-8">
-            {RESUME_INTERVIEW_ARTICLES.map(({ title, to, description }) => (
-              <Link
-                key={title}
-                to={to}
-                className="block p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-lg hover:border-edur-blue/50 card-hover"
-              >
-                <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{description}</p>
-              </Link>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link to={ROUTES.RESUME_BUILDER} className="inline-flex items-center px-5 py-2.5 rounded-xl bg-edur-steel text-white font-medium hover:bg-edur-blue btn-theme">
-              Resume Builder
-            </Link>
-            <Link to={ROUTES.RESUME_ANALYZER} className="inline-flex items-center px-5 py-2.5 rounded-xl border-2 border-edur-steel text-edur-steel dark:border-edur-sky dark:text-edur-sky font-medium hover:bg-edur-steel/10 btn-theme">
-              Resume Analyzer
-            </Link>
-          </div>
-        </ScrollReveal>
-
-        {/* Career Path Articles (existing) */}
-        <ScrollReveal as="section" className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Career Path Articles</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {CAREER_ARTICLES.map((article) => (
-              <Link
-                key={article.title}
-                to={article.to}
-                className="block p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-lg hover:border-edur-blue/50 card-hover"
-              >
-                <span className="text-xs font-medium text-edur-steel dark:text-edur-sky">{article.tag}</span>
-                <h3 className="font-semibold text-gray-900 dark:text-white mt-1">{article.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{article.description}</p>
-              </Link>
-            ))}
-          </div>
-        </ScrollReveal>
-
-        {/* Job Preparation Tips */}
-        <ScrollReveal as="section" className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Job Preparation Tips</h2>
-          <ul className="space-y-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 list-disc list-inside text-gray-700 dark:text-gray-300">
-            {JOB_PREP_TIPS.map((tip) => (
-              <li key={tip}>{tip}</li>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            {t('career:prepTitle', { defaultValue: 'Interview & application prep' })}
+          </h2>
+          <ul className="space-y-3 text-gray-700 dark:text-gray-300">
+            {Array.isArray(prepTips) && prepTips.map((tip) => (
+              <li key={tip} className="flex gap-2">
+                <span aria-hidden>•</span>
+                <span>{tip}</span>
+              </li>
             ))}
           </ul>
         </ScrollReveal>
 
-        {/* Quick Links */}
-        <ScrollReveal as="section">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Links</h2>
-          <div className="flex flex-wrap gap-3">
-            <Link to={ROUTES.RESUME_BUILDER} className="px-4 py-2 rounded-xl bg-edur-steel text-white font-medium hover:bg-edur-blue btn-theme">Resume Builder</Link>
-            <Link to={ROUTES.RESUME_ANALYZER} className="px-4 py-2 rounded-xl border-2 border-edur-steel text-edur-steel dark:border-edur-sky dark:text-edur-sky hover:bg-edur-sky/20 btn-theme">Resume Analyzer</Link>
-            <Link to={ROUTES.EXAM_PREP} className="px-4 py-2 rounded-xl border-2 border-edur-steel text-edur-steel dark:border-edur-sky dark:text-edur-sky hover:bg-edur-sky/20 btn-theme">Exam Prep</Link>
-            <Link to={ROUTES.JOBS} className="px-4 py-2 rounded-xl border-2 border-edur-steel text-edur-steel dark:border-edur-sky dark:text-edur-sky hover:bg-edur-sky/20 btn-theme">Browse Jobs</Link>
+        <ScrollReveal as="section" className="mb-14">
+          <div className="flex items-end justify-between gap-4 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {t('career:articlesFromDb', { count: totalArticles, defaultValue: 'Career articles' })}
+            </h2>
+            {totalArticles > articles.length ? (
+              <span className="text-sm text-gray-500">{articles.length} / {totalArticles}</span>
+            ) : null}
           </div>
+          {articlesLoading ? (
+            <div className="grid sm:grid-cols-2 gap-4">
+              <ListingCardSkeleton /><ListingCardSkeleton />
+            </div>
+          ) : articles.length === 0 ? (
+            <p className="text-gray-500">{t('career:noArticles', { defaultValue: 'No guidance articles yet.' })}</p>
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-4">
+              {articles.map((article) => (
+                <Link
+                  key={article._id || article.slug}
+                  to={`${ROUTES.CAREER_GUIDANCE}/${article.slug}`}
+                  className="block p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-edur-blue/50"
+                >
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{article.title}</h3>
+                  {article.summary ? <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-3">{article.summary}</p> : null}
+                </Link>
+              ))}
+            </div>
+          )}
         </ScrollReveal>
       </div>
     </>

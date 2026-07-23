@@ -5,6 +5,10 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { cacheGet, cacheSet, cacheDelPattern } from '../config/redis.js';
 import { CACHE_KEYS } from '../utils/cacheKeys.js';
 import { sanitizeString } from '../utils/sanitize.js';
+import {
+  isSlotWithinLimits,
+} from '../utils/adSlotLimits.js';
+import { scheduleAnalyticsEvent } from '../services/analytics/AnalyticsEventService.js';
 
 const FEATURED_LIMIT = 10;
 const SPONSORED_LIMIT = 10;
@@ -40,7 +44,8 @@ export const getSponsoredScholarships = asyncHandler(async (req, res) => {
 
 export const getAdSlots = asyncHandler(async (req, res) => {
   const slots = await AdSlotConfig.find({ active: true }).lean();
-  res.json({ data: slots });
+  const data = slots.filter(isSlotWithinLimits);
+  res.json({ data });
 });
 
 export const listAdSlots = asyncHandler(async (req, res) => {
@@ -57,18 +62,35 @@ export const createAdSlot = asyncHandler(async (req, res) => {
     placement: body.placement || 'sidebar',
     dimensions: body.dimensions ? sanitizeString(body.dimensions) : undefined,
     active: body.active !== false,
+    imageUrl: body.imageUrl ? sanitizeString(body.imageUrl) : undefined,
+    targetUrl: body.targetUrl ? sanitizeString(body.targetUrl) : undefined,
+    startDate: body.startDate ? new Date(body.startDate) : undefined,
+    endDate: body.endDate ? new Date(body.endDate) : undefined,
+    priority: body.priority != null ? Number(body.priority) : 0,
+    clickLimit: body.clickLimit != null ? Number(body.clickLimit) : undefined,
+    impressionLimit: body.impressionLimit != null ? Number(body.impressionLimit) : undefined,
+    status: body.status || 'active',
   });
   res.status(201).json(doc);
 });
 
 export const updateAdSlot = asyncHandler(async (req, res) => {
+  const body = req.body || {};
   const doc = await AdSlotConfig.findByIdAndUpdate(
     req.params.id,
     {
-      ...(req.body?.name != null && { name: sanitizeString(req.body.name) }),
-      ...(req.body?.placement != null && { placement: req.body.placement }),
-      ...(req.body?.dimensions != null && { dimensions: sanitizeString(req.body.dimensions) }),
-      ...(req.body?.active !== undefined && { active: !!req.body.active }),
+      ...(body.name != null && { name: sanitizeString(body.name) }),
+      ...(body.placement != null && { placement: body.placement }),
+      ...(body.dimensions != null && { dimensions: sanitizeString(body.dimensions) }),
+      ...(body.active !== undefined && { active: !!body.active }),
+      ...(body.imageUrl !== undefined && { imageUrl: sanitizeString(body.imageUrl) }),
+      ...(body.targetUrl !== undefined && { targetUrl: sanitizeString(body.targetUrl) }),
+      ...(body.startDate !== undefined && { startDate: body.startDate ? new Date(body.startDate) : null }),
+      ...(body.endDate !== undefined && { endDate: body.endDate ? new Date(body.endDate) : null }),
+      ...(body.priority !== undefined && { priority: Number(body.priority) }),
+      ...(body.clickLimit !== undefined && { clickLimit: body.clickLimit ? Number(body.clickLimit) : null }),
+      ...(body.impressionLimit !== undefined && { impressionLimit: body.impressionLimit ? Number(body.impressionLimit) : null }),
+      ...(body.status !== undefined && { status: body.status }),
     },
     { new: true }
   );
@@ -80,6 +102,66 @@ export const deleteAdSlot = asyncHandler(async (req, res) => {
   const doc = await AdSlotConfig.findByIdAndDelete(req.params.id);
   if (!doc) return res.status(404).json({ error: 'Ad slot not found' });
   res.json({ message: 'Deleted' });
+});
+
+/** Public: record one advertisement impression (no auth). */
+export const trackAdImpression = asyncHandler(async (req, res) => {
+  const slotId = sanitizeString(req.body?.slotId);
+  if (!slotId) return res.status(400).json({ error: 'slotId is required' });
+
+  const doc = await AdSlotConfig.findOneAndUpdate(
+    {
+      slotId,
+      active: true,
+      status: 'active',
+      $or: [
+        { impressionLimit: { $exists: false } },
+        { impressionLimit: null },
+        { $expr: { $lt: [{ $ifNull: ['$impressionCount', 0] }, '$impressionLimit'] } },
+      ],
+    },
+    { $inc: { impressionCount: 1 } },
+    { new: true }
+  ).select('slotId impressionCount');
+
+  if (!doc) return res.status(404).json({ error: 'Slot not found or impression limit reached' });
+  scheduleAnalyticsEvent({
+    eventType: 'ad_impression',
+    entityType: 'ad',
+    entityId: doc.slotId,
+    metadata: { placement: req.body?.placement },
+  });
+  res.json({ success: true, slotId: doc.slotId, impressionCount: doc.impressionCount });
+});
+
+/** Public: record one advertisement click (no auth). */
+export const trackAdClick = asyncHandler(async (req, res) => {
+  const slotId = sanitizeString(req.body?.slotId);
+  if (!slotId) return res.status(400).json({ error: 'slotId is required' });
+
+  const doc = await AdSlotConfig.findOneAndUpdate(
+    {
+      slotId,
+      active: true,
+      status: 'active',
+      $or: [
+        { clickLimit: { $exists: false } },
+        { clickLimit: null },
+        { $expr: { $lt: [{ $ifNull: ['$clickCount', 0] }, '$clickLimit'] } },
+      ],
+    },
+    { $inc: { clickCount: 1 } },
+    { new: true }
+  ).select('slotId clickCount');
+
+  if (!doc) return res.status(404).json({ error: 'Slot not found or click limit reached' });
+  scheduleAnalyticsEvent({
+    eventType: 'ad_click',
+    entityType: 'ad',
+    entityId: doc.slotId,
+    metadata: { placement: req.body?.placement, targetUrl: req.body?.targetUrl },
+  });
+  res.json({ success: true, slotId: doc.slotId, clickCount: doc.clickCount });
 });
 
 /** Admin: set job featured/sponsored */

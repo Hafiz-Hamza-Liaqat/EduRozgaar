@@ -1,0 +1,71 @@
+/**
+ * Canonical search entity types (C.7.0.4).
+ */
+
+export const SEARCH_ENTITY_TYPES = [
+  'job',
+  'scholarship',
+  'admission',
+  'university',
+  'blog',
+  'career-guidance',
+  'cms-page',
+  'page-builder-page',
+  'form',
+  'media',
+  'talent-profile',
+  'credential',
+];
+
+export const SEARCH_ENTITY_TYPE_SET = new Set(SEARCH_ENTITY_TYPES);
+
+/** Public-facing searchable types (excludes optional admin-only indexing). */
+export const PUBLIC_SEARCH_ENTITY_TYPES = [
+  'job',
+  'scholarship',
+  'admission',
+  'university',
+  'blog',
+  'career-guidance',
+  'cms-page',
+  'page-builder-page',
+];
+
+export const SUGGESTION_ENTITY_TYPES = [
+  'job',
+  'scholarship',
+  'university',
+  'blog',
+  'cms-page',
+  'page-builder-page',
+];
+
+export const SEARCH_SORT_OPTIONS = ['relevance', 'newest', 'oldest', 'alphabetical'];
+
+/**
+ * @param {string} type
+ */
+export function isSearchEntityType(type) {
+  return SEARCH_ENTITY_TYPE_SET.has(type);
+}
+
+/**
+ * @param {string} entityType
+ */
+export function entityTypeLabel(entityType) {
+  const labels = {
+    job: 'Jobs',
+    scholarship: 'Scholarships',
+    admission: 'Admissions',
+    university: 'Universities',
+    blog: 'Blogs',
+    'career-guidance': 'Career Guidance',
+    'cms-page': 'Pages',
+    'page-builder-page': 'Pages',
+    form: 'Forms',
+    media: 'Media',
+    'talent-profile': 'Talent Profiles',
+    credential: 'Credentials',
+  };
+  return labels[entityType] || entityType;
+}

@@ -1,0 +1,180 @@
+{
+  "title": "ٹیلنٹ پروفائل",
+  "subtitle": "آپ کی کیریئر شناخت — تمام کیریئر ڈیٹا یہاں محفوظ ہے۔",
+  "save": "پروفائل محفوظ کریں",
+  "saving": "محفوظ ہو رہا ہے…",
+  "saved": "پروفائل محفوظ ہو گئی",
+  "saveError": "پروفائل محفوظ نہیں ہو سکی",
+  "loadError": "پروفائل لوڈ نہیں ہو سکی",
+  "featureDisabled": "ٹیلنٹ پروفائل غیر فعال ہے۔",
+  "tabs": {
+    "personal": "ذاتی",
+    "contact": "رابطہ",
+    "career": "کیریئر",
+    "education": "تعلیم",
+    "experience": "تجربہ",
+    "skills": "مہارتیں",
+    "languages": "زبانیں",
+    "certifications": "سرٹیفیکیٹ",
+    "portfolio": "پورٹ فولیو",
+    "resumes": "ریزیومے ورژن",
+    "documents": "دستاویزات"
+  },
+  "personal": {
+    "firstName": "پہلا نام",
+    "lastName": "آخری نام",
+    "photo": "پروفائل فوٹو URL",
+    "dateOfBirth": "تاریخ پیدائش",
+    "gender": "جنس (اختیاری)",
+    "nationality": "قومیت (اختیاری)",
+    "country": "ملک",
+    "region": "علاقہ / صوبہ",
+    "city": "شہر",
+    "visibility": "عوامی پروفائل",
+    "visibilityHint": "عوامی پروفائلز تلاش میں ظاہر ہو سکتی ہیں۔"
+  },
+  "contact": {
+    "email": "ای میل",
+    "emailReadOnly": "اکاؤنٹ سیٹنگز سے منظم",
+    "phone": "فون",
+    "website": "ویب سائٹ",
+    "linkedIn": "لنکڈ ان",
+    "github": "گٹ ہب",
+    "portfolio": "پورٹ فولیو",
+    "twitter": "X / ٹویٹر (اختیاری)"
+  },
+  "career": {
+    "headline": "موجودہ عنوان",
+    "summary": "پیشہ ورانہ خلاصہ",
+    "employmentStatus": "ملازمت کی حیثیت",
+    "workMode": "پسندیدہ کام کا طریقہ",
+    "preferredCountries": "پسندیدہ ممالک",
+    "preferredCountriesHint": "کوما سے الگ ممالک",
+    "timeZone": "ٹائم زون",
+    "salaryMin": "کم از کم تنخواہ (اختیاری)",
+    "salaryMax": "زیادہ سے زیادہ تنخواہ (اختیاری)",
+    "salaryCurrency": "کرنسی",
+    "salaryPeriod": "مدت"
+  },
+  "education": {
+    "add": "تعلیم شامل کریں",
+    "institution": "ادارہ",
+    "degree": "ڈگری",
+    "field": "شعبہ",
+    "startYear": "آغاز",
+    "endYear": "اختتام",
+    "grade": "گریڈ / GPA",
+    "description": "تفصیل",
+    "remove": "ہٹائیں"
+  },
+  "experience": {
+    "add": "تجربہ شامل کریں",
+    "company": "کمپنی",
+    "title": "عنوان",
+    "location": "مقام",
+    "startDate": "آغاز",
+    "endDate": "اختتام",
+    "current": "موجودہ کردار",
+    "responsibilities": "ذمہ داریاں",
+    "achievements": "کامیابیاں (ہر لائن پر ایک)",
+    "remove": "ہٹائیں"
+  },
+  "skills": {
+    "technical": "تکنیکی مہارتیں",
+    "soft": "نرم مہارتیں",
+    "add": "مہارت شامل کریں",
+    "name": "مہارت",
+    "level": "سطح",
+    "remove": "ہٹائیں"
+  },
+  "languages": {
+    "add": "زبان شامل کریں",
+    "language": "زبان",
+    "proficiency": "مہارت",
+    "remove": "ہٹائیں"
+  },
+  "certifications": {
+    "add": "سرٹیفیکیٹ شامل کریں",
+    "name": "نام",
+    "issuer": "جاری کنندہ",
+    "issued": "جاری",
+    "expires": "میعاد",
+    "url": "سرٹیفیکیٹ URL",
+    "remove": "ہٹائیں"
+  },
+  "portfolio": {
+    "add": "پروجیکٹ شامل کریں",
+    "title": "عنوان",
+    "description": "تفصیل",
+    "url": "URL",
+    "technologies": "ٹیکنالوجیز (کوما سے الگ)",
+    "featured": "نمایاں",
+    "remove": "ہٹائیں"
+  },
+  "resumes": {
+    "title": "ریزیومے ورژن",
+    "empty": "ابھی کوئی ریزیومے ورژن نہیں۔",
+    "create": "پروفائل سے ورژن بنائیں",
+    "publish": "شائع کریں",
+    "delete": "حذف",
+    "preview": "پیش نظارہ",
+    "primary": "بنیادی",
+    "status": "حیثیت",
+    "version": "ورژن",
+    "created": "تخلیق",
+    "publishSuccess": "ریزیومے شائع ہو گیا",
+    "createSuccess": "ریزیومے ورژن بن گیا",
+    "deleteSuccess": "ریزیومے ورژن حذف ہو گیا",
+    "deleteConfirm": "یہ ریزیومے ورژن حذف کریں؟",
+    "error": "ریزیومے عمل ناکام"
+  },
+  "documents": {
+    "title": "پروفائل دستاویزات",
+    "empty": "ابھی کوئی دستاویز نہیں۔",
+    "upload": "دستاویز اپ لوڈ کریں",
+    "label": "لیبل",
+    "type": "قسم",
+    "delete": "حذف",
+    "download": "ڈاؤن لوڈ",
+    "deleteConfirm": "یہ دستاویز حذف کریں؟",
+    "uploadSuccess": "دستاویز اپ لوڈ ہو گئی",
+    "deleteSuccess": "دستاویز حذف ہو گئی",
+    "error": "دستاویز عمل ناکام",
+    "types": {
+      "resume": "ریزیومے",
+      "cover_letter": "کور لیٹر",
+      "certificate": "سرٹیفیکیٹ",
+      "portfolio": "پورٹ فولیو",
+      "transcript": "ٹرانسکرپٹ",
+      "other": "دیگر"
+    }
+  },
+  "employmentStatus": {
+    "employed": "ملازم",
+    "unemployed": "بے روزگار",
+    "student": "طالب علم",
+    "freelance": "فری لانس",
+    "self_employed": "خود روزگار",
+    "open_to_work": "کام کے لیے تیار"
+  },
+  "workMode": {
+    "onsite": "آفس میں",
+    "remote": "ریموٹ",
+    "hybrid": "ہائبرڈ"
+  },
+  "skillLevel": {
+    "beginner": "ابتدائی",
+    "intermediate": "درمیانی",
+    "advanced": "اعلیٰ",
+    "expert": "ماہر"
+  },
+  "languageLevel": {
+    "basic": "بنیادی",
+    "conversational": "گفتگو",
+    "professional": "پیشہ ورانہ",
+    "native": "مادری"
+  },
+  "validation": {
+    "firstNameRequired": "پہلا نام ضروری ہے"
+  }
+}

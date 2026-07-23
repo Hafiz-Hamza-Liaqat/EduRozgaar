@@ -1,7 +1,15 @@
 import { Job } from '../models/Job.js';
-import mongoose from 'mongoose';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { listResponse, paginate } from '../utils/apiResponse.js';
+import { Employer } from '../models/Employer.js';
+import { JobVacancyService } from '../services/career/JobVacancyService.js';
+import {
+  getRequestLocale,
+  withListLocaleFilter,
+  findLocalizedBySlug,
+  findLocalizedById,
+  isObjectIdParam,
+} from '../utils/localeQuery.js';
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
@@ -44,7 +52,7 @@ export const getJobs = asyncHandler(async (req, res) => {
   const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_LIMIT));
   const skip = (page - 1) * limit;
   const sort = req.query.sort === 'deadline' ? 'deadline' : 'newest';
-  const query = buildJobQuery(req.query);
+  const query = withListLocaleFilter(buildJobQuery(req.query), getRequestLocale(req));
   const [data, total] = await Promise.all([
     Job.find(query).sort(buildJobSort(sort)).skip(skip).limit(limit).lean(),
     Job.countDocuments(query),
@@ -54,19 +62,26 @@ export const getJobs = asyncHandler(async (req, res) => {
 
 export const getJobByIdOrSlug = asyncHandler(async (req, res) => {
   const { idOrSlug } = req.params;
-  const isId = mongoose.Types.ObjectId.isValid(idOrSlug) && String(new mongoose.Types.ObjectId(idOrSlug)) === idOrSlug;
+  const locale = getRequestLocale(req);
   const publicFilter = {
     status: 'active',
     $or: [{ approvalStatus: 'approved' }, { approvalStatus: { $exists: false } }],
   };
-  const job = isId
-    ? await Job.findOne({ _id: idOrSlug, ...publicFilter }).lean()
-    : await Job.findOne({ slug: idOrSlug, ...publicFilter }).lean();
+  const job = isObjectIdParam(idOrSlug)
+    ? await findLocalizedById(Job, idOrSlug, publicFilter, locale)
+    : await findLocalizedBySlug(Job, idOrSlug, publicFilter, locale);
   if (!job) return res.status(404).json({ error: 'Job not found' });
+  let employerVerification = null;
+  if (job.employerId) {
+    const emp = await Employer.findById(job.employerId).select('verificationLevel verified companyName slug').lean();
+    if (emp) employerVerification = { verificationLevel: emp.verificationLevel, verified: emp.verified, companyName: emp.companyName, slug: emp.slug };
+  }
   await Job.findByIdAndUpdate(job._id, { $inc: { views: 1 } });
-  const relatedFilter = { status: 'active', _id: { $ne: job._id } };
+  const docLocale = job.locale || locale;
+  const relatedFilter = withListLocaleFilter({ status: 'active', _id: { $ne: job._id } }, docLocale);
   if (job.category) relatedFilter.category = job.category;
   else if (job.province) relatedFilter.province = job.province;
   const related = await Job.find(relatedFilter).sort({ createdAt: -1 }).limit(4).lean();
-  res.json({ ...job, views: (job.views || 0) + 1, related });
+  const vacancy = await JobVacancyService.getVacancyStats(job);
+  res.json({ ...job, views: (job.views || 0) + 1, related, employerVerification, vacancy });
 });

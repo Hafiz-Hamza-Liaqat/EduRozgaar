@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { Link } from 'react-router-dom';
 import { resumeApi } from '../../services/listingsService';
@@ -7,6 +8,7 @@ import { ROUTES } from '../../constants';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
 
 export default function ResumeAnalyzer() {
+  const { t } = useTranslation(['resume', 'common']);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -15,7 +17,7 @@ export default function ResumeAnalyzer() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      toast.error('Please select a PDF or DOCX file');
+      toast.error(t('resume:selectFileError'));
       return;
     }
     setLoading(true);
@@ -25,9 +27,9 @@ export default function ResumeAnalyzer() {
       formData.append('resume', file);
       const { data } = await resumeApi.analyze(formData);
       setResult(data);
-      toast.success('Resume analyzed. See matching jobs below.');
+      toast.success(t('resume:analyzedSuccess'));
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Analysis failed');
+      toast.error(err.response?.data?.error || t('resume:analysisFailed'));
     } finally {
       setLoading(false);
     }
@@ -35,13 +37,13 @@ export default function ResumeAnalyzer() {
 
   return (
     <>
-      <SeoHead title="Resume Analyzer" description="Upload your resume and get matched with top jobs based on your skills and experience." noindex />
+      <SeoHead title={t('resume:analyzerSeoTitle')} description={t('resume:analyzerSeoDescription')} noindex />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">AI Job Matching Resume Scanner</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Upload your resume (PDF or DOCX). We extract skills, education, and experience and suggest top matching jobs with improvement tips.</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('resume:analyzerPageTitle')}</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">{t('resume:analyzerPageSubtitle')}</p>
 
         <form onSubmit={handleSubmit} className="mb-8 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select file (PDF or DOCX, max 5MB)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('resume:selectFileLabel')}</label>
           <input
             type="file"
             accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -53,7 +55,7 @@ export default function ResumeAnalyzer() {
             disabled={loading || !file}
             className="mt-4 rounded-lg bg-primary hover:bg-primary-hover text-white btn-theme px-4 py-2 font-medium disabled:opacity-50"
           >
-            {loading ? 'Analyzing…' : 'Analyze resume'}
+            {loading ? t('resume:analyzing') : t('resume:analyzeResume')}
           </button>
         </form>
 
@@ -72,7 +74,7 @@ export default function ResumeAnalyzer() {
           <div className="space-y-8">
             {result.suggestions?.length > 0 && (
               <section className="p-4 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
-                <h2 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-3">Suggestions to improve your match</h2>
+                <h2 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-3">{t('resume:suggestionsTitle')}</h2>
                 <ul className="list-disc list-inside space-y-1 text-sm text-amber-700 dark:text-amber-300">
                   {result.suggestions.map((s, i) => (
                     <li key={i}>{s}</li>
@@ -82,10 +84,10 @@ export default function ResumeAnalyzer() {
             )}
 
             <section className="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Extracted from your resume</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('resume:extractedTitle')}</h2>
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Skills</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t('resume:skillsLabel')}</h3>
                   <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300">
                     {(result.extracted?.skills || []).map((s, i) => (
                       <li key={i}>{s}</li>
@@ -93,7 +95,7 @@ export default function ResumeAnalyzer() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Education</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t('resume:educationLabel')}</h3>
                   <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300">
                     {(result.extracted?.education || []).map((e, i) => (
                       <li key={i}>{e}</li>
@@ -101,7 +103,7 @@ export default function ResumeAnalyzer() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Experience</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{t('resume:experienceLabel')}</h3>
                   <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300">
                     {(result.extracted?.experience || []).map((e, i) => (
                       <li key={i}>{e}</li>
@@ -112,7 +114,7 @@ export default function ResumeAnalyzer() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top matching jobs</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('resume:matchingJobsTitle')}</h2>
               <ul className="space-y-3">
                 {(result.jobs || []).map((job, idx) => {
                   const matched = (result.matchedSkills || [])[idx];
@@ -125,7 +127,9 @@ export default function ResumeAnalyzer() {
                         <span className="font-semibold text-gray-900 dark:text-white">{job.title}</span>
                         <span className="text-gray-600 dark:text-gray-400"> · {job.organization || job.company}</span>
                         {matched?.matched?.length > 0 && (
-                          <p className="text-xs text-primary dark:text-mint mt-1">Matched skills: {matched.matched.join(', ')}</p>
+                          <p className="text-xs text-primary dark:text-mint mt-1">
+                            {t('resume:matchedSkills', { skills: matched.matched.join(', ') })}
+                          </p>
                         )}
                       </Link>
                     </li>
@@ -134,9 +138,9 @@ export default function ResumeAnalyzer() {
               </ul>
             </section>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-          <Link to={ROUTES.DASHBOARD} className="text-primary dark:text-mint hover:underline">← Back to Dashboard</Link>
-        </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+              <Link to={ROUTES.DASHBOARD} className="text-primary dark:text-mint hover:underline">{t('resume:backToDashboard')}</Link>
+            </p>
           </div>
         )}
       </div>

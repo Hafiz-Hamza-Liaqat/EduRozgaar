@@ -1,0 +1,152 @@
+{
+  "seoTitle": "[AR] Career Guidance – EduRozgaar",
+  "seoDescription": "[AR] Career paths by degree, skill development, and resume & interview tips for Pakistani students.",
+  "title": "[AR] Career Guidance",
+  "subtitle": "[AR] Choose your path, build in-demand skills, and get ready for jobs and interviews.",
+  "backToDashboard": "[AR] ← Dashboard",
+  "breadcrumbHome": "[AR] Home",
+  "pathsByDegree": "[AR] Career Paths by Degree",
+  "skillDevelopment": "[AR] Skill Development",
+  "skillDevelopmentDesc": "[AR] Trending skills: what they are, why they matter, and how to learn.",
+  "learnMore": "[AR] Learn more →",
+  "resumeInterviewTips": "[AR] Resume & Interview Tips",
+  "resumeBuilder": "[AR] Resume Builder",
+  "resumeAnalyzer": "[AR] Resume Analyzer",
+  "careerPathArticles": "[AR] Career Path Articles",
+  "jobPrepTips": "[AR] Job Preparation Tips",
+  "quickLinks": "[AR] Quick Links",
+  "examPrep": "[AR] Exam Prep",
+  "browseJobs": "[AR] Browse Jobs",
+  "degrees": {
+    "computerScience": {
+      "title": "Computer Science",
+      "careers": [
+        "Software Engineer",
+        "Data Scientist",
+        "AI / ML Engineer",
+        "DevOps Engineer",
+        "Product Manager",
+        "Cybersecurity Analyst"
+      ]
+    },
+    "business": {
+      "title": "Business",
+      "careers": [
+        "Accountant",
+        "Marketing Manager",
+        "HR Specialist",
+        "Business Analyst",
+        "Financial Analyst",
+        "Consultant"
+      ]
+    },
+    "engineering": {
+      "title": "Engineering",
+      "careers": [
+        "Civil Engineer",
+        "Mechanical Engineer",
+        "Electrical Engineer",
+        "Project Manager",
+        "Quality Engineer",
+        "Design Engineer"
+      ]
+    },
+    "medical": {
+      "title": "Medical",
+      "careers": [
+        "Doctor",
+        "Nurse",
+        "Pharmacist",
+        "Medical Researcher",
+        "Healthcare Administrator",
+        "Lab Technologist"
+      ]
+    },
+    "artsHumanities": {
+      "title": "Arts & Humanities",
+      "careers": [
+        "Content Writer",
+        "Journalist",
+        "Teacher",
+        "Social Worker",
+        "Graphic Designer",
+        "Public Relations"
+      ]
+    }
+  },
+  "skills": {
+    "webDev": {
+      "title": "Web Development",
+      "description": "Frontend, backend, and full-stack skills for building modern web apps."
+    },
+    "dataScience": {
+      "title": "Data Science",
+      "description": "Python, statistics, and ML for data-driven roles."
+    },
+    "aiMl": {
+      "title": "AI & Machine Learning",
+      "description": "Fundamentals and tools for AI/ML careers."
+    },
+    "cybersecurity": {
+      "title": "Cybersecurity",
+      "description": "Security fundamentals and certifications."
+    },
+    "cloud": {
+      "title": "Cloud Computing",
+      "description": "AWS, Azure, and cloud architecture."
+    }
+  },
+  "resumeArticles": {
+    "cvFormat": {
+      "title": "Best CV format for fresh graduates",
+      "description": "Structure and sections that get shortlisted."
+    },
+    "interviews": {
+      "title": "How to pass job interviews",
+      "description": "Common questions, STAR method, and body language."
+    },
+    "mistakes": {
+      "title": "Resume mistakes to avoid",
+      "description": "Spelling, length, and tailoring tips."
+    }
+  },
+  "articles": {
+    "choosingPath": {
+      "title": "Choosing the Right Career Path",
+      "description": "Understand your interests, skills, and market demand to decide your field.",
+      "tag": "Career"
+    },
+    "employerSkills": {
+      "title": "Skills That Employers Look For",
+      "description": "Technical and soft skills that increase your employability in Pakistan.",
+      "tag": "Skills"
+    },
+    "interviewPrep": {
+      "title": "How to Prepare for Job Interviews",
+      "description": "Common questions, body language, and follow-up tips.",
+      "tag": "Jobs"
+    },
+    "examPrep": {
+      "title": "FPSC & PPSC Exam Preparation",
+      "description": "Syllabus, past papers, and time management for government exams.",
+      "tag": "Exam Prep"
+    },
+    "networking": {
+      "title": "Building a Professional Network",
+      "description": "LinkedIn, alumni networks, and industry events.",
+      "tag": "Career"
+    },
+    "firstJob": {
+      "title": "First Job: What to Expect",
+      "description": "Transition from student to professional life.",
+      "tag": "Career"
+    }
+  },
+  "prepTips": [
+    "Tailor your CV to each job description.",
+    "Research the company before the interview.",
+    "Prepare STAR (Situation, Task, Action, Result) examples.",
+    "Follow up with a thank-you email after the interview.",
+    "Keep learning: short courses and certifications help."
+  ]
+}

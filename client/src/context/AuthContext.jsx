@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { authApi } from '../services/authService';
+import { resetAxiosAuthState } from '../services/axiosBase';
+import { resetPermissionsCache } from '../hooks/usePermissions';
 
 const STORAGE_TOKEN = 'edurozgaar-token';
 const STORAGE_REFRESH = 'edurozgaar-refresh-token';
@@ -33,6 +35,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const clearAuth = useCallback(() => {
+    resetAxiosAuthState();
+    resetPermissionsCache();
     localStorage.removeItem(STORAGE_TOKEN);
     localStorage.removeItem(STORAGE_REFRESH);
     localStorage.removeItem(STORAGE_USER);
@@ -42,10 +46,11 @@ export function AuthProvider({ children }) {
   const login = useCallback(
     async (email, password) => {
       setError(null);
+      resetAxiosAuthState();
       const { data } = await authApi.login({ email, password });
       setTokens(data.accessToken, data.refreshToken);
-      persistUser(data.user);
-      return data.user;
+      persistUser({ ...data.user, mustChangePassword: !!data.mustChangePassword });
+      return { user: data.user, mustChangePassword: !!data.mustChangePassword };
     },
     [persistUser, setTokens]
   );
@@ -90,11 +95,21 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
+    let cancelled = false;
     authApi
       .me()
-      .then(({ data }) => persistUser(data.user))
-      .catch(() => clearAuth())
-      .finally(() => setLoading(false));
+      .then(({ data }) => {
+        if (!cancelled) persistUser(data.user);
+      })
+      .catch(() => {
+        if (!cancelled) clearAuth();
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [clearAuth, persistUser]);
 
   const value = {

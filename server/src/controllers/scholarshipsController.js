@@ -1,7 +1,13 @@
 import { Scholarship } from '../models/Scholarship.js';
-import mongoose from 'mongoose';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { listResponse, paginate } from '../utils/apiResponse.js';
+import {
+  getRequestLocale,
+  withListLocaleFilter,
+  findLocalizedBySlug,
+  findLocalizedById,
+  isObjectIdParam,
+} from '../utils/localeQuery.js';
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
@@ -31,7 +37,7 @@ export const getScholarships = asyncHandler(async (req, res) => {
   const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_LIMIT));
   const skip = (page - 1) * limit;
   const sort = req.query.sort === 'deadline' ? 'deadline' : 'newest';
-  const query = buildScholarshipQuery(req.query);
+  const query = withListLocaleFilter(buildScholarshipQuery(req.query), getRequestLocale(req));
   const [data, total] = await Promise.all([
     Scholarship.find(query).sort(buildScholarshipSort(sort)).skip(skip).limit(limit).lean(),
     Scholarship.countDocuments(query),
@@ -41,13 +47,15 @@ export const getScholarships = asyncHandler(async (req, res) => {
 
 export const getScholarshipByIdOrSlug = asyncHandler(async (req, res) => {
   const { idOrSlug } = req.params;
-  const isId = mongoose.Types.ObjectId.isValid(idOrSlug) && String(new mongoose.Types.ObjectId(idOrSlug)) === idOrSlug;
-  const scholarship = isId
-    ? await Scholarship.findOne({ _id: idOrSlug, status: 'active' }).lean()
-    : await Scholarship.findOne({ slug: idOrSlug, status: 'active' }).lean();
+  const locale = getRequestLocale(req);
+  const baseFilter = { status: 'active' };
+  const scholarship = isObjectIdParam(idOrSlug)
+    ? await findLocalizedById(Scholarship, idOrSlug, baseFilter, locale)
+    : await findLocalizedBySlug(Scholarship, idOrSlug, baseFilter, locale);
   if (!scholarship) return res.status(404).json({ error: 'Scholarship not found' });
   await Scholarship.findByIdAndUpdate(scholarship._id, { $inc: { views: 1 } });
-  const relatedFilter = { status: 'active', _id: { $ne: scholarship._id } };
+  const docLocale = scholarship.locale || locale;
+  const relatedFilter = withListLocaleFilter({ status: 'active', _id: { $ne: scholarship._id } }, docLocale);
   if (scholarship.level) relatedFilter.level = scholarship.level;
   else if (scholarship.country) relatedFilter.country = scholarship.country;
   const related = await Scholarship.find(relatedFilter).sort({ deadline: 1 }).limit(4).lean();

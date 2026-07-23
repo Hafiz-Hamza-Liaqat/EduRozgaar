@@ -42,7 +42,7 @@ Complete these steps after your site is live at `https://yourdomain.com`.
 1. **MongoDB Atlas** (recommended): enable automated backups on cluster.
 2. **Self-hosted**: cron daily backup:
    ```bash
-   0 3 * * * /path/to/EduRozgaar/scripts/backup-mongodb.sh
+   0 3 * * * /path/to/EduRozgaar/scripts/backup/mongo-backup.sh
    ```
 3. Copy backups off-server (S3, Google Drive, etc.).
 

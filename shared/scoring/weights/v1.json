@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "scoreTypes": {
+    "career_readiness": {
+      "ttlMinutes": 15,
+      "providers": {
+        "profile_completeness": 0.2,
+        "resume_quality": 0.2,
+        "verified_skills": 0.15,
+        "document_completeness": 0.1,
+        "application_engagement": 0.2,
+        "skill_coverage": 0.15
+      }
+    },
+    "resume_strength": {
+      "ttlMinutes": 15,
+      "providers": {
+        "resume_quality": 0.55,
+        "profile_completeness": 0.25,
+        "document_completeness": 0.2
+      }
+    },
+    "job_match": {
+      "ttlMinutes": 10,
+      "providers": {
+        "job_requirement_match": 1
+      }
+    },
+    "employer_match": {
+      "ttlMinutes": 10,
+      "providers": {
+        "job_requirement_match": 1
+      }
+    }
+  }
+}

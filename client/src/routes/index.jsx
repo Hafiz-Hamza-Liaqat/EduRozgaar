@@ -1,12 +1,13 @@
 import { lazy, Suspense } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { MainLayoutWrapper } from '../layouts/MainLayout';
+import { LocaleMainLayout } from '../layouts/LocaleMainLayout';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { ProtectedEmployerRoute } from '../components/employer/ProtectedEmployerRoute';
 import { ROUTES } from '../constants';
-import { ROLES } from '../constants';
 
 const Home = lazyLoad(() => import('../pages/Home/Home'));
+const SearchResults = lazyLoad(() => import('../pages/Search/SearchResults'));
 const Jobs = lazyLoad(() => import('../pages/Jobs/Jobs'));
 const JobDetail = lazyLoad(() => import('../pages/Jobs/JobDetail'));
 const Scholarships = lazyLoad(() => import('../pages/Scholarships/Scholarships'));
@@ -15,6 +16,9 @@ const Admissions = lazyLoad(() => import('../pages/Admissions/Admissions'));
 const AdmissionDetail = lazyLoad(() => import('../pages/Admissions/AdmissionDetail'));
 const SchoolsAndColleges = lazyLoad(() => import('../pages/SchoolsAndColleges/SchoolsAndColleges'));
 const ForeignStudies = lazyLoad(() => import('../pages/ForeignStudies/ForeignStudies'));
+const ForeignStudyDetail = lazyLoad(() => import('../pages/ForeignStudies/ForeignStudyDetail'));
+const InstitutionDetail = lazyLoad(() => import('../pages/SchoolsAndColleges/InstitutionDetail'));
+const NotificationsPage = lazyLoad(() => import('../pages/Notifications/NotificationsPage'));
 const Blog = lazyLoad(() => import('../pages/Blog/Blog'));
 const BlogPost = lazyLoad(() => import('../pages/Blog/BlogPost'));
 const Contact = lazyLoad(() => import('../pages/Contact/Contact'));
@@ -22,6 +26,8 @@ const Login = lazyLoad(() => import('../pages/Auth/Login'));
 const Register = lazyLoad(() => import('../pages/Auth/Register'));
 const ForgotPassword = lazyLoad(() => import('../pages/Auth/ForgotPassword'));
 const ResetPassword = lazyLoad(() => import('../pages/Auth/ResetPassword'));
+const VerifyEmail = lazyLoad(() => import('../pages/Auth/VerifyEmail'));
+const AcceptInvitation = lazyLoad(() => import('../pages/Auth/AcceptInvitation'));
 const Profile = lazyLoad(() => import('../pages/Profile/Profile'));
 const Dashboard = lazyLoad(() => import('../pages/Dashboard/Dashboard'));
 const SavedJobs = lazyLoad(() => import('../pages/SavedJobs/SavedJobs'));
@@ -29,6 +35,10 @@ const Admin = lazyLoad(() => import('../pages/Admin/Admin'));
 const AIJobGenerator = lazyLoad(() => import('../pages/Admin/AIJobGenerator'));
 const AnalyticsDashboard = lazyLoad(() => import('../pages/Admin/AnalyticsDashboard'));
 const GrowthDashboard = lazyLoad(() => import('../pages/Admin/GrowthDashboard'));
+const ExecutiveDashboard = lazyLoad(() => import('../pages/Admin/ExecutiveDashboard'));
+const ModerationQueue = lazyLoad(() => import('../pages/Admin/ModerationQueue'));
+const AdminReviewQueue = lazyLoad(() => import('../pages/Admin/AdminReviewQueue'));
+const AuditLogPage = lazyLoad(() => import('../pages/Admin/AuditLogPage'));
 const AlertsAdmin = lazyLoad(() => import('../pages/Admin/AlertsAdmin'));
 const JobsProvinceLanding = lazyLoad(() => import('../pages/Landing/JobsProvinceLanding'));
 const JobsCategoryLanding = lazyLoad(() => import('../pages/Landing/JobsCategoryLanding'));
@@ -43,19 +53,33 @@ const IntlScholarships = lazyLoad(() => import('../pages/IntlScholarships/IntlSc
 const IntlScholarshipDetail = lazyLoad(() => import('../pages/IntlScholarships/IntlScholarshipDetail'));
 const Badges = lazyLoad(() => import('../pages/Badges/Badges'));
 const ResumeBuilder = lazyLoad(() => import('../pages/ResumeBuilder/ResumeBuilder'));
+const TalentProfileEditor = lazyLoad(() => import('../pages/TalentProfile/TalentProfileEditor'));
+const MyApplications = lazyLoad(() => import('../pages/Applications/MyApplications'));
+const CreateApplication = lazyLoad(() => import('../pages/Applications/CreateApplication'));
+const ApplicationDetail = lazyLoad(() => import('../pages/Applications/ApplicationDetail'));
+const AssessmentsCatalog = lazyLoad(() => import('../pages/Assessments/AssessmentsCatalog'));
+const AssessmentDetail = lazyLoad(() => import('../pages/Assessments/AssessmentDetail'));
+const AssessmentTake = lazyLoad(() => import('../pages/Assessments/AssessmentTake'));
 const CareerGuidance = lazyLoad(() => import('../pages/CareerGuidance/CareerGuidance'));
+const CareerArticleDetail = lazyLoad(() => import('../pages/CareerGuidance/CareerArticleDetail'));
 const SEOJobsPage = lazyLoad(() => import('../pages/SEO/SEOJobsPage'));
 const SEOScholarshipsPage = lazyLoad(() => import('../pages/SEO/SEOScholarshipsPage'));
-const About = lazyLoad(() => import('../pages/Static/About'));
-const Services = lazyLoad(() => import('../pages/Static/Services'));
-const Advertise = lazyLoad(() => import('../pages/Static/Advertise'));
-const HelpCenter = lazyLoad(() => import('../pages/Static/HelpCenter'));
-const FAQ = lazyLoad(() => import('../pages/Static/FAQ'));
+const About = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.AboutPage })));
+const Services = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.ServicesPage })));
+const Advertise = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.AdvertisePage })));
+const HelpCenter = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.HelpCenterPage })));
+const FAQ = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.FAQPage })));
+const PrivacyPolicy = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.PrivacyPolicyPage })));
+const Terms = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.TermsPage })));
+const Cookies = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.CookiesPage })));
+const License = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.LicensePage })));
+const Disclaimer = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.DisclaimerPage })));
+const RefundPolicy = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.RefundPolicyPage })));
+const Careers = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.CareersPage })));
+const Support = lazyLoad(() => import('../pages/Static/staticCmsPages').then((m) => ({ default: m.SupportPage })));
+const SupportTickets = lazyLoad(() => import('../pages/Support/SupportTickets'));
 const SubmitOpportunity = lazyLoad(() => import('../pages/Static/SubmitOpportunity'));
-const PrivacyPolicy = lazyLoad(() => import('../pages/Static/PrivacyPolicy'));
-const Terms = lazyLoad(() => import('../pages/Static/Terms'));
-const Cookies = lazyLoad(() => import('../pages/Static/Cookies'));
-const License = lazyLoad(() => import('../pages/Static/License'));
+const NotFound = lazyLoad(() => import('../pages/Static/NotFound'));
 const EmployerLogin = lazyLoad(() => import('../pages/Employer/EmployerLogin'));
 const EmployerRegister = lazyLoad(() => import('../pages/Employer/EmployerRegister'));
 const EmployerLayout = lazyLoad(() => import('../pages/Employer/EmployerLayout'));
@@ -64,7 +88,50 @@ const EmployerJobs = lazyLoad(() => import('../pages/Employer/EmployerJobs'));
 const EmployerPostJob = lazyLoad(() => import('../pages/Employer/EmployerPostJob'));
 const EmployerApplications = lazyLoad(() => import('../pages/Employer/EmployerApplications'));
 const EmployerAnalytics = lazyLoad(() => import('../pages/Employer/EmployerAnalytics'));
+const EmployerIntelligence = lazyLoad(() => import('../pages/Employer/EmployerIntelligence'));
+const EmployerCandidates = lazyLoad(() => import('../pages/Employer/EmployerCandidates'));
+const EmployerCandidateCompare = lazyLoad(() => import('../pages/Employer/EmployerCandidateCompare'));
+const EmployerCandidateDetail = lazyLoad(() => import('../pages/Employer/EmployerCandidateDetail'));
+const EmployerPipeline = lazyLoad(() => import('../pages/Employer/EmployerPipeline'));
+const AdminContentJobs = lazyLoad(() => import('../pages/Admin/AdminContentJobs'));
+const AdminContentScholarships = lazyLoad(() => import('../pages/Admin/AdminContentScholarships'));
+const AdminContentAdmissions = lazyLoad(() => import('../pages/Admin/AdminContentAdmissions'));
+const AdminContentBlogs = lazyLoad(() => import('../pages/Admin/AdminContentBlogs'));
+const AdminContentInternships = lazyLoad(() => import('../pages/Admin/AdminContentInternships'));
+const AdminContentUniversities = lazyLoad(() => import('../pages/Admin/AdminContentUniversities'));
+const AdminIntlScholarships = lazyLoad(() => import('../pages/Admin/AdminIntlScholarships'));
+const AdminForeignStudies = lazyLoad(() => import('../pages/Admin/AdminForeignStudies'));
+const AdminCareerGuidance = lazyLoad(() => import('../pages/Admin/AdminCareerGuidance'));
+const AdminCompanies = lazyLoad(() => import('../pages/Admin/AdminCompanies'));
+const AdminEmployers = lazyLoad(() => import('../pages/Admin/AdminEmployers'));
+const AdminNotifications = lazyLoad(() => import('../pages/Admin/AdminNotifications'));
+const AdminAdvertisements = lazyLoad(() => import('../pages/Admin/AdminAdvertisements'));
+const AdminExamPreparation = lazyLoad(() => import('../pages/Admin/AdminExamPreparation'));
+const AdminUsers = lazyLoad(() => import('../pages/Admin/AdminUsers'));
+const AdminInvitations = lazyLoad(() => import('../pages/Admin/AdminInvitations'));
+const AdminPayments = lazyLoad(() => import('../pages/Admin/AdminPayments'));
+const AdminImport = lazyLoad(() => import('../pages/Admin/AdminImport'));
+const AdminGlobalSearch = lazyLoad(() => import('../pages/Admin/AdminGlobalSearch'));
+const AdminSiteCms = lazyLoad(() => import('../pages/Admin/AdminSiteCms'));
+const AdminPageBuilder = lazyLoad(() => import('../pages/Admin/AdminPageBuilder'));
+const AdminPageBuilderHistory = lazyLoad(() => import('../pages/Admin/AdminPageBuilderHistory'));
+const AdminBlockTemplates = lazyLoad(() => import('../pages/Admin/AdminBlockTemplates'));
+const AdminGlobalBlocks = lazyLoad(() => import('../pages/Admin/AdminGlobalBlocks'));
+const AdminMediaLibrary = lazyLoad(() => import('../pages/Admin/AdminMediaLibrary'));
+const AdminForms = lazyLoad(() => import('../pages/Admin/AdminForms'));
+const AdminFormEditor = lazyLoad(() => import('../pages/Admin/AdminFormEditor'));
+const AdminFormSubmissions = lazyLoad(() => import('../pages/Admin/AdminFormSubmissions'));
+const AdminContactMessages = lazyLoad(() => import('../pages/Admin/AdminContactMessages'));
+const AdminInstitutions = lazyLoad(() => import('../pages/Admin/AdminInstitutions'));
+const AdminWebinars = lazyLoad(() => import('../pages/Admin/AdminWebinars'));
+const AdminPlatformOps = lazyLoad(() => import('../pages/Admin/AdminPlatformOps'));
+const AdminNewsletter = lazyLoad(() => import('../pages/Admin/AdminNewsletter'));
+const AdminSupport = lazyLoad(() => import('../pages/Admin/AdminSupport'));
+const AdminMonitoring = lazyLoad(() => import('../pages/Admin/AdminMonitoring'));
 const EmployerSettings = lazyLoad(() => import('../pages/Employer/EmployerSettings'));
+const EmployerPublicGate = lazyLoad(() => import('../pages/Public/EmployerPublicProfile'));
+const CompanyProfile = lazyLoad(() => import('../pages/Public/CompanyProfile'));
+const UniversityProfile = lazyLoad(() => import('../pages/Public/UniversityProfile'));
 
 function lazyLoad(importFn) {
   const Lazy = lazy(importFn);
@@ -78,19 +145,42 @@ function lazyLoad(importFn) {
 }
 
 function PageFallback() {
+  const { t } = useTranslation('common');
   return (
     <div className="min-h-[40vh] flex items-center justify-center">
-      <div className="animate-pulse text-gray-500 dark:text-gray-400">Loading...</div>
+      <div className="animate-pulse text-gray-500 dark:text-gray-400">{t('loading')}</div>
     </div>
   );
 }
 
 export const routes = [
   {
+    path: ROUTES.EMPLOYER_DASHBOARD,
+    element: (
+      <ProtectedEmployerRoute>
+        <EmployerLayout />
+      </ProtectedEmployerRoute>
+    ),
+    children: [
+      { index: true, element: <EmployerDashboard /> },
+      { path: 'intelligence', element: <EmployerIntelligence /> },
+      { path: 'intelligence/candidates', element: <EmployerCandidates /> },
+      { path: 'intelligence/compare', element: <EmployerCandidateCompare /> },
+      { path: 'intelligence/candidates/:id', element: <EmployerCandidateDetail /> },
+      { path: 'intelligence/pipeline', element: <EmployerPipeline /> },
+      { path: 'jobs', element: <EmployerJobs /> },
+      { path: 'jobs/new', element: <EmployerPostJob /> },
+      { path: 'applications', element: <EmployerApplications /> },
+      { path: 'analytics', element: <EmployerAnalytics /> },
+      { path: 'settings', element: <EmployerSettings /> },
+    ],
+  },
+  {
     path: '/',
     element: <MainLayoutWrapper />,
     children: [
       { index: true, element: <Home /> },
+      { path: ROUTES.SEARCH, element: <SearchResults /> },
       { path: ROUTES.JOBS, element: <Jobs /> },
       { path: '/jobs-in-:slug', element: <SEOJobsPage /> },
       { path: '/latest-government-jobs', element: <SEOJobsPage /> },
@@ -110,7 +200,9 @@ export const routes = [
       { path: ROUTES.ADMISSIONS, element: <Admissions /> },
       { path: `${ROUTES.ADMISSIONS}/:slug`, element: <AdmissionDetail /> },
       { path: ROUTES.SCHOOLS_AND_COLLEGES, element: <SchoolsAndColleges /> },
+      { path: `${ROUTES.SCHOOLS_AND_COLLEGES}/:slug`, element: <InstitutionDetail /> },
       { path: ROUTES.FOREIGN_STUDIES, element: <ForeignStudies /> },
+      { path: `${ROUTES.FOREIGN_STUDIES}/:slug`, element: <ForeignStudyDetail /> },
       { path: ROUTES.BLOG, element: <Blog /> },
       { path: `${ROUTES.BLOG}/:slug`, element: <BlogPost /> },
       { path: ROUTES.CONTACT, element: <Contact /> },
@@ -124,33 +216,83 @@ export const routes = [
       { path: ROUTES.TERMS, element: <Terms /> },
       { path: ROUTES.COOKIES, element: <Cookies /> },
       { path: ROUTES.LICENSE, element: <License /> },
+      { path: ROUTES.DISCLAIMER, element: <Disclaimer /> },
+      { path: ROUTES.REFUND_POLICY, element: <RefundPolicy /> },
+      { path: ROUTES.CAREERS, element: <Careers /> },
+      { path: ROUTES.SUPPORT, element: <Support /> },
+      { path: `${ROUTES.SUPPORT}/tickets`, element: <SupportTickets /> },
       { path: ROUTES.LOGIN, element: <Login /> },
       { path: ROUTES.REGISTER, element: <Register /> },
       { path: ROUTES.EMPLOYER_LOGIN, element: <EmployerLogin /> },
       { path: ROUTES.EMPLOYER_REGISTER, element: <EmployerRegister /> },
-      {
-        path: ROUTES.EMPLOYER_DASHBOARD,
-        element: (
-          <ProtectedEmployerRoute>
-            <EmployerLayout />
-          </ProtectedEmployerRoute>
-        ),
-        children: [
-          { index: true, element: <EmployerDashboard /> },
-          { path: 'jobs', element: <EmployerJobs /> },
-          { path: 'jobs/new', element: <EmployerPostJob /> },
-          { path: 'applications', element: <EmployerApplications /> },
-          { path: 'analytics', element: <EmployerAnalytics /> },
-          { path: 'settings', element: <EmployerSettings /> },
-        ],
-      },
+      { path: 'employer/:slug', element: <EmployerPublicGate /> },
+      { path: `${ROUTES.COMPANY}/:slug`, element: <CompanyProfile /> },
+      { path: `${ROUTES.UNIVERSITY}/:slug`, element: <UniversityProfile /> },
       { path: ROUTES.FORGOT_PASSWORD, element: <ForgotPassword /> },
       { path: ROUTES.RESET_PASSWORD, element: <ResetPassword /> },
+      { path: ROUTES.VERIFY_EMAIL, element: <VerifyEmail /> },
+      { path: ROUTES.ACCEPT_INVITATION, element: <AcceptInvitation /> },
       {
         path: ROUTES.PROFILE,
         element: (
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTES.TALENT_PROFILE,
+        element: (
+          <ProtectedRoute>
+            <TalentProfileEditor />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTES.APPLICATIONS,
+        element: (
+          <ProtectedRoute>
+            <MyApplications />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: `${ROUTES.APPLICATIONS}/new`,
+        element: (
+          <ProtectedRoute>
+            <CreateApplication />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: `${ROUTES.APPLICATIONS}/:id`,
+        element: (
+          <ProtectedRoute>
+            <ApplicationDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTES.ASSESSMENTS,
+        element: (
+          <ProtectedRoute>
+            <AssessmentsCatalog />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: `${ROUTES.ASSESSMENTS}/:slug/take`,
+        element: (
+          <ProtectedRoute>
+            <AssessmentTake />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: `${ROUTES.ASSESSMENTS}/:slug`,
+        element: (
+          <ProtectedRoute>
+            <AssessmentDetail />
           </ProtectedRoute>
         ),
       },
@@ -171,17 +313,66 @@ export const routes = [
         ),
       },
       {
+        path: ROUTES.NOTIFICATIONS,
+        element: (
+          <ProtectedRoute>
+            <NotificationsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: ROUTES.ADMIN,
         element: (
-          <ProtectedRoute requireRole={[ROLES.ADMIN]}>
+          <ProtectedRoute requireStaff>
             <Admin />
           </ProtectedRoute>
         ),
         children: [
+          { index: true, element: <ExecutiveDashboard /> },
+          { path: 'moderation', element: <ModerationQueue /> },
+          { path: 'review', element: <AdminReviewQueue /> },
+          { path: 'audit', element: <AuditLogPage /> },
           { path: 'growth-dashboard', element: <GrowthDashboard /> },
           { path: 'ai-job-generator', element: <AIJobGenerator /> },
           { path: 'analytics', element: <AnalyticsDashboard /> },
           { path: 'alerts', element: <AlertsAdmin /> },
+          { path: 'jobs', element: <AdminContentJobs /> },
+          { path: 'scholarships', element: <AdminContentScholarships /> },
+          { path: 'admissions', element: <AdminContentAdmissions /> },
+          { path: 'blogs', element: <AdminContentBlogs /> },
+          { path: 'internships', element: <AdminContentInternships /> },
+          { path: 'universities', element: <AdminContentUniversities /> },
+          { path: 'international-scholarships', element: <AdminIntlScholarships /> },
+          { path: 'foreign-studies', element: <AdminForeignStudies /> },
+          { path: 'career-guidance', element: <AdminCareerGuidance /> },
+          { path: 'companies', element: <AdminCompanies /> },
+          { path: 'employers', element: <AdminEmployers /> },
+          { path: 'notifications', element: <AdminNotifications /> },
+          { path: 'advertisements', element: <AdminAdvertisements /> },
+          { path: 'exam-preparation', element: <AdminExamPreparation /> },
+          { path: 'users', element: <AdminUsers /> },
+          { path: 'invitations', element: <AdminInvitations /> },
+          { path: 'payments', element: <AdminPayments /> },
+          { path: 'activity', element: <AuditLogPage /> },
+          { path: 'import', element: <AdminImport /> },
+          { path: 'search', element: <AdminGlobalSearch /> },
+          { path: 'site-cms', element: <AdminSiteCms /> },
+          { path: 'page-builder', element: <AdminPageBuilder /> },
+          { path: 'page-builder/history', element: <AdminPageBuilderHistory /> },
+          { path: 'page-builder/templates', element: <AdminBlockTemplates /> },
+          { path: 'page-builder/global-blocks', element: <AdminGlobalBlocks /> },
+          { path: 'media', element: <AdminMediaLibrary /> },
+          { path: 'forms', element: <AdminForms /> },
+          { path: 'forms/new', element: <AdminFormEditor /> },
+          { path: 'forms/submissions', element: <AdminFormSubmissions /> },
+          { path: 'forms/:id', element: <AdminFormEditor /> },
+          { path: 'contact-messages', element: <AdminContactMessages /> },
+          { path: 'institutions', element: <AdminInstitutions /> },
+          { path: 'webinars', element: <AdminWebinars /> },
+          { path: 'platform-ops', element: <AdminPlatformOps /> },
+          { path: 'newsletter', element: <AdminNewsletter /> },
+          { path: 'support', element: <AdminSupport /> },
+          { path: 'monitoring', element: <AdminMonitoring /> },
         ],
       },
       {
@@ -194,6 +385,7 @@ export const routes = [
       },
       { path: ROUTES.RESUME_BUILDER, element: <ResumeBuilder /> },
       { path: ROUTES.CAREER_GUIDANCE, element: <CareerGuidance /> },
+      { path: '/career-guidance/:slug', element: <CareerArticleDetail /> },
       { path: ROUTES.EXAM_PREP, element: <ExamPrep /> },
       { path: `${ROUTES.EXAM_PREP}/quiz/:quizId`, element: <QuizTake /> },
       { path: `${ROUTES.EXAM_PREP}/:slug`, element: <ExamDetail /> },
@@ -212,5 +404,27 @@ export const routes = [
       },
     ],
   },
-  { path: '*', element: <Navigate to="/" replace /> },
+  {
+    path: '/:locale',
+    element: <LocaleMainLayout />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: 'search', element: <SearchResults /> },
+      { path: 'jobs', element: <Jobs /> },
+      { path: 'jobs/:slug', element: <JobDetail /> },
+      { path: 'scholarships', element: <Scholarships /> },
+      { path: 'scholarships/:slug', element: <ScholarshipDetail /> },
+      { path: 'admissions', element: <Admissions /> },
+      { path: 'admissions/:slug', element: <AdmissionDetail /> },
+      { path: 'blog', element: <Blog /> },
+      { path: 'blog/:slug', element: <BlogPost /> },
+      { path: 'about', element: <About /> },
+      { path: 'services', element: <Services /> },
+      { path: 'privacy-policy', element: <PrivacyPolicy /> },
+      { path: 'terms', element: <Terms /> },
+      { path: 'career-guidance', element: <CareerGuidance /> },
+      { path: 'career-guidance/:slug', element: <CareerArticleDetail /> },
+    ],
+  },
+  { path: '*', element: <NotFound /> },
 ];

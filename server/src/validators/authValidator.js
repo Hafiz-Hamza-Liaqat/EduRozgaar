@@ -47,3 +47,10 @@ export function validateResetPassword(body) {
   const passwordError = validatePassword(body.password, true);
   return { tokenError, passwordError };
 }
+
+export function validateChangePassword(body) {
+  const currentPassword = body.currentPassword != null ? String(body.currentPassword) : '';
+  const currentError = !currentPassword ? 'Current password is required' : null;
+  const passwordError = validatePassword(body.newPassword, true);
+  return { currentError, passwordError };
+}

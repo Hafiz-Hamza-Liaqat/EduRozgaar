@@ -1,0 +1,180 @@
+{
+  "title": "Talent Profile",
+  "subtitle": "Your canonical career identity — all career data lives here.",
+  "save": "Save profile",
+  "saving": "Saving…",
+  "saved": "Profile saved",
+  "saveError": "Could not save profile",
+  "loadError": "Could not load profile",
+  "featureDisabled": "Talent profile is disabled.",
+  "tabs": {
+    "personal": "Personal",
+    "contact": "Contact",
+    "career": "Career",
+    "education": "Education",
+    "experience": "Experience",
+    "skills": "Skills",
+    "languages": "Languages",
+    "certifications": "Certifications",
+    "portfolio": "Portfolio",
+    "resumes": "Resume versions",
+    "documents": "Documents"
+  },
+  "personal": {
+    "firstName": "First name",
+    "lastName": "Last name",
+    "photo": "Profile photo URL",
+    "dateOfBirth": "Date of birth",
+    "gender": "Gender (optional)",
+    "nationality": "Nationality (optional)",
+    "country": "Country",
+    "region": "Region / State / Province",
+    "city": "City",
+    "visibility": "Public profile",
+    "visibilityHint": "Public profiles may appear in search when enabled."
+  },
+  "contact": {
+    "email": "Email",
+    "emailReadOnly": "Managed by your account settings",
+    "phone": "Phone",
+    "website": "Website",
+    "linkedIn": "LinkedIn",
+    "github": "GitHub",
+    "portfolio": "Portfolio",
+    "twitter": "X / Twitter (optional)"
+  },
+  "career": {
+    "headline": "Current title",
+    "summary": "Professional summary",
+    "employmentStatus": "Employment status",
+    "workMode": "Preferred work mode",
+    "preferredCountries": "Preferred countries",
+    "preferredCountriesHint": "Comma-separated country names or codes",
+    "timeZone": "Time zone",
+    "salaryMin": "Salary min (optional)",
+    "salaryMax": "Salary max (optional)",
+    "salaryCurrency": "Currency",
+    "salaryPeriod": "Period"
+  },
+  "education": {
+    "add": "Add education",
+    "institution": "Institution",
+    "degree": "Degree",
+    "field": "Field of study",
+    "startYear": "Start",
+    "endYear": "End",
+    "grade": "Grade / GPA",
+    "description": "Description",
+    "remove": "Remove"
+  },
+  "experience": {
+    "add": "Add experience",
+    "company": "Company",
+    "title": "Title",
+    "location": "Location",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "current": "Current role",
+    "responsibilities": "Responsibilities",
+    "achievements": "Achievements (one per line)",
+    "remove": "Remove"
+  },
+  "skills": {
+    "technical": "Technical skills",
+    "soft": "Soft skills",
+    "add": "Add skill",
+    "name": "Skill",
+    "level": "Level",
+    "remove": "Remove"
+  },
+  "languages": {
+    "add": "Add language",
+    "language": "Language",
+    "proficiency": "Proficiency",
+    "remove": "Remove"
+  },
+  "certifications": {
+    "add": "Add certification",
+    "name": "Name",
+    "issuer": "Issuer",
+    "issued": "Issued",
+    "expires": "Expires",
+    "url": "Credential URL",
+    "remove": "Remove"
+  },
+  "portfolio": {
+    "add": "Add project",
+    "title": "Title",
+    "description": "Description",
+    "url": "URL",
+    "technologies": "Technologies (comma-separated)",
+    "featured": "Featured",
+    "remove": "Remove"
+  },
+  "resumes": {
+    "title": "Resume versions",
+    "empty": "No resume versions yet. Save your profile first, then create a version.",
+    "create": "Create version from profile",
+    "publish": "Publish",
+    "delete": "Delete",
+    "preview": "Preview",
+    "primary": "Primary",
+    "status": "Status",
+    "version": "Version",
+    "created": "Created",
+    "publishSuccess": "Resume published",
+    "createSuccess": "Resume version created",
+    "deleteSuccess": "Resume version deleted",
+    "deleteConfirm": "Delete this resume version?",
+    "error": "Resume action failed"
+  },
+  "documents": {
+    "title": "Profile documents",
+    "empty": "No documents uploaded yet.",
+    "upload": "Upload document",
+    "label": "Label",
+    "type": "Document type",
+    "delete": "Delete",
+    "download": "Download",
+    "deleteConfirm": "Delete this document?",
+    "uploadSuccess": "Document uploaded",
+    "deleteSuccess": "Document deleted",
+    "error": "Document action failed",
+    "types": {
+      "resume": "Resume",
+      "cover_letter": "Cover letter",
+      "certificate": "Certificate",
+      "portfolio": "Portfolio",
+      "transcript": "Transcript",
+      "other": "Other"
+    }
+  },
+  "employmentStatus": {
+    "employed": "Employed",
+    "unemployed": "Unemployed",
+    "student": "Student",
+    "freelance": "Freelance",
+    "self_employed": "Self-employed",
+    "open_to_work": "Open to work"
+  },
+  "workMode": {
+    "onsite": "On-site",
+    "remote": "Remote",
+    "hybrid": "Hybrid"
+  },
+  "skillLevel": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "expert": "Expert"
+  },
+  "languageLevel": {
+    "basic": "Basic",
+    "conversational": "Conversational",
+    "professional": "Professional",
+    "native": "Native"
+  },
+  "validation": {
+    "firstNameRequired": "First name is required"
+  }
+}

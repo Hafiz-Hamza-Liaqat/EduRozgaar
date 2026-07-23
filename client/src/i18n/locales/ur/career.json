@@ -1,0 +1,74 @@
+{
+  "seoTitle": "کیریئر گائیڈنس – ایڈوروزگار",
+  "seoDescription": "ڈگری کے لحاظ سے کیریئر راستے، مہارت کی ترقی، اور پاکستانی طلباء کے لیے ریزیومے اور انٹرویو کے مشورے۔",
+  "title": "کیریئر گائیڈنس",
+  "subtitle": "اپنا راستہ منتخب کریں، مطلوبہ مہارتیں بنائیں، اور نوکریوں اور انٹرویوز کے لیے تیار ہوں۔",
+  "backToDashboard": "← ڈیش بورڈ",
+  "breadcrumbHome": "ہوم",
+  "pathsByDegree": "ڈگری کے لحاظ سے کیریئر راستے",
+  "skillDevelopment": "مہارت کی ترقی",
+  "skillDevelopmentDesc": "مقبول مہارتیں: کیا ہیں، کیوں اہم ہیں، اور کیسے سیکھیں۔",
+  "learnMore": "مزید جانیں →",
+  "resumeInterviewTips": "ریزیومے اور انٹرویو کے مشورے",
+  "resumeBuilder": "ریزیومے بنائیں",
+  "resumeAnalyzer": "ریزیومے تجزیہ",
+  "careerPathArticles": "کیریئر راستے کے مضامین",
+  "articlesFromDb": "ہماری کیریئر لائبریری سے {{count}} مضامین",
+  "loadingArticles": "مضامین لوڈ ہو رہے ہیں…",
+  "noArticles": "ابھی کوئی کیریئر مضمون نہیں۔",
+  "articleNotFound": "مضمون نہیں ملا۔",
+  "backToCareer": "کیریئر رہنمائی پر واپس",
+  "jobPrepTips": "نوکری کی تیاری کے مشورے",
+  "quickLinks": "فوری لنکس",
+  "examPrep": "امتحان کی تیاری",
+  "browseJobs": "نوکریاں دیکhیں",
+  "degrees": {
+    "computerScience": {
+      "title": "کمپیوٹر سائنس",
+      "careers": ["سافٹ ویئر انجینئر", "ڈیٹا سائنسدان", "AI / ML انجینئر", "DevOps انجینئر", "پروڈکٹ مینیجر", "سائبر سیکیورٹی تجزیہ کار"]
+    },
+    "business": {
+      "title": "کاروبار",
+      "careers": ["اکاؤنٹنٹ", "مارکیٹنگ مینیجر", "HR ماہر", "بزنس تجزیہ کار", "مالی تجزیہ کار", "مشیر"]
+    },
+    "engineering": {
+      "title": "انجینئرنگ",
+      "careers": ["سول انجینئر", "میکانیکل انجینئر", "الیکٹrical انجینئر", "پروجیکٹ مینیجر", "کوالٹی انجینئر", "ڈیزائن انجینئر"]
+    },
+    "medical": {
+      "title": "طبی",
+      "careers": ["ڈاکٹر", "نرس", "فarmacist", "طبی محقق", "صحت منتظم", "لیب ٹیکنالوجسٹ"]
+    },
+    "artsHumanities": {
+      "title": "فنون و Humanities",
+      "careers": ["مواد نگار", "صحافی", "استاد", "سماجی کارکن", "گرافک ڈیزائنر", "Public Relations"]
+    }
+  },
+  "skills": {
+    "webDev": { "title": "ویب ڈevelپمنٹ", "description": "جدید ویب ایپس بنانے کے لیے frontend، backend اور full-stack مہارتیں۔" },
+    "dataScience": { "title": "ڈیٹا سائنس", "description": "ڈیٹا پر مبنی کرداروں کے لیے Python، شماریات اور ML۔" },
+    "aiMl": { "title": "AI اور Machine Learning", "description": "AI/ML کیریئرز کے لیے بنیادیں اور ٹولز۔" },
+    "cybersecurity": { "title": "سائبر سیکیورٹی", "description": "سیکیورٹی کی بنیادیں اور سرٹیفیکیشنز۔" },
+    "cloud": { "title": "کلاؤڈ کمپیوٹنگ", "description": "AWS، Azure اور کلاؤڈ آرکیٹیکچر۔" }
+  },
+  "resumeArticles": {
+    "cvFormat": { "title": "فریش گریجuates کے لیے بہترین CV فارمیٹ", "description": "ساخت اور سیکشنز جو شارٹ لسٹ میں آتے ہیں۔" },
+    "interviews": { "title": "نوکری کے انٹرویوز کیسے پاس کریں", "description": "عام سوالات، STAR طریقہ اور body language۔" },
+    "mistakes": { "title": "ریزیومے کی غلطیاں جن سے بچیں", "description": "ہجے، لمبائی اور tailoring کے مشورے۔" }
+  },
+  "articles": {
+    "choosingPath": { "title": "صحیح کیریئر راستہ منتخب کرنا", "description": "اپنی دلچسپیاں، مہارتیں اور مارکیٹ کی طلب سمجھ کر شعبہ طے کریں۔", "tag": "کیریئر" },
+    "employerSkills": { "title": "آجر کون سی مہارتیں چاہتے ہیں", "description": "پاکستان میں ملازمت کے امکانات بڑھانے والی تکنیکی اور soft skills۔", "tag": "مہارتیں" },
+    "interviewPrep": { "title": "نوکری کے انٹرویوز کی تیاری", "description": "عام سوالات، body language اور follow-up مشورے۔", "tag": "نوکریاں" },
+    "examPrep": { "title": "FPSC اور PPSC امتحان کی تیاری", "description": "سرکاری امتحانات کے لیے نصاب، پرانے پیپر اور وقت کا انتظام۔", "tag": "امتحان کی تیاری" },
+    "networking": { "title": "پیشہ ورانہ نیٹ ورک بنانا", "description": "LinkedIn، alumni networks اور industry events۔", "tag": "کیریئر" },
+    "firstJob": { "title": "پہلی نوکری: کیا توقع کریں", "description": "طالب علم سے پیشہ ور زندگی میں منتقلی۔", "tag": "کیریئر" }
+  },
+  "prepTips": [
+    "ہر نوکری کی تفصیل کے مطابق اپنا CV بنائیں۔",
+    "انٹرویو سے پہلے کمپنی کی تحقیق کریں۔",
+    "STAR (Situation, Task, Action, Result) مثالیں تیار کریں۔",
+    "انٹرویو کے بعد thank-you email بھیجیں۔",
+    "سیکھتے رہیں: مختصر کورسز اور سرٹیفیکیشنز مددگار ہیں۔"
+  ]
+}

@@ -24,8 +24,10 @@ export const defaultPlans = [
   },
 ];
 
+/** Insert default job plans only when collection is empty (production-safe). */
 export async function seedJobPlans() {
   const existing = await JobPlan.countDocuments();
-  if (existing > 0) return;
+  if (existing > 0) return { mode: 'insert_only', inserted: 0, skipped: existing };
   await JobPlan.insertMany(defaultPlans);
+  return { mode: 'insert_only', inserted: defaultPlans.length, skipped: 0 };
 }

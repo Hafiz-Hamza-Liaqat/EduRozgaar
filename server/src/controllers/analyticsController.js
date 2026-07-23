@@ -1,22 +1,30 @@
-import { AnalyticsEvent } from '../models/AnalyticsEvent.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { recordAnalyticsEvent } from '../services/analytics/AnalyticsEventService.js';
+import { AnalyticsEvent } from '../models/AnalyticsEvent.js';
 import { cacheGet, cacheSet } from '../config/redis.js';
 
 const CACHE_TTL = 120;
 
+/**
+ * Public event ingest — delegates to AnalyticsEventService (C.7.0.5).
+ * Keeps legacy response shape for backward compatibility.
+ */
 export const recordEvent = asyncHandler(async (req, res) => {
-  const { eventType, listingType, listingId, metadata } = req.body || {};
-  if (!eventType || !String(eventType).trim()) return res.status(400).json({ error: 'eventType is required' });
-  const doc = await AnalyticsEvent.create({
-    eventType: String(eventType).trim(),
-    userId: req.user?.userId || undefined,
-    listingType: listingType || undefined,
-    listingId: listingId || undefined,
-    metadata: metadata || undefined,
-  });
-  res.status(201).json({ id: doc._id });
+  try {
+    const doc = await recordAnalyticsEvent(req.body || {}, {
+      userId: req.user?.userId,
+      userAgent: req.headers['user-agent'] || '',
+    });
+    res.status(201).json({ id: doc._id });
+  } catch (e) {
+    if (e.status === 400) {
+      return res.status(400).json({ error: e.message, details: e.details });
+    }
+    throw e;
+  }
 });
 
+/** Legacy v1 dashboard — unchanged contract */
 export const getDashboard = asyncHandler(async (req, res) => {
   const cacheKey = 'analytics:dashboard';
   let data = await cacheGet(cacheKey);

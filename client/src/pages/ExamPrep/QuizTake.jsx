@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { Link, useParams } from 'react-router-dom';
 import { examsApi } from '../../services/listingsService';
@@ -6,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../constants';
 
 export default function QuizTake() {
+  const { t } = useTranslation('exams');
   const { quizId } = useParams();
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -31,18 +33,18 @@ export default function QuizTake() {
     if (!started || !quiz?.durationMinutes || submitted) return;
     let total = quiz.durationMinutes * 60;
     setSecondsLeft(total);
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       total -= 1;
       setSecondsLeft(total);
-      if (total <= 0) clearInterval(t);
+      if (total <= 0) clearInterval(timer);
     }, 1000);
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [started, quiz?.durationMinutes, submitted]);
 
   const handleSubmit = async () => {
     const selected = answers.map((a) => (a === null ? -1 : a));
     if (selected.some((s) => s < 0)) {
-      toast.error('Please answer all questions');
+      toast.error(t('answerAllQuestions'));
       return;
     }
     setSubmitting(true);
@@ -53,9 +55,9 @@ export default function QuizTake() {
         durationSeconds: quiz?.durationMinutes ? quiz.durationMinutes * 60 - secondsLeft : null,
       });
       setSubmitted(data);
-      toast.success(`Score: ${data.score}%`);
+      toast.success(t('scoreToast', { score: data.score }));
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Submit failed');
+      toast.error(err.response?.data?.error || t('submitFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -64,7 +66,7 @@ export default function QuizTake() {
   if (loading || !quiz) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <SeoHead title="Quiz" description="Exam preparation quiz." noindex />
+        <SeoHead title={t('quizSeoTitle')} description={t('quizSeoDescription')} noindex />
         <div className="animate-pulse h-8 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
       </div>
     );
@@ -75,13 +77,17 @@ export default function QuizTake() {
   if (submitted) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <SeoHead title="Quiz Result" noindex />
+        <SeoHead title={t('quizResultTitle')} noindex />
         <div className="p-6 rounded-xl border border-primary/30 dark:border-mint/30 bg-mint/20 dark:bg-mint/10 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Your Score: {submitted.score}%</h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">{submitted.correctCount} / {submitted.totalQuestions} correct</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('yourScore', { score: submitted.score })}</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            {t('correctCount', { correct: submitted.correctCount, total: submitted.totalQuestions })}
+          </p>
         </div>
         <div className="mt-6 flex gap-4">
-          <Link to={ROUTES.EXAM_PREP} className="text-primary dark:text-mint hover:underline">← Exam Prep</Link>
+          <Link to={ROUTES.EXAM_PREP} className="text-primary dark:text-mint hover:underline">
+            ← {t('examPrepBreadcrumb')}
+          </Link>
         </div>
       </div>
     );
@@ -90,18 +96,20 @@ export default function QuizTake() {
   if (!started) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <SeoHead title={`${quiz.title} – Quiz`} noindex />
+        <SeoHead title={`${quiz.title} – ${t('quizSeoTitle')}`} noindex />
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{quiz.title}</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">{questions.length} questions · {quiz.durationMinutes || 30} minutes</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          {t('questionsMinutes', { count: questions.length, minutes: quiz.durationMinutes || 30 })}
+        </p>
         <button
           type="button"
           onClick={() => setStarted(true)}
           className="rounded-lg bg-primary hover:bg-primary-hover text-white btn-theme px-6 py-3 font-medium"
         >
-          Start Quiz
+          {t('startQuiz')}
         </button>
         <div className="mt-6">
-          <Link to={ROUTES.EXAM_PREP} className="text-sm text-primary dark:text-mint hover:underline">← Back</Link>
+          <Link to={ROUTES.EXAM_PREP} className="text-sm text-primary dark:text-mint hover:underline">{t('back')}</Link>
         </div>
       </div>
     );
@@ -109,7 +117,7 @@ export default function QuizTake() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <SeoHead title={`${quiz.title} – Quiz`} noindex />
+      <SeoHead title={`${quiz.title} – ${t('quizSeoTitle')}`} noindex />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">{quiz.title}</h1>
         {secondsLeft != null && (
@@ -144,14 +152,14 @@ export default function QuizTake() {
       </div>
 
       <div className="mt-8 flex justify-between">
-        <Link to={ROUTES.EXAM_PREP} className="text-primary dark:text-mint hover:underline">← Cancel</Link>
+        <Link to={ROUTES.EXAM_PREP} className="text-primary dark:text-mint hover:underline">{t('cancel')}</Link>
         <button
           type="button"
           onClick={handleSubmit}
           disabled={submitting || answers.some((a) => a === null)}
           className="rounded-lg bg-primary hover:bg-primary-hover text-white btn-theme px-6 py-2 font-medium disabled:opacity-50"
         >
-          {submitting ? 'Submitting…' : 'Submit'}
+          {submitting ? t('submitting') : t('submit')}
         </button>
       </div>
     </div>

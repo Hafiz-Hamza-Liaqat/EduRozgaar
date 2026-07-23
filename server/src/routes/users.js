@@ -3,11 +3,12 @@ import { analyzeResume, getScanHistory } from '../controllers/resumeAnalyzerCont
 import { generateCoverLetter } from '../controllers/coverLetterController.js';
 import { getMyApplications } from '../controllers/applicationsController.js';
 import { uploadResume } from '../middleware/upload.js';
+import { uploadLimiter } from '../middleware/rateLimit.js';
 import { requireAuth } from '../middleware/auth.js';
 
 export const usersRouter = Router();
 
-usersRouter.post('/users/resume-analyze', requireAuth, (req, res, next) => {
+usersRouter.post('/users/resume-analyze', requireAuth, uploadLimiter, (req, res, next) => {
   uploadResume(req, res, (err) => {
     if (err) return res.status(400).json({ error: err.message || 'File upload failed' });
     next();

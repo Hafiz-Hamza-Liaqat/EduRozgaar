@@ -10,6 +10,11 @@ export const authApi = {
   forgotPassword: (email) =>
     axiosInstance.post('/auth/forgot-password', { email }),
   resetPassword: (data) => axiosInstance.post('/auth/reset-password', data),
+  verifyEmail: (data) => axiosInstance.post('/auth/verify-email', data),
+  changePassword: (data) => axiosInstance.post('/auth/change-password', data),
+  resendVerification: () => axiosInstance.post('/auth/resend-verification'),
+  getInvitation: (token) => axiosInstance.get('/auth/accept-invitation', { params: { token } }),
+  acceptInvitation: (data) => axiosInstance.post('/auth/accept-invitation', data),
   getProfile: () => axiosInstance.get('/auth/profile'),
   updateProfile: (data) => axiosInstance.patch('/auth/profile', data),
 };

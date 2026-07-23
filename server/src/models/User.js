@@ -6,7 +6,9 @@ const userSchema = new mongoose.Schema(
     name: { type: String, trim: true, default: '' },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true, select: false },
-    role: { type: String, enum: ['Admin', 'User'], default: 'User' },
+    role: { type: String, enum: ['User', 'Editor', 'Moderator', 'Admin', 'SuperAdmin'], default: 'User' },
+    accountStatus: { type: String, enum: ['active', 'suspended'], default: 'active' },
+    emailVerified: { type: Boolean, default: false },
     province: { type: String, trim: true, default: '' },
     interests: {
       type: [String],
@@ -23,6 +25,10 @@ const userSchema = new mongoose.Schema(
     refreshTokenExpires: { type: Date, select: false },
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
+    emailVerificationToken: { type: String, select: false },
+    emailVerificationExpires: { type: Date, select: false },
+    mustChangePassword: { type: Boolean, default: false },
+    tempPasswordExpires: { type: Date, select: false },
     lastLoginAt: { type: Date },
     savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Job' }],
     savedScholarships: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Scholarship' }],
@@ -38,7 +44,7 @@ const userSchema = new mongoose.Schema(
     recentlyViewedScholarships: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Scholarship' }],
     recentlyViewedAdmissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Admission' }],
     fcmToken: { type: String, select: false },
-    preferredLanguage: { type: String, enum: ['en', 'ur'], default: 'en' },
+    preferredLanguage: { type: String, enum: ['en', 'ur', 'ar'], default: 'en' },
     // OAuth: googleId, avatar (future GOOGLE_CLIENT_ID integration)
   },
   { timestamps: true }

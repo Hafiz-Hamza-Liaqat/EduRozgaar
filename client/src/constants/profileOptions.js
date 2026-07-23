@@ -1,13 +1,4 @@
-export const PROVINCES = [
-  'Punjab',
-  'Sindh',
-  'KPK',
-  'Balochistan',
-  'Islamabad',
-  'Gilgit-Baltistan',
-  'AJK',
-  'Other',
-];
+export { PAKISTAN_PROVINCES as PROVINCES } from '@shared/constants/pakistan.js';
 
 export const INTEREST_CATEGORIES = [
   'Software',

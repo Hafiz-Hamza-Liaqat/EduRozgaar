@@ -11,6 +11,8 @@ export const ROUTES = {
   REGISTER: '/auth/register',
   FORGOT_PASSWORD: '/auth/forgot-password',
   RESET_PASSWORD: '/auth/reset-password',
+  VERIFY_EMAIL: '/auth/verify-email',
+  ACCEPT_INVITATION: '/auth/accept-invitation',
   PROFILE: '/profile',
   DASHBOARD: '/dashboard',
   SAVED_JOBS: '/saved-jobs',
@@ -25,6 +27,7 @@ export const ROUTES = {
   BADGES_LEADERBOARD: '/badges',
   RESUME_BUILDER: '/resume-builder',
   CAREER_GUIDANCE: '/career-guidance',
+  CAREER_ARTICLE: '/career-guidance/:slug',
   ABOUT: '/about',
   SERVICES: '/services',
   ADVERTISE: '/advertise',
@@ -35,6 +38,13 @@ export const ROUTES = {
   TERMS: '/terms',
   COOKIES: '/cookies',
   LICENSE: '/license',
+  DISCLAIMER: '/disclaimer',
+  REFUND_POLICY: '/refund-policy',
+  CAREERS: '/careers',
+  SUPPORT: '/support',
+  NOTIFICATIONS: '/notifications',
+  FOREIGN_STUDY_DETAIL: '/foreign-studies/:slug',
+  INSTITUTION_DETAIL: '/schools-and-colleges/:slug',
   EMPLOYER_LOGIN: '/employer/login',
   EMPLOYER_REGISTER: '/employer/register',
   EMPLOYER_DASHBOARD: '/employer',
@@ -43,8 +53,30 @@ export const ROUTES = {
   EMPLOYER_APPLICATIONS: '/employer/applications',
   EMPLOYER_ANALYTICS: '/employer/analytics',
   EMPLOYER_SETTINGS: '/employer/settings',
+  EMPLOYER_INTELLIGENCE: '/employer/intelligence',
+  EMPLOYER_INTELLIGENCE_CANDIDATES: '/employer/intelligence/candidates',
+  EMPLOYER_INTELLIGENCE_COMPARE: '/employer/intelligence/compare',
+  EMPLOYER_INTELLIGENCE_PIPELINE: '/employer/intelligence/pipeline',
+  EMPLOYER_PUBLIC: '/employer',
+  COMPANY: '/company',
+  UNIVERSITY: '/university',
+  SEARCH: '/search',
+  TALENT_PROFILE: '/talent-profile',
+  APPLICATIONS: '/applications',
+  APPLICATIONS_NEW: '/applications/new',
+  ASSESSMENTS: '/assessments',
+  ASSESSMENT_DETAIL: '/assessments/:slug',
+  ASSESSMENT_TAKE: '/assessments/:slug/take',
 };
 
-export const ROLES = { ADMIN: 'Admin', USER: 'User' };
+export const ROLES = {
+  USER: 'User',
+  EDITOR: 'Editor',
+  MODERATOR: 'Moderator',
+  ADMIN: 'Admin',
+  SUPER_ADMIN: 'SuperAdmin',
+};
+
+export const STAFF_ROLES = [ROLES.EDITOR, ROLES.MODERATOR, ROLES.ADMIN, ROLES.SUPER_ADMIN];
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';

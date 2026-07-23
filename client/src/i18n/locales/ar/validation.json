@@ -1,0 +1,19 @@
+{
+  "required": "[AR] This field is required.",
+  "emailRequired": "[AR] Email is required.",
+  "passwordRequired": "[AR] Password is required.",
+  "emailInvalid": "[AR] Please enter a valid email address.",
+  "passwordMin": "[AR] Password must be at least 8 characters.",
+  "passwordUpper": "[AR] Include at least one uppercase letter.",
+  "passwordLower": "[AR] Include at least one lowercase letter.",
+  "passwordNumber": "[AR] Include at least one number.",
+  "passwordMismatch": "[AR] Passwords do not match.",
+  "nameRequired": "[AR] Name is required.",
+  "loginFailed": "[AR] Invalid email or password.",
+  "tooManyRequests": "[AR] Too many requests. Please try again later.",
+  "networkError": "[AR] Network error. Check your connection.",
+  "serverError": "[AR] Something went wrong. Please try again.",
+  "unauthorized": "[AR] Please log in to continue.",
+  "forbidden": "[AR] You do not have permission to do this.",
+  "notFound": "[AR] The requested resource was not found."
+}

@@ -1,11 +1,21 @@
 import crypto from 'crypto';
 import { User } from '../models/User.js';
 import { signAccessToken, signRefreshToken, verifyToken } from '../utils/jwt.js';
-import { validateAuthRegister, validateAuthLogin, validateForgotPassword, validateResetPassword } from '../validators/authValidator.js';
+import { validateAuthRegister, validateAuthLogin, validateForgotPassword, validateResetPassword, validateChangePassword } from '../validators/authValidator.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ensureReferralCode } from '../utils/referralCode.js';
 import { awardBadge } from './badgesController.js';
-import { sendPasswordResetEmail } from '../services/emailService.js';
+import { onUserRegistered, queueEmail } from '../services/automationService.js';
+import { isSmtpConfigured } from '../services/emailService.js';
+import { logAudit, auditFromRequest } from '../services/auditService.js';
+import { getPermissionsForRole } from '../config/rbac.js';
+import {
+  storeRefreshToken,
+  validateRefreshToken,
+  revokeRefreshToken,
+  revokeAccessToken,
+  hashResetToken,
+} from '../utils/tokenStore.js';
 
 function toSafeUser(user) {
   if (!user) return null;
@@ -61,8 +71,11 @@ export const register = asyncHandler(async (req, res) => {
     await awardBadge(referredBy, 'referral', 'Referral Champion', 'Referred a friend');
   }
 
+  onUserRegistered(user).catch(() => {});
+
   const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
   const refreshToken = signRefreshToken({ userId: user._id.toString() });
+  await storeRefreshToken(user._id.toString(), refreshToken);
   res.status(201).json({
     user: toSafeUser(await User.findById(user._id)),
     accessToken,
@@ -80,32 +93,69 @@ export const login = asyncHandler(async (req, res) => {
     });
   }
   const email = req.body.email.trim().toLowerCase();
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password +tempPasswordExpires');
   if (!user || !(await user.comparePassword(req.body.password))) {
     return res.status(401).json({ error: 'Invalid email or password' });
+  }
+  if (user.accountStatus === 'suspended') {
+    return res.status(403).json({ error: 'Account suspended' });
+  }
+  if (user.tempPasswordExpires && user.tempPasswordExpires < new Date()) {
+    return res.status(403).json({ error: 'Temporary password has expired. Contact an administrator.' });
   }
   user.lastLoginAt = new Date();
   await user.save({ validateBeforeSave: false });
   const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
   const refreshToken = signRefreshToken({ userId: user._id.toString() });
+  await storeRefreshToken(user._id.toString(), refreshToken);
   const safe = toSafeUser(await User.findById(user._id));
+  await logAudit({
+    actor: { userId: user._id.toString(), email: user.email, role: user.role },
+    action: 'auth.login',
+    targetType: 'user',
+    targetId: user._id.toString(),
+    targetLabel: user.email,
+    ip: req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || '',
+  });
   res.json({
     user: safe,
     accessToken,
     refreshToken,
     expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    mustChangePassword: !!user.mustChangePassword,
   });
 });
 
 export const me = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.userId);
   if (!user) return res.status(404).json({ error: 'User not found' });
-  res.json({ user: toSafeUser(user) });
+  const safe = toSafeUser(user);
+  res.json({
+    user: safe,
+    permissions: getPermissionsForRole(user.role),
+  });
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  // Placeholder: optional token blacklist or clear refresh token in DB for this user
-  // Integration point: revoke refresh tokens; notifications service can stop sending to this device
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (req.user?.userId) {
+    const user = await User.findById(req.user.userId).select('email role');
+    await revokeRefreshToken(req.user.userId);
+    if (user) {
+      await logAudit({
+        ...auditFromRequest(req),
+        actor: { userId: req.user.userId, email: user.email, role: user.role },
+        action: 'auth.logout',
+        targetType: 'user',
+        targetId: req.user.userId,
+        targetLabel: user.email,
+      });
+    }
+  }
+  if (token) {
+    await revokeAccessToken(token);
+  }
   res.json({ message: 'Logged out' });
 });
 
@@ -121,10 +171,15 @@ export const refreshToken = asyncHandler(async (req, res) => {
   if (decoded.type !== 'refresh' || !decoded.userId) {
     return res.status(401).json({ error: 'Invalid refresh token' });
   }
+  const valid = await validateRefreshToken(decoded.userId, token);
+  if (!valid) {
+    return res.status(401).json({ error: 'Refresh token revoked or expired' });
+  }
   const user = await User.findById(decoded.userId);
   if (!user) return res.status(401).json({ error: 'User not found' });
   const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
   const newRefreshToken = signRefreshToken({ userId: user._id.toString() });
+  await storeRefreshToken(user._id.toString(), newRefreshToken);
   res.json({
     user: toSafeUser(user),
     accessToken,
@@ -145,14 +200,36 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     return res.status(200).json({ message });
   }
   const token = crypto.randomBytes(32).toString('hex');
-  user.passwordResetToken = token;
+  user.passwordResetToken = hashResetToken(token);
   user.passwordResetExpires = new Date(Date.now() + RESET_TOKEN_EXPIRY_MS);
   await user.save({ validateBeforeSave: false });
   const resetUrl = `${FRONTEND_BASE.replace(/\/$/, '')}/auth/reset-password?token=${token}`;
-  await sendPasswordResetEmail(user.email, resetUrl).catch((err) => {
-    console.error('[forgotPassword] sendEmail failed:', err);
+  await queueEmail({
+    to: user.email,
+    templateKey: 'passwordReset',
+    vars: { url: resetUrl },
+    dedupKey: `password_reset:${user._id}:${Date.now()}`,
   });
   return res.status(200).json({ message });
+});
+
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const token = (req.query.token || req.body?.token || '').trim();
+  if (!token) return res.status(400).json({ error: 'Verification token is required' });
+
+  const user = await User.findOne({
+    emailVerificationToken: crypto.createHash('sha256').update(token).digest('hex'),
+    emailVerificationExpires: { $gt: new Date() },
+  }).select('+emailVerificationToken +emailVerificationExpires');
+
+  if (!user) return res.status(400).json({ error: 'Invalid or expired verification link' });
+
+  user.emailVerified = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  res.json({ message: 'Email verified successfully', emailVerified: true });
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
@@ -165,7 +242,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   }
   const token = req.body.token.trim();
   const user = await User.findOne({
-    passwordResetToken: token,
+    passwordResetToken: hashResetToken(token),
     passwordResetExpires: { $gt: new Date() },
   })
     .select('+password +passwordResetToken +passwordResetExpires');
@@ -175,6 +252,69 @@ export const resetPassword = asyncHandler(async (req, res) => {
   user.password = req.body.password;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
+  user.mustChangePassword = false;
+  user.tempPasswordExpires = undefined;
   await user.save();
+  // RC-1: invalidate existing sessions after password reset
+  await revokeRefreshToken(String(user._id));
   return res.status(200).json({ message: 'Password reset successfully. You can now sign in with your new password.' });
+});
+
+export const changePassword = asyncHandler(async (req, res) => {
+  const { currentError, passwordError } = validateChangePassword(req.body);
+  if (currentError || passwordError) {
+    return res.status(400).json({
+      error: 'Validation failed',
+      details: { currentPassword: currentError, newPassword: passwordError },
+    });
+  }
+  const user = await User.findById(req.user.userId).select('+password');
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  if (!(await user.comparePassword(req.body.currentPassword))) {
+    return res.status(401).json({ error: 'Current password is incorrect' });
+  }
+  user.password = req.body.newPassword;
+  user.mustChangePassword = false;
+  user.tempPasswordExpires = undefined;
+  await user.save();
+  // RC-1: invalidate refresh tokens; revoke current access token if present
+  await revokeRefreshToken(String(user._id));
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    await revokeAccessToken(authHeader.slice(7));
+  }
+  await logAudit({
+    ...auditFromRequest(req),
+    action: 'auth.change_password',
+    targetType: 'user',
+    targetId: user._id,
+    targetLabel: user.email,
+  });
+  res.json({ message: 'Password changed successfully' });
+});
+
+export const resendVerification = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.userId).select('+emailVerificationToken +emailVerificationExpires');
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  if (user.emailVerified) {
+    return res.status(400).json({ error: 'Email is already verified' });
+  }
+  const verifyToken = crypto.randomBytes(32).toString('hex');
+  user.emailVerificationToken = hashResetToken(verifyToken);
+  user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  await user.save({ validateBeforeSave: false });
+
+  const verifyUrl = `${FRONTEND_BASE.replace(/\/$/, '')}/auth/verify-email?token=${verifyToken}`;
+  const queueResult = await queueEmail({
+    to: user.email,
+    templateKey: 'emailVerification',
+    vars: { name: user.name, url: verifyUrl },
+    dedupKey: `verify_resend:${user._id}:${Date.now()}`,
+  });
+
+  const emailMeta = isSmtpConfigured()
+    ? { emailQueued: true, emailMode: 'live' }
+    : { emailQueued: true, emailMode: 'placeholder', emailNotice: 'Email queued (SMTP not configured)' };
+
+  res.json({ message: 'Verification email sent', ...emailMeta });
 });

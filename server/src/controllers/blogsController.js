@@ -1,7 +1,13 @@
 import { Blog } from '../models/Blog.js';
-import mongoose from 'mongoose';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { listResponse, paginate } from '../utils/apiResponse.js';
+import {
+  getRequestLocale,
+  withListLocaleFilter,
+  findLocalizedBySlug,
+  findLocalizedById,
+  isObjectIdParam,
+} from '../utils/localeQuery.js';
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
@@ -25,7 +31,7 @@ export const getBlogs = asyncHandler(async (req, res) => {
   const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_LIMIT));
   const skip = (page - 1) * limit;
   const sort = req.query.sort === 'views' ? { views: -1, publishedAt: -1 } : { publishedAt: -1, createdAt: -1 };
-  const query = buildQuery(req.query);
+  const query = withListLocaleFilter(buildQuery(req.query), getRequestLocale(req));
   const [data, total] = await Promise.all([
     Blog.find(query).sort(sort).skip(skip).limit(limit).lean(),
     Blog.countDocuments(query),
@@ -35,10 +41,11 @@ export const getBlogs = asyncHandler(async (req, res) => {
 
 export const getBlogByIdOrSlug = asyncHandler(async (req, res) => {
   const { idOrSlug } = req.params;
-  const isId = mongoose.Types.ObjectId.isValid(idOrSlug) && String(new mongoose.Types.ObjectId(idOrSlug)) === idOrSlug;
-  const blog = isId
-    ? await Blog.findOne({ _id: idOrSlug, status: 'published' }).lean()
-    : await Blog.findOne({ slug: idOrSlug, status: 'published' }).lean();
+  const locale = getRequestLocale(req);
+  const baseFilter = { status: 'published' };
+  const blog = isObjectIdParam(idOrSlug)
+    ? await findLocalizedById(Blog, idOrSlug, baseFilter, locale)
+    : await findLocalizedBySlug(Blog, idOrSlug, baseFilter, locale);
   if (!blog) return res.status(404).json({ error: 'Blog not found' });
   await Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } });
   res.json({ ...blog, views: (blog.views || 0) + 1 });

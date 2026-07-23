@@ -5,6 +5,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { listResponse, paginate } from '../utils/apiResponse.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import { awardBadge } from './badgesController.js';
+import { ApplicationMigrationService } from '../services/career/migration/ApplicationMigrationService.js';
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
@@ -63,8 +64,15 @@ export const applyToInternship = asyncHandler(async (req, res) => {
   const existing = await InternshipApplication.findOne({ userId, internshipId: internship._id });
   if (existing) return res.status(400).json({ error: 'Already applied to this internship' });
   const app = await InternshipApplication.create({ userId, internshipId: internship._id, status: 'applied' });
+  const dualWrite = await ApplicationMigrationService.dualWriteFromLegacyInternshipApplication(app.toObject(), internship);
+  const opportunityApplicationId = dualWrite?.application?._id ? String(dualWrite.application._id) : null;
   await awardBadge(userId, 'internship_applied', 'Internship Applied', 'Applied to an internship', { internshipId: internship._id });
-  res.status(201).json({ id: app._id, message: 'Application recorded' });
+  res.status(201).json({
+    id: app._id,
+    message: 'Application recorded',
+    opportunityApplicationId,
+    trackerUrl: opportunityApplicationId ? `/applications/${opportunityApplicationId}` : null,
+  });
 });
 
 export const getMyApplications = asyncHandler(async (req, res) => {

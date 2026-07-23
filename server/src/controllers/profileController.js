@@ -29,7 +29,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     if (typeof notifications.telegram === 'boolean') user.notifications.telegram = notifications.telegram;
   }
   if (req.body.name !== undefined) user.name = String(req.body.name).trim();
-  if (req.body.preferredLanguage !== undefined && ['en', 'ur'].includes(req.body.preferredLanguage)) user.preferredLanguage = req.body.preferredLanguage;
+  if (req.body.preferredLanguage !== undefined && ['en', 'ur', 'ar'].includes(req.body.preferredLanguage)) user.preferredLanguage = req.body.preferredLanguage;
   await user.save();
   res.json({ user: toSafeUser(user) });
 });

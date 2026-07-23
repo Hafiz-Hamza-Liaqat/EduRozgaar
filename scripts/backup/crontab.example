@@ -1,0 +1,4 @@
+# Example crontab entries (L.2) — install on backup host
+# 0 2 * * * cd /opt/edurozgaar && MONGO_URI=mongodb://127.0.0.1:27017/edurozgaar ./scripts/backup/mongo-backup.sh >> /var/log/edurozgaar-backup.log 2>&1
+# 30 2 * * 0 cd /opt/edurozgaar && UPLOADS_PATH=./server/uploads ./scripts/backup/media-backup.sh >> /var/log/edurozgaar-backup.log 2>&1
+# 0 3 * * 1 cd /opt/edurozgaar && ./scripts/backup/verify-restore.sh $(ls -d ./backups/mongo/edurozgaar_* | tail -1) >> /var/log/edurozgaar-backup.log 2>&1

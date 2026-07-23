@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { authApi } from '../../services/authService';
@@ -13,7 +14,9 @@ import { formatDate } from '../../utils/formatDate';
 import { SeoHead } from '../../components/seo';
 
 export default function Profile() {
+  const { t } = useTranslation(['profile', 'common']);
   const { user, updateUser } = useAuth();
+  const { setLang } = useLanguage();
   const [name, setName] = useState('');
   const [province, setProvince] = useState('');
   const [interests, setInterests] = useState([]);
@@ -25,12 +28,17 @@ export default function Profile() {
   });
   const [preferredLanguage, setPreferredLanguage] = useState('en');
   const [savedJobs, setSavedJobs] = useState([]);
-  const { setLang } = useLanguage();
   const [savedScholarships, setSavedScholarships] = useState([]);
   const [savedAdmissions, setSavedAdmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
+  const [messageSuccess, setMessageSuccess] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [resendingVerify, setResendingVerify] = useState(false);
 
   useEffect(() => {
     authApi
@@ -49,9 +57,14 @@ export default function Profile() {
             telegram: u.notifications.telegram ?? false,
           }));
         }
-        setPreferredLanguage(u.preferredLanguage || 'en');
+        const lang = u.preferredLanguage || 'en';
+        setPreferredLanguage(lang);
+        setLang(lang, { persistProfile: false });
       })
-      .catch(() => setMessage('Could not load profile.'))
+      .catch(() => {
+        setMessage(t('profile:couldNotLoad'));
+        setMessageSuccess(false);
+      })
       .finally(() => setLoading(false));
 
     savedApi.get().then(({ data }) => {
@@ -59,7 +72,7 @@ export default function Profile() {
       setSavedScholarships(data.savedScholarships || []);
       setSavedAdmissions(data.savedAdmissions || []);
     }).catch(() => {});
-  }, []);
+  }, [setLang]);
 
   const toggleInterest = (item) => {
     setInterests((prev) =>
@@ -80,21 +93,66 @@ export default function Profile() {
         preferredLanguage,
       });
       updateUser(data.user);
-      setLang(preferredLanguage);
-      setMessage('Profile updated.');
-    } catch {
-      setMessage('Failed to update profile.');
+      setLang(preferredLanguage, { persistProfile: false });
+      setMessage(t('profile:updated'));
+      setMessageSuccess(true);
+    } catch (err) {
+      setMessage(err.response?.data?.error || t('profile:failedUpdate'));
+      setMessageSuccess(false);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const notifOptions = [{ key: 'email', label: t('profile:emailNotif') }];
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmNewPassword) {
+      setMessage(t('profile:passwordMismatch', { defaultValue: 'Passwords do not match' }));
+      setMessageSuccess(false);
+      return;
+    }
+    setChangingPassword(true);
+    setMessage(null);
+    try {
+      await authApi.changePassword({ currentPassword, newPassword });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setMessage(t('profile:passwordChanged', { defaultValue: 'Password changed successfully' }));
+      setMessageSuccess(true);
+      updateUser({ ...user, mustChangePassword: false });
+    } catch (err) {
+      setMessage(err.response?.data?.error || t('profile:passwordChangeFailed', { defaultValue: 'Could not change password' }));
+      setMessageSuccess(false);
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResendingVerify(true);
+    setMessage(null);
+    try {
+      const { data } = await authApi.resendVerification();
+      const notice = data.emailNotice ? ` ${data.emailNotice}` : '';
+      setMessage(`${t('profile:verificationSent', { defaultValue: 'Verification email sent' })}${notice}`);
+      setMessageSuccess(true);
+    } catch (err) {
+      setMessage(err.response?.data?.error || t('profile:verificationFailed', { defaultValue: 'Could not send verification email' }));
+      setMessageSuccess(false);
+    } finally {
+      setResendingVerify(false);
     }
   };
 
   if (loading) {
     return (
       <>
-        <SeoHead title="Profile" description="Your EduRozgaar profile and preferences." noindex />
+        <SeoHead title={t('profile:seoTitle')} description={t('profile:seoDescription')} noindex />
         <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center">
-          <div className="animate-pulse text-gray-500 dark:text-gray-400">Loading profile...</div>
+          <div className="animate-pulse text-gray-500 dark:text-gray-400">{t('common:loadingProfile')}</div>
         </div>
       </>
     );
@@ -102,36 +160,59 @@ export default function Profile() {
 
   return (
     <>
-      <SeoHead title="Profile" description="Your EduRozgaar profile and preferences." noindex />
+      <SeoHead title={t('profile:seoTitle')} description={t('profile:seoDescription')} noindex />
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Profile</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Manage your preferences and saved items.</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('profile:title')}</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">{t('profile:subtitle')}</p>
 
         {message && (
-          <Alert variant={message.includes('updated') ? 'success' : 'error'} className="mb-6">
+          <Alert variant={messageSuccess ? 'success' : 'error'} className="mb-6">
             {message}
           </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <FormField label="Name" id="profile-name">
+          <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 space-y-2">
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{t('profile:accountEmail', { defaultValue: 'Account email' })}</h2>
+            <p id="profile-email-display" className="text-gray-700 dark:text-gray-300">{user?.email}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              {user?.emailVerified ? (
+                <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                  {t('profile:emailVerified', { defaultValue: 'Verified' })}
+                </span>
+              ) : (
+                <>
+                  <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                    {t('profile:emailNotVerified', { defaultValue: 'Not verified' })}
+                  </span>
+                  <Button type="button" variant="secondary" disabled={resendingVerify} onClick={handleResendVerification}>
+                    {resendingVerify ? t('common:sending', { defaultValue: 'Sending…' }) : t('profile:resendVerification', { defaultValue: 'Resend verification' })}
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <FormField label={t('common:name')} id="profile-name">
             <input
               id="profile-name"
+              name="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-primary outline-none"
             />
           </FormField>
 
-          <FormField label="Province" id="profile-province">
+          <FormField label={t('common:province')} id="profile-province">
             <select
               id="profile-province"
+              name="province"
               value={province}
               onChange={(e) => setProvince(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
             >
-              <option value="">Select province</option>
+              <option value="">{t('profile:selectProvince')}</option>
               {PROVINCES.map((p) => (
                 <option key={p} value={p}>
                   {p}
@@ -142,7 +223,7 @@ export default function Profile() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Interests (jobs, scholarships, admissions)
+              {t('profile:interestsHelp')}
             </label>
             <div className="flex flex-wrap gap-2">
               {INTEREST_CATEGORIES.map((item) => (
@@ -162,31 +243,29 @@ export default function Profile() {
             </div>
           </div>
 
-          <FormField label="Preferred language" id="profile-lang">
+          <FormField label={t('common:preferredLanguage')} id="profile-lang">
             <select
               id="profile-lang"
+              name="preferredLanguage"
               value={preferredLanguage}
               onChange={(e) => setPreferredLanguage(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
             >
-              <option value="en">English</option>
-              <option value="ur">Urdu</option>
+              <option value="en">{t('common:english')}</option>
+              <option value="ur">{t('common:urdu')}</option>
             </select>
           </FormField>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Notification preferences
+              {t('common:notificationPreferences')}
             </label>
             <div className="space-y-2">
-              {[
-                { key: 'email', label: 'Email' },
-                { key: 'push', label: 'Push (placeholder)' },
-                { key: 'whatsapp', label: 'WhatsApp (placeholder)' },
-                { key: 'telegram', label: 'Telegram (placeholder)' },
-              ].map(({ key, label }) => (
+              {notifOptions.map(({ key, label }) => (
                 <label key={key} className="flex items-center gap-2">
                   <input
+                    id={`profile-notif-${key}`}
+                    name={`notifications.${key}`}
                     type="checkbox"
                     checked={notifications[key]}
                     onChange={(e) =>
@@ -201,15 +280,69 @@ export default function Profile() {
           </div>
 
           <Button type="submit" disabled={saving}>
-            {saving ? 'Saving...' : 'Save profile'}
+            {saving ? t('common:saving') : t('common:saveProfile')}
           </Button>
         </form>
 
         <section className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Saved jobs</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('profile:changePassword', { defaultValue: 'Change password' })}</h2>
+          {user?.mustChangePassword && (
+            <Alert variant="warning" className="mb-4">
+              {t('profile:mustChangePassword', { defaultValue: 'You must change your temporary password before continuing.' })}
+            </Alert>
+          )}
+          <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
+            <FormField label={t('profile:currentPassword', { defaultValue: 'Current password' })} id="profile-current-password">
+              <input
+                id="profile-current-password"
+                name="currentPassword"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
+              />
+            </FormField>
+            <FormField label={t('profile:newPassword', { defaultValue: 'New password' })} id="profile-new-password">
+              <input
+                id="profile-new-password"
+                name="newPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
+              />
+            </FormField>
+            <FormField label={t('profile:confirmNewPassword', { defaultValue: 'Confirm new password' })} id="profile-confirm-password">
+              <input
+                id="profile-confirm-password"
+                name="confirmNewPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
+              />
+            </FormField>
+            <Button type="submit" disabled={changingPassword}>
+              {changingPassword ? t('common:saving') : t('profile:updatePassword', { defaultValue: 'Update password' })}
+            </Button>
+          </form>
+        </section>
+
+        <section className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('common:savedJobs')}</h2>
           {savedJobs.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              No saved jobs. Save jobs from the <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline">Jobs</Link> page.
+              <Trans
+                i18nKey="profile:saveJobsEmpty"
+                components={{ link: <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline" /> }}
+              />
             </p>
           ) : (
             <ul className="space-y-2">
@@ -224,10 +357,13 @@ export default function Profile() {
         </section>
 
         <section className="mt-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Saved scholarships</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('common:savedScholarships')}</h2>
           {savedScholarships.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              No saved scholarships. Save from the <Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint hover:underline">Scholarships</Link> page.
+              <Trans
+                i18nKey="profile:saveScholarshipsEmpty"
+                components={{ link: <Link to={ROUTES.SCHOLARSHIPS} className="text-primary dark:text-mint hover:underline" /> }}
+              />
             </p>
           ) : (
             <ul className="space-y-2">
@@ -242,10 +378,13 @@ export default function Profile() {
         </section>
 
         <section className="mt-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Saved admissions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('common:savedAdmissions')}</h2>
           {savedAdmissions.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              No saved admissions. Save from the <Link to={ROUTES.ADMISSIONS} className="text-primary dark:text-mint hover:underline">Admissions</Link> page.
+              <Trans
+                i18nKey="profile:saveAdmissionsEmpty"
+                components={{ link: <Link to={ROUTES.ADMISSIONS} className="text-primary dark:text-mint hover:underline" /> }}
+              />
             </p>
           ) : (
             <ul className="space-y-2">

@@ -14,6 +14,14 @@ const foreignStudySchema = new mongoose.Schema(
     link: { type: String },
     status: { type: String, enum: ['draft', 'active', 'closed'], default: 'active' },
     imageUrl: { type: String },
+    visaInfo: { type: String },
+    costOfLiving: { type: String },
+    studentLife: { type: String },
+    languageTests: [{ type: String }],
+    scholarshipsInfo: { type: String },
+    intakes: [{ type: String }],
+    seoTitle: { type: String },
+    metaDescription: { type: String },
   },
   { timestamps: true }
 );
@@ -23,7 +31,7 @@ foreignStudySchema.index({ level: 1, status: 1 });
 foreignStudySchema.index({ deadline: 1, status: 1 });
 
 foreignStudySchema.pre('save', function (next) {
-  if (!this.slug || this.isModified('country') || this.isModified('program')) {
+  if (!this.slug && this.country) {
     this.slug = foreignStudySlug(this.country, this.program || '');
   }
   next();

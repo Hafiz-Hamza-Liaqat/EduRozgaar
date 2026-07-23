@@ -35,3 +35,19 @@ export function foreignStudySlug(country, program) {
 export function examSlug(name) {
   return slugify(name || '');
 }
+
+export function companySlug(name) {
+  return slugify(name || '');
+}
+
+export function employerSlug(companyName) {
+  return slugify(companyName || '');
+}
+
+export function universitySlug(name) {
+  return slugify(name || '');
+}
+
+export function careerArticleSlug(title) {
+  return slugify(title || '');
+}

@@ -1,0 +1,18 @@
+{
+  "seoTitle": "[AR] Profile",
+  "seoDescription": "[AR] Your EduRozgaar profile and preferences.",
+  "title": "[AR] Profile",
+  "subtitle": "[AR] Manage your preferences and saved items.",
+  "couldNotLoad": "[AR] Could not load profile.",
+  "updated": "[AR] Profile updated.",
+  "failedUpdate": "[AR] Failed to update profile.",
+  "interestsHelp": "[AR] Interests (jobs, scholarships, admissions)",
+  "emailNotif": "[AR] Email",
+  "pushNotif": "[AR] Push (placeholder)",
+  "whatsappNotif": "[AR] WhatsApp (placeholder)",
+  "telegramNotif": "[AR] Telegram (placeholder)",
+  "selectProvince": "[AR] Select province",
+  "saveJobsEmpty": "[AR] No saved jobs. Save jobs from the <link>Jobs</link> page.",
+  "saveScholarshipsEmpty": "[AR] No saved scholarships. Save from the <link>Scholarships</link> page.",
+  "saveAdmissionsEmpty": "[AR] No saved admissions. Save from the <link>Admissions</link> page."
+}

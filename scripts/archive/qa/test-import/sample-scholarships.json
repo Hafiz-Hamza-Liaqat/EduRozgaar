@@ -1,0 +1,10 @@
+[
+  {
+    "title": "QA Import JSON Scholarship 2026",
+    "provider": "QA Test Provider",
+    "country": "Pakistan",
+    "level": "Graduate",
+    "description": "Imported via JSON for launch QA.",
+    "status": "active"
+  }
+]

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { scholarshipSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { buildCanonicalUrl } from '../../seo/config';
@@ -8,8 +9,10 @@ import { ROUTES } from '../../constants';
 import { SaveButton } from '../../components/listings/SaveButton';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../utils/formatDate';
+import { useContentView } from '../../hooks/usePageView';
 
 export default function IntlScholarshipDetail() {
+  const { t } = useTranslation(['scholarships', 'common', 'navbar']);
   const { id } = useParams();
   const { isAuthenticated } = useAuth();
   const [item, setItem] = useState(null);
@@ -17,9 +20,14 @@ export default function IntlScholarshipDetail() {
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(false);
 
+  useContentView('university', item?._id, 'university_view');
+
   useEffect(() => {
-    intlScholarshipsApi.get(id).then(({ data }) => setItem(data)).catch((e) => setError(e.response?.data?.error || 'Not found')).finally(() => setLoading(false));
-  }, [id]);
+    intlScholarshipsApi.get(id)
+      .then(({ data }) => setItem(data))
+      .catch((e) => setError(e.response?.data?.error || t('scholarships:scholarshipNotFound')))
+      .finally(() => setLoading(false));
+  }, [id, t]);
 
   useEffect(() => {
     if (!isAuthenticated || !item) return;
@@ -29,10 +37,10 @@ export default function IntlScholarshipDetail() {
     }).catch(() => {});
   }, [isAuthenticated, item]);
 
-  const handleSaveToggle = async (id, save) => {
-    if (!id) return;
-    if (save) await intlScholarshipsApi.save(id);
-    else await intlScholarshipsApi.unsave(id);
+  const handleSaveToggle = async (scholarshipId, save) => {
+    if (!scholarshipId) return;
+    if (save) await intlScholarshipsApi.save(scholarshipId);
+    else await intlScholarshipsApi.unsave(scholarshipId);
     setSaved(!!save);
   };
 
@@ -51,14 +59,16 @@ export default function IntlScholarshipDetail() {
   if (error || !item) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <p className="text-red-600 dark:text-red-400">{error || 'Not found.'}</p>
-        <Link to={ROUTES.INTL_SCHOLARSHIPS} className="text-primary dark:text-mint hover:underline mt-2 inline-block">← International Scholarships</Link>
+        <p className="text-red-600 dark:text-red-400">{error || t('scholarships:scholarshipNotFound')}</p>
+        <Link to={ROUTES.INTL_SCHOLARSHIPS} className="text-primary dark:text-mint hover:underline mt-2 inline-block">{t('scholarships:backToIntlScholarships')}</Link>
       </div>
     );
   }
 
   const canonicalPath = `${ROUTES.INTL_SCHOLARSHIPS}/${item.slug || item._id || id}`;
-  const description = `${item.title} - ${item.country}. Deadline ${item.deadline ? formatDate(item.deadline) : 'TBA'}.`;
+  const description = item.deadline
+    ? t('scholarships:intlDetailDescription', { title: item.title, country: item.country, deadline: formatDate(item.deadline) })
+    : t('scholarships:intlDetailDescriptionTba', { title: item.title, country: item.country });
   const schema = scholarshipSchema({ ...item, slug: undefined });
   if (schema) schema.url = buildCanonicalUrl(canonicalPath);
 
@@ -71,34 +81,38 @@ export default function IntlScholarshipDetail() {
         jsonLd={combineSchemas(
           schema,
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'International Scholarships', url: ROUTES.INTL_SCHOLARSHIPS },
+            { name: t('navbar:home'), url: ROUTES.HOME },
+            { name: t('scholarships:intlBreadcrumb'), url: ROUTES.INTL_SCHOLARSHIPS },
             { name: item.title, url: canonicalPath },
           ]),
         )}
       />
       <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
-        <Link to={ROUTES.INTL_SCHOLARSHIPS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← International Scholarships</Link>
+        <Link to={ROUTES.INTL_SCHOLARSHIPS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">{t('scholarships:backToIntlScholarships')}</Link>
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{item.title}</h1>
             <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">{item.country}{item.university ? ` · ${item.university}` : ''}</p>
-            {item.deadline && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Deadline: {formatDate(item.deadline)}</p>}
+            {item.deadline && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {t('scholarships:deadlinePrefix')}: {formatDate(item.deadline)}
+              </p>
+            )}
           </div>
-          {isAuthenticated && <SaveButton id={item._id} saved={saved} onToggle={(id, save) => handleSaveToggle(id, save)} />}
+          {isAuthenticated && <SaveButton id={item._id} saved={saved} onToggle={(scholarshipId, save) => handleSaveToggle(scholarshipId, save)} />}
         </div>
 
         {item.description && (
           <div className="mt-6 prose dark:prose-invert max-w-none">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Description</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('scholarships:descriptionLabel')}</h2>
             <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{item.description}</p>
           </div>
         )}
 
         {item.eligibility?.length > 0 && (
           <div className="mt-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Eligibility</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('scholarships:eligibility')}</h2>
             <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mt-2 space-y-1">
               {item.eligibility.map((e, i) => (
                 <li key={i}>{e}</li>
@@ -109,14 +123,14 @@ export default function IntlScholarshipDetail() {
 
         {item.visaRequirements && (
           <div className="mt-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Visa requirements</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('scholarships:visaRequirements')}</h2>
             <p className="text-gray-700 dark:text-gray-300 mt-2">{item.visaRequirements}</p>
           </div>
         )}
 
         {item.link && (
           <a href={item.link} target="_blank" rel="noopener noreferrer" className="inline-block mt-6 px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover btn-theme">
-            Apply on official site →
+            {t('scholarships:applyOfficialSite')}
           </a>
         )}
       </div>

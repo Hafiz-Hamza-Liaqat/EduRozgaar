@@ -1,0 +1,99 @@
+/**
+ * Intelligent indexing engine (C.7.0.4).
+ */
+import { Job } from '../../models/Job.js';
+import { Scholarship } from '../../models/Scholarship.js';
+import { Admission } from '../../models/Admission.js';
+import { University } from '../../models/University.js';
+import { Blog } from '../../models/Blog.js';
+import { CareerArticle } from '../../models/CareerArticle.js';
+import { CmsStaticPage } from '../../models/CmsStaticPage.js';
+import { CmsPageLayout } from '../../models/CmsPageLayout.js';
+import { FormDefinition } from '../../models/FormDefinition.js';
+import { MediaAsset } from '../../models/MediaAsset.js';
+import { TalentProfile } from '../../models/career/TalentProfile.js';
+import { Credential } from '../../models/career/Credential.js';
+import { SEARCH_ENTITY_TYPES } from '../../../../shared/search/entityTypes.js';
+import { SEARCH_DOCUMENT_MAPPERS } from './documentMappers.js';
+import { deleteSearchDocument, upsertSearchDocument } from './SearchIndexService.js';
+import { searchCacheInvalidatePrefix } from './searchCache.js';
+
+const ENTITY_MODELS = {
+  job: Job,
+  scholarship: Scholarship,
+  admission: Admission,
+  university: University,
+  blog: Blog,
+  'career-guidance': CareerArticle,
+  'cms-page': CmsStaticPage,
+  'page-builder-page': CmsPageLayout,
+  form: FormDefinition,
+  media: MediaAsset,
+  'talent-profile': TalentProfile,
+  credential: Credential,
+};
+
+/**
+ * @param {string} entityType
+ * @param {string} entityId
+ * @param {string} [locale]
+ */
+export async function indexEntity(entityType, entityId, locale = 'en') {
+  const mapper = SEARCH_DOCUMENT_MAPPERS[entityType];
+  const Model = ENTITY_MODELS[entityType];
+  if (!mapper || !Model) return null;
+
+  const doc = await Model.findById(entityId).lean();
+  if (!doc) {
+    await deleteSearchDocument(entityType, entityId, locale);
+    return null;
+  }
+
+  const normalized = mapper(doc);
+  if (!normalized) {
+    await deleteSearchDocument(entityType, entityId, locale);
+    return null;
+  }
+
+  return upsertSearchDocument(normalized);
+}
+
+export async function removeEntity(entityType, entityId, locale = 'en') {
+  return deleteSearchDocument(entityType, entityId, locale);
+}
+
+/**
+ * @param {string} entityType
+ */
+export async function rebuildEntityType(entityType) {
+  const Model = ENTITY_MODELS[entityType];
+  const mapper = SEARCH_DOCUMENT_MAPPERS[entityType];
+  if (!Model || !mapper) return { entityType, indexed: 0 };
+
+  const cursor = Model.find().cursor();
+  let indexed = 0;
+  for await (const doc of cursor) {
+    const normalized = mapper(doc);
+    if (normalized?.searchable) {
+      await upsertSearchDocument(normalized);
+      indexed += 1;
+    }
+  }
+  searchCacheInvalidatePrefix('search:');
+  return { entityType, indexed };
+}
+
+export async function rebuildAll() {
+  const results = [];
+  for (const entityType of SEARCH_ENTITY_TYPES) {
+    results.push(await rebuildEntityType(entityType));
+  }
+  return results;
+}
+
+export class SearchIndexer {
+  static indexEntity = indexEntity;
+  static removeEntity = removeEntity;
+  static rebuildEntityType = rebuildEntityType;
+  static rebuildAll = rebuildAll;
+}

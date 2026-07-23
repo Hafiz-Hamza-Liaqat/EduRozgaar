@@ -1,0 +1,33 @@
+{
+  "title": "دستاویزات",
+  "credentialsTitle": "اسناد",
+  "loadError": "دستاویزات لوڈ نہیں ہو سکیں۔",
+  "empty": "ابھی کوئی دستاویز نہیں۔",
+  "featureDisabled": "دستاویز پلیٹ فارم دستیاب نہیں۔",
+  "types": {
+    "resume": "ریزیومے",
+    "cv": "سی وی",
+    "cover_letter": "کور لیٹر",
+    "transcript": "ٹرانسکرپٹ",
+    "degree": "ڈگری",
+    "passport": "پاسپورٹ",
+    "visa": "ویزا",
+    "portfolio": "پورٹ فolio",
+    "certificate": "سرٹیفکیٹ",
+    "other": "دیگر"
+  },
+  "visibility": {
+    "private": "نجی",
+    "employer_scoped": "صرف آجر",
+    "public": "عوامی"
+  },
+  "credentialStatus": {
+    "pending_verification": "تصدیق زیر التوا",
+    "active": "تصدیق شدہ",
+    "expired": "میعاد ختم",
+    "revoked": "منسوخ"
+  },
+  "expiresNever": "کبھی نہیں",
+  "issuedBy": "{{issuer}} کی طرف سے جاری",
+  "scoreLabel": "{{score}}%"
+}

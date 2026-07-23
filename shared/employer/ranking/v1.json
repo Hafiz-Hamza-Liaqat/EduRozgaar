@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "ranking": {
+    "readiness": 0.4,
+    "verified_assessments": 0.25,
+    "experience": 0.2,
+    "profile_completeness": 0.1,
+    "recent_activity": 0.05
+  }
+}

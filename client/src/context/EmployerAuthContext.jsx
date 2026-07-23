@@ -1,6 +1,10 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { employerAuthApi } from '../services/employerService';
-import { EMPLOYER_TOKEN_STORAGE } from '../services/employerService';
+import {
+  employerAuthApi,
+  EMPLOYER_TOKEN_STORAGE,
+  EMPLOYER_REFRESH_STORAGE,
+  resetEmployerAxiosAuthState,
+} from '../services/employerService';
 
 const STORAGE_EMPLOYER = 'edurozgaar-employer';
 
@@ -15,6 +19,13 @@ function readStoredEmployer() {
   }
 }
 
+function clearEmployerSessionLocal() {
+  localStorage.removeItem(EMPLOYER_TOKEN_STORAGE);
+  localStorage.removeItem(EMPLOYER_REFRESH_STORAGE);
+  localStorage.removeItem(STORAGE_EMPLOYER);
+  resetEmployerAxiosAuthState();
+}
+
 export function EmployerAuthProvider({ children }) {
   const [employer, setEmployer] = useState(readStoredEmployer);
   const [loading, setLoading] = useState(true);
@@ -26,28 +37,37 @@ export function EmployerAuthProvider({ children }) {
     else localStorage.removeItem(STORAGE_EMPLOYER);
   }, []);
 
-  const setToken = useCallback((token) => {
-    if (token) localStorage.setItem(EMPLOYER_TOKEN_STORAGE, token);
+  const setSessionTokens = useCallback((accessToken, refreshToken) => {
+    if (accessToken) localStorage.setItem(EMPLOYER_TOKEN_STORAGE, accessToken);
     else localStorage.removeItem(EMPLOYER_TOKEN_STORAGE);
+    if (refreshToken) localStorage.setItem(EMPLOYER_REFRESH_STORAGE, refreshToken);
+    else localStorage.removeItem(EMPLOYER_REFRESH_STORAGE);
   }, []);
 
   const login = useCallback(async (email, password) => {
     setError(null);
     const { data } = await employerAuthApi.login(email, password);
-    setToken(data.accessToken);
+    setSessionTokens(data.accessToken, data.refreshToken);
     persistEmployer(data.employer);
     return data.employer;
-  }, [persistEmployer, setToken]);
+  }, [persistEmployer, setSessionTokens]);
 
   const register = useCallback(async (payload) => {
     const { data } = await employerAuthApi.register(payload);
-    setToken(data.accessToken);
+    setSessionTokens(data.accessToken, data.refreshToken);
     persistEmployer(data.employer);
     return data.employer;
-  }, [persistEmployer, setToken]);
+  }, [persistEmployer, setSessionTokens]);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(EMPLOYER_TOKEN_STORAGE);
+  const logout = useCallback(async () => {
+    try {
+      if (localStorage.getItem(EMPLOYER_TOKEN_STORAGE)) {
+        await employerAuthApi.logout();
+      }
+    } catch {
+      /* local clear still required */
+    }
+    clearEmployerSessionLocal();
     persistEmployer(null);
   }, [persistEmployer]);
 
@@ -61,7 +81,7 @@ export function EmployerAuthProvider({ children }) {
       .me()
       .then(({ data }) => persistEmployer(data.employer))
       .catch(() => {
-        localStorage.removeItem(EMPLOYER_TOKEN_STORAGE);
+        clearEmployerSessionLocal();
         persistEmployer(null);
       })
       .finally(() => setLoading(false));

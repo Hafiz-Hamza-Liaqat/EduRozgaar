@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { ROUTES } from '../../constants';
 import { validatePassword } from '../../utils/validation';
+import { translateValidationError } from '../../utils/validationI18n';
 import { authApi } from '../../services/authService';
 import { Button } from '../../components/common/Button';
 import { FormField } from '../../components/common/FormField';
@@ -12,6 +14,7 @@ export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token') || '';
+  const { t } = useTranslation(['forms', 'common', 'validation']);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -20,15 +23,16 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!token) setSubmitError('Invalid reset link. Please use the link from your email or request a new one.');
-  }, [token]);
+    if (!token) setSubmitError(t('forms:resetPassword.invalidToken'));
+  }, [token, t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
-    const passwordErr = validatePassword(password, true);
-    const confirmErr =
-      password !== confirmPassword ? 'Passwords do not match' : null;
+    const passwordErr = translateValidationError(validatePassword(password, true), t);
+    const confirmErr = password !== confirmPassword
+      ? t('validation:passwordMismatch')
+      : null;
     if (passwordErr || confirmErr) {
       setErrors({ password: passwordErr, confirmPassword: confirmErr });
       return;
@@ -40,7 +44,7 @@ export default function ResetPassword() {
       setSuccess(true);
       setTimeout(() => navigate(ROUTES.LOGIN, { replace: true }), 2000);
     } catch (err) {
-      const msg = err.response?.data?.error || 'Failed to reset password. The link may have expired.';
+      const msg = err.response?.data?.error || t('forms:resetPassword.failed');
       setSubmitError(msg);
     } finally {
       setSubmitting(false);
@@ -50,13 +54,13 @@ export default function ResetPassword() {
   if (success) {
     return (
       <>
-        <SeoHead title="Password reset" noindex />
+        <SeoHead title={t('forms:resetPassword.successTitle')} noindex />
         <div className="max-w-md mx-auto px-4 sm:px-6 py-8 md:py-12 text-center">
-          <Alert variant="success" title="Password reset" className="mb-6">
-            Your password has been reset. Redirecting you to login...
+          <Alert variant="success" title={t('forms:resetPassword.successTitle')} className="mb-6">
+            {t('forms:resetPassword.success')}
           </Alert>
           <Link to={ROUTES.LOGIN} className="text-primary dark:text-mint font-medium hover:underline">
-            Go to login
+            {t('forms:resetPassword.goToLogin')}
           </Link>
         </div>
       </>
@@ -65,22 +69,22 @@ export default function ResetPassword() {
 
   return (
     <>
-      <SeoHead title="Set new password" description="Set a new password for your EduRozgaar account." noindex />
+      <SeoHead title={t('forms:resetPassword.setNewPasswordTitle')} description={t('forms:resetPassword.seoDescription')} noindex />
       <div className="max-w-md mx-auto px-4 sm:px-6 py-8 md:py-12">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Set new password</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('forms:resetPassword.setNewPasswordTitle')}</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Enter your new password below. Use at least 8 characters with uppercase, lowercase, and a number.
+          {t('forms:resetPassword.subtitle')}
         </p>
 
         {submitError && (
-          <Alert variant="error" title="Error" className="mb-6">
+          <Alert variant="error" title={t('common:error')} className="mb-6">
             {submitError}
           </Alert>
         )}
 
         {token ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField label="New password" id="reset-password" error={errors.password}>
+            <FormField label={t('forms:resetPassword.newPassword')} id="reset-password" error={errors.password}>
               <input
                 id="reset-password"
                 type="password"
@@ -88,10 +92,10 @@ export default function ResetPassword() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow duration-200"
-                placeholder="••••••••"
+                placeholder={t('common:passwordPlaceholder')}
               />
             </FormField>
-            <FormField label="Confirm password" id="reset-confirm" error={errors.confirmPassword}>
+            <FormField label={t('forms:resetPassword.confirmPassword')} id="reset-confirm" error={errors.confirmPassword}>
               <input
                 id="reset-confirm"
                 type="password"
@@ -99,24 +103,24 @@ export default function ResetPassword() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow duration-200"
-                placeholder="••••••••"
+                placeholder={t('common:passwordPlaceholder')}
               />
             </FormField>
             <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Resetting...' : 'Reset password'}
+              {submitting ? t('forms:resetPassword.resetting') : t('forms:resetPassword.submit')}
             </Button>
           </form>
         ) : (
           <p className="text-gray-600 dark:text-gray-400">
             <Link to={ROUTES.FORGOT_PASSWORD} className="text-primary dark:text-mint font-medium hover:underline">
-              Request a new reset link
+              {t('forms:resetPassword.requestNewLink')}
             </Link>
           </p>
         )}
 
         <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           <Link to={ROUTES.LOGIN} className="text-primary dark:text-mint font-medium hover:underline link-hover">
-            ← Back to login
+            ← {t('common:backToLogin')}
           </Link>
         </p>
       </div>

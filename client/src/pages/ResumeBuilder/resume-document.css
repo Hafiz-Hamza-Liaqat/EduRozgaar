@@ -1,0 +1,149 @@
+/* Shared resume document styles — preview and PDF export use the same markup */
+
+.resume-preview {
+  box-sizing: border-box;
+  color: #111827;
+  font-size: 11pt;
+  line-height: 1.45;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.resume-header {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 0.75rem;
+}
+
+.resume-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 0.15rem;
+  letter-spacing: -0.01em;
+}
+
+.resume-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 0.35rem;
+}
+
+.resume-contact,
+.resume-social {
+  font-size: 0.72rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.resume-section {
+  margin-bottom: 0.65rem;
+}
+
+.resume-section-heading {
+  break-after: avoid;
+  page-break-after: avoid;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+  padding-bottom: 0.15rem;
+  border-bottom: 1px solid currentColor;
+  opacity: 0.85;
+}
+
+.resume-section-body {
+  margin: 0;
+}
+
+.resume-entry {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 0.45rem;
+}
+
+.resume-entry:last-child {
+  margin-bottom: 0;
+}
+
+.resume-entry-title {
+  font-weight: 600;
+  font-size: 0.78rem;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.resume-entry-meta {
+  font-size: 0.68rem;
+  margin: 0.05rem 0 0;
+  opacity: 0.8;
+}
+
+.resume-entry-text {
+  font-size: 0.72rem;
+  margin: 0.15rem 0 0;
+  white-space: pre-wrap;
+}
+
+.resume-skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resume-skill-item {
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.resume-skill-item::before {
+  content: '• ';
+  opacity: 0.65;
+}
+
+.resume-inline-list {
+  font-size: 0.72rem;
+  margin: 0;
+}
+
+/* Template skins */
+.resume-skin-modern .resume-header {
+  border-bottom: 2px solid #334155;
+  padding-bottom: 0.5rem;
+}
+
+.resume-skin-modern .resume-name { color: #1e293b; }
+.resume-skin-modern .resume-title { color: #475569; }
+.resume-skin-modern .resume-section-heading { color: #64748b; border-color: #cbd5e1; }
+
+.resume-skin-minimal .resume-name { color: #111827; font-size: 1.25rem; }
+.resume-skin-minimal .resume-section-heading { color: #374151; border-color: #e5e7eb; }
+
+.resume-skin-creative {
+  background: linear-gradient(to bottom, #ecfdf5, #ffffff);
+}
+
+.resume-skin-creative .resume-name { color: #064e3b; }
+.resume-skin-creative .resume-title { color: #047857; }
+.resume-skin-creative .resume-section-heading { color: #059669; border-color: #a7f3d0; }
+.resume-skin-creative .resume-entry-title { color: #065f46; }
+
+.resume-skin-academic {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.resume-skin-academic .resume-header {
+  text-align: center;
+  border-bottom: 1px solid #c7d2fe;
+  padding-bottom: 0.5rem;
+}
+
+.resume-skin-academic .resume-name { color: #312e81; }
+.resume-skin-academic .resume-title { color: #4338ca; }
+.resume-skin-academic .resume-section-heading { color: #4338ca; border-color: #c7d2fe; }
+.resume-skin-academic .resume-entry-title { color: #312e81; }

@@ -4,33 +4,73 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import mongoSanitize from 'express-mongo-sanitize';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
+import { registerGracefulShutdown } from './config/shutdown.js';
+import { getHelmetOptions } from './config/security.js';
 import { startScraperCron } from './scheduler/cron.js';
-import { healthRouter, jobsRouter, scholarshipsRouter, admissionsRouter, blogsRouter, foreignStudiesRouter, authRouter, adminRouter, trendingRouter, newsletterRouter, notificationsRouter, monetizationRouter, usersRouter, v1Router, examsRouter, internshipsRouter, chatbotRouter, webinarsRouter, intlScholarshipsRouter, badgesRouter, seoRouter, resumesRouter, employerRouter } from './routes/index.js';
+import { healthRouter, jobsRouter, scholarshipsRouter, admissionsRouter, blogsRouter, foreignStudiesRouter, authRouter, adminRouter, trendingRouter, newsletterRouter, notificationsRouter, monetizationRouter, usersRouter, v1Router, examsRouter, internshipsRouter, chatbotRouter, webinarsRouter, intlScholarshipsRouter, badgesRouter, seoRouter, resumesRouter, employerRouter, publicProfilesRouter, careerArticlesRouter, resumeTemplatesRouter, cmsRouter, contactRouter, institutionsRouter, supportRouter, userInboxRouter, formsRouter, dynamicContentRouter, searchRouter, analyticsRouter, talentRouter, opportunityApplicationsRouter, timelineRouter, documentsRouter, credentialsRouter, careerDashboardRouter, migrationRouter, scoringRouter, assessmentsRouter, employerIntelligenceRouter } from './routes/index.js';
+import { registerCareerTimelineHandlers } from './services/career/careerEventHandlers.js';
+import { registerCareerNotificationHandlers } from './services/career/careerNotificationBridge.js';
+import { registerCareerScoringHandlers } from './services/career/careerScoringBridge.js';
 import { getSitemap, getRobots } from './controllers/seoController.js';
+import { stripeWebhook } from './controllers/paymentsController.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { apiLimiter } from './middleware/rateLimit.js';
 import { getCorsOptions } from './config/cors.js';
 import { validateProductionEnv } from './config/validateEnv.js';
+import { logger } from './utils/logger.js';
 
 validateProductionEnv();
 
+registerCareerTimelineHandlers();
+registerCareerNotificationHandlers();
+registerCareerScoringHandlers();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(helmet({ contentSecurityPolicy: false }));
+if (process.env.SENTRY_DSN) {
+  import('@sentry/node')
+    .then((Sentry) => {
+      Sentry.init({ dsn: process.env.SENTRY_DSN, environment: process.env.NODE_ENV || 'development' });
+      logger.info('Sentry initialized');
+    })
+    .catch(() => logger.warn('Sentry DSN set but @sentry/node not installed'));
+}
+
+app.use(helmet(getHelmetOptions()));
 app.use(compression());
+
+// Stripe webhook requires raw body — must be before express.json()
+app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), stripeWebhook);
+
 app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '1mb' }));
 app.use(mongoSanitize());
 app.use(requestLogger);
 app.use('/api', apiLimiter);
 
+app.use('/uploads', (_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(path.join(__dirname, '../uploads'), {
+  dotfiles: 'deny',
+  index: false,
+}));
+
 app.get('/sitemap.xml', getSitemap);
 app.get('/robots.txt', getRobots);
 
 app.use('/api', healthRouter);
+app.use('/api', contactRouter);
+app.use('/api', institutionsRouter);
+app.use('/api', supportRouter);
+app.use('/api', userInboxRouter);
 app.use('/api', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', jobsRouter);
@@ -52,6 +92,24 @@ app.use('/api', badgesRouter);
 app.use('/api', seoRouter);
 app.use('/api', resumesRouter);
 app.use('/api', employerRouter);
+app.use('/api', publicProfilesRouter);
+app.use('/api', careerArticlesRouter);
+app.use('/api', resumeTemplatesRouter);
+app.use('/api/cms', cmsRouter);
+app.use('/api', formsRouter);
+app.use('/api', dynamicContentRouter);
+app.use('/api', searchRouter);
+app.use('/api', analyticsRouter);
+app.use('/api', talentRouter);
+app.use('/api', opportunityApplicationsRouter);
+app.use('/api', timelineRouter);
+app.use('/api', documentsRouter);
+app.use('/api', credentialsRouter);
+app.use('/api', careerDashboardRouter);
+app.use('/api', migrationRouter);
+app.use('/api', scoringRouter);
+app.use('/api', assessmentsRouter);
+app.use('/api', employerIntelligenceRouter);
 app.use('/api/v1', v1Router);
 
 app.use(errorHandler);
@@ -59,16 +117,36 @@ app.use(errorHandler);
 connectDB()
   .then(async () => {
     const { seedJobPlans } = await import('./seed/jobPlans.js');
-    await seedJobPlans().catch((e) => console.warn('Job plans seed:', e.message));
-    startScraperCron();
-    app.listen(PORT, () => {
-      console.log(`EduRozgaar API running at http://localhost:${PORT}`);
+    const jobPlansResult = await seedJobPlans().catch((e) => {
+      logger.warn('job_plans_seed_failed', { error: e.message });
+      return { error: e.message };
     });
+    if (jobPlansResult && !jobPlansResult.error) {
+      logger.info('job_plans_seed', jobPlansResult);
+    }
+
+    if (process.env.CMS_SEED_ON_START !== '0') {
+      const { seedCmsSiteContent } = await import('./seed/cmsSiteContent.js');
+      const cmsResult = await seedCmsSiteContent().catch((e) => {
+        logger.warn('cms_seed_failed', { error: e.message });
+        return { error: e.message };
+      });
+      if (cmsResult && !cmsResult.error) {
+        logger.info('cms_seed', cmsResult);
+      }
+    } else {
+      logger.info('cms_seed_skipped', { reason: 'CMS_SEED_ON_START=0' });
+    }
+
+    if (process.env.WORKER_ONLY !== '1') {
+      startScraperCron();
+    } else {
+      logger.info('api_cron_skipped', { reason: 'WORKER_ONLY container handles queue' });
+    }
+    const PORT_NUM = Number(PORT);
+    registerGracefulShutdown(app, PORT_NUM);
   })
   .catch((err) => {
     console.error('\n❌ MongoDB connection failed:', err.message);
-    console.error('\n👉 Start MongoDB first:');
-    console.error('   Windows:  net start MongoDB');
-    console.error('   Mac/Linux:  mongod (or sudo systemctl start mongod)\n');
     process.exit(1);
   });

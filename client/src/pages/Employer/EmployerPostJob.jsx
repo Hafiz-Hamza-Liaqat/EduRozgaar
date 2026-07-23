@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { employerApi } from '../../services/employerService';
 import { ROUTES } from '../../constants';
@@ -19,6 +20,7 @@ const defaultForm = {
 };
 
 export default function EmployerPostJob() {
+  const { t } = useTranslation(['employer', 'common']);
   const navigate = useNavigate();
   const [form, setForm] = useState(defaultForm);
   const [plans, setPlans] = useState([]);
@@ -49,21 +51,34 @@ export default function EmployerPostJob() {
       setCreatedJob(data.job);
       setStep('plan');
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create job');
+      setError(err.response?.data?.error || t('employer:failedCreateJob'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleActivate = async (planId) => {
+  const handleActivate = async (planId, isFree = false) => {
     if (!createdJob) return;
     setSubmitting(true);
     setError('');
     try {
+      if (isFree || !planId) {
+        await employerApi.activateJob(createdJob._id, { planId: planId || undefined });
+        navigate(ROUTES.EMPLOYER_JOBS);
+        return;
+      }
+      const plan = plans.find((p) => p._id === planId);
+      if (plan && plan.price > 0) {
+        const { data } = await employerApi.createCheckout(createdJob._id, { planId });
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+      }
       await employerApi.activateJob(createdJob._id, { planId });
       navigate(ROUTES.EMPLOYER_JOBS);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to activate');
+      setError(err.response?.data?.error || t('employer:failedActivate'));
     } finally {
       setSubmitting(false);
     }
@@ -72,24 +87,24 @@ export default function EmployerPostJob() {
   if (step === 'plan' && createdJob) {
     return (
       <>
-        <SeoHead title="Choose Plan" description="Select a plan to publish your job post." noindex />
-        <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-2">Choose a plan</h1>
-        <p className="text-slate-600 mb-6">Job &quot;{createdJob.title}&quot; is saved as draft. Select a plan to publish.</p>
+        <SeoHead title={t('employer:choosePlanSeoTitle')} description={t('employer:choosePlanSeoDesc')} noindex />
+        <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-2">{t('employer:choosePlan')}</h1>
+        <p className="text-slate-600 mb-6">{t('employer:draftSavedPlan', { title: createdJob.title })}</p>
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{error}</div>
         )}
         <div className="grid gap-4 max-w-2xl">
           {createdJob.planType === 'free' && (
             <div className="bg-white border border-[#E5E7EB] rounded-xl p-5">
-              <h3 className="font-semibold text-[#0F172A]">First Job Free</h3>
-              <p className="text-sm text-slate-600 mt-1">Your first job post is free. Submit for approval.</p>
+              <h3 className="font-semibold text-[#0F172A]">{t('employer:firstJobFree')}</h3>
+              <p className="text-sm text-slate-600 mt-1">{t('employer:firstJobFreeDesc')}</p>
               <button
                 type="button"
                 disabled={submitting}
-                onClick={() => handleActivate(null)}
+                onClick={() => handleActivate(null, true)}
                 className="mt-4 px-4 py-2 bg-[#635BFF] hover:bg-[#4F46E5] text-white text-sm font-medium rounded-lg disabled:opacity-50"
               >
-                Activate (Free)
+                {t('employer:activateFree')}
               </button>
             </div>
           )}
@@ -98,7 +113,7 @@ export default function EmployerPostJob() {
               <h3 className="font-semibold text-[#0F172A]">{plan.name}</h3>
               <p className="text-2xl font-semibold text-[#635BFF] mt-1">${plan.price}</p>
               <p className="text-sm text-slate-600 mt-1">
-                {plan.durationDays ? `${plan.durationDays} days` : 'Until filled'}
+                {plan.durationDays ? t('employer:daysDuration', { count: plan.durationDays }) : t('employer:untilFilled')}
               </p>
               <ul className="mt-2 text-sm text-slate-600 list-disc list-inside">
                 {(plan.features || []).slice(0, 3).map((f, i) => (
@@ -111,7 +126,7 @@ export default function EmployerPostJob() {
                 onClick={() => handleActivate(plan._id)}
                 className="mt-4 px-4 py-2 bg-[#635BFF] hover:bg-[#4F46E5] text-white text-sm font-medium rounded-lg disabled:opacity-50"
               >
-                Pay &amp; Publish
+                {t('employer:payAndPublish')}
               </button>
             </div>
           ))}
@@ -122,25 +137,25 @@ export default function EmployerPostJob() {
 
   return (
     <>
-      <SeoHead title="Post New Job" description="Create and publish a new job listing." noindex />
-      <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">Post New Job</h1>
+      <SeoHead title={t('employer:postJobSeoTitle')} description={t('employer:postJobSeoDesc')} noindex />
+      <h1 className="text-2xl font-semibold tracking-tight text-[#0F172A] mb-6">{t('employer:postNewJob')}</h1>
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{error}</div>
       )}
       <form onSubmit={handleSubmitDraft} className="max-w-2xl space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Job Title *</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:jobTitleRequired')}</label>
           <input
             name="jobTitle"
             value={form.jobTitle}
             onChange={handleChange}
             required
             className="w-full px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F172A]"
-            placeholder="e.g. React Developer"
+            placeholder={t('employer:jobTitlePlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Company Name *</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:companyNameRequired')}</label>
           <input
             name="companyName"
             value={form.companyName}
@@ -150,66 +165,66 @@ export default function EmployerPostJob() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Location</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('common:location')}</label>
           <input
             name="location"
             value={form.location}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F172A]"
-            placeholder="e.g. Lahore, Pakistan"
+            placeholder={t('employer:locationPlaceholder')}
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#0F172A] mb-1">Job Type</label>
+            <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:jobTypeLabel')}</label>
             <select
               name="jobType"
               value={form.jobType}
               onChange={handleChange}
               className="w-full px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F172A]"
             >
-              <option value="Private">Private</option>
-              <option value="Government">Government</option>
-              <option value="Internship">Internship</option>
+              <option value="Private">{t('employer:jobTypePrivate')}</option>
+              <option value="Government">{t('employer:jobTypeGovernment')}</option>
+              <option value="Internship">{t('employer:jobTypeInternship')}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#0F172A] mb-1">Work Type</label>
+            <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:workTypeLabel')}</label>
             <select
               name="type"
               value={form.type}
               onChange={handleChange}
               className="w-full px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F172A]"
             >
-              <option value="full-time">Full-time</option>
-              <option value="part-time">Part-time</option>
-              <option value="contract">Contract</option>
-              <option value="internship">Internship</option>
+              <option value="full-time">{t('common:fullTime')}</option>
+              <option value="part-time">{t('common:partTime')}</option>
+              <option value="contract">{t('common:contract')}</option>
+              <option value="internship">{t('common:internship')}</option>
             </select>
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Salary Range</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:salaryRange')}</label>
           <input
             name="salaryRange"
             value={form.salaryRange}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F172A]"
-            placeholder="e.g. 50k - 80k PKR"
+            placeholder={t('employer:salaryPlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Skills (comma-separated)</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:skillsCommaSeparated')}</label>
           <input
             name="skillsRequired"
             value={form.skillsRequired}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F172A]"
-            placeholder="React, Node.js, MongoDB"
+            placeholder={t('employer:skillsPlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Description *</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:descriptionRequired')}</label>
           <textarea
             name="jobDescription"
             value={form.jobDescription}
@@ -220,7 +235,7 @@ export default function EmployerPostJob() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Application Deadline</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:applicationDeadline')}</label>
           <input
             name="applicationDeadline"
             type="date"
@@ -230,18 +245,18 @@ export default function EmployerPostJob() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Apply Link</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:applyLink')}</label>
           <input
             name="applyLink"
             type="url"
             value={form.applyLink}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F172A]"
-            placeholder="https://..."
+            placeholder={t('employer:applyLinkPlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0F172A] mb-1">Or Apply Email</label>
+          <label className="block text-sm font-medium text-[#0F172A] mb-1">{t('employer:orApplyEmail')}</label>
           <input
             name="applyEmail"
             type="email"
@@ -255,7 +270,7 @@ export default function EmployerPostJob() {
           disabled={submitting}
           className="px-6 py-2.5 bg-[#635BFF] hover:bg-[#4F46E5] text-white font-medium rounded-lg disabled:opacity-50"
         >
-          {submitting ? 'Saving...' : 'Save draft & choose plan'}
+          {submitting ? t('common:saving') : t('employer:saveDraftChoosePlan')}
         </button>
       </form>
     </>

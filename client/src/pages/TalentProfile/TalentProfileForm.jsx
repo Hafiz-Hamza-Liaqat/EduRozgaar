@@ -1,0 +1,499 @@
+import { useTranslation } from 'react-i18next';
+import { FormField } from '../../components/common/FormField';
+import { Button } from '../../components/common/Button';
+import {
+  emptyEducation,
+  emptyExperience,
+  emptySkill,
+  emptyLanguage,
+  emptyCertification,
+  emptyPortfolio,
+  parseListInput,
+  formatListInput,
+} from './talentProfileMapper';
+
+export const inputClass =
+  'w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none min-h-[44px]';
+
+function SectionCard({ title, children }) {
+  return (
+    <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 sm:p-6 space-y-4">
+      {title && <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>}
+      {children}
+    </section>
+  );
+}
+
+function updateNested(setForm, path, value) {
+  setForm((prev) => {
+    const next = { ...prev };
+    const keys = path.split('.');
+    let cur = next;
+    for (let i = 0; i < keys.length - 1; i += 1) {
+      cur[keys[i]] = { ...cur[keys[i]] };
+      cur = cur[keys[i]];
+    }
+    cur[keys[keys.length - 1]] = value;
+    return next;
+  });
+}
+
+function updateArrayItem(setForm, key, index, patch) {
+  setForm((prev) => {
+    const arr = [...(prev[key] || [])];
+    arr[index] = { ...arr[index], ...patch };
+    return { ...prev, [key]: arr };
+  });
+}
+
+function addArrayItem(setForm, key, factory) {
+  setForm((prev) => ({ ...prev, [key]: [...(prev[key] || []), factory()] }));
+}
+
+function removeArrayItem(setForm, key, index) {
+  setForm((prev) => ({
+    ...prev,
+    [key]: (prev[key] || []).filter((_, i) => i !== index),
+  }));
+}
+
+export function TalentProfileForm({ form, setForm, activeTab }) {
+  const { t } = useTranslation(['talent', 'common']);
+
+  if (activeTab === 'personal') {
+    return (
+      <SectionCard title={t('talent:tabs.personal')}>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <FormField label={t('talent:personal.firstName')} id="tp-firstName">
+            <input
+              id="tp-firstName"
+              className={inputClass}
+              value={form.personal.firstName}
+              onChange={(e) => updateNested(setForm, 'personal.firstName', e.target.value)}
+              autoComplete="given-name"
+            />
+          </FormField>
+          <FormField label={t('talent:personal.lastName')} id="tp-lastName">
+            <input
+              id="tp-lastName"
+              className={inputClass}
+              value={form.personal.lastName}
+              onChange={(e) => updateNested(setForm, 'personal.lastName', e.target.value)}
+              autoComplete="family-name"
+            />
+          </FormField>
+          <FormField label={t('talent:personal.photo')} id="tp-avatar" className="sm:col-span-2">
+            <input
+              id="tp-avatar"
+              className={inputClass}
+              type="url"
+              value={form.avatarUrl}
+              onChange={(e) => setForm((p) => ({ ...p, avatarUrl: e.target.value }))}
+              placeholder="https://"
+            />
+          </FormField>
+          <FormField label={t('talent:personal.dateOfBirth')} id="tp-dob">
+            <input
+              id="tp-dob"
+              type="date"
+              className={inputClass}
+              value={form.personal.dateOfBirth}
+              onChange={(e) => updateNested(setForm, 'personal.dateOfBirth', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:personal.gender')} id="tp-gender">
+            <input
+              id="tp-gender"
+              className={inputClass}
+              value={form.personal.gender}
+              onChange={(e) => updateNested(setForm, 'personal.gender', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:personal.country')} id="tp-country">
+            <input
+              id="tp-country"
+              className={inputClass}
+              value={form.personal.country}
+              onChange={(e) => updateNested(setForm, 'personal.country', e.target.value)}
+              autoComplete="country-name"
+            />
+          </FormField>
+          <FormField label={t('talent:personal.region')} id="tp-region">
+            <input
+              id="tp-region"
+              className={inputClass}
+              value={form.personal.region}
+              onChange={(e) => updateNested(setForm, 'personal.region', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:personal.city')} id="tp-city">
+            <input
+              id="tp-city"
+              className={inputClass}
+              value={form.personal.city}
+              onChange={(e) => updateNested(setForm, 'personal.city', e.target.value)}
+              autoComplete="address-level2"
+            />
+          </FormField>
+          <FormField label={t('talent:personal.nationality')} id="tp-nationality">
+            <input
+              id="tp-nationality"
+              className={inputClass}
+              value={form.personal.nationality}
+              onChange={(e) => updateNested(setForm, 'personal.nationality', e.target.value)}
+            />
+          </FormField>
+        </div>
+        <label className="flex items-center gap-3 min-h-[44px] cursor-pointer">
+          <input
+            type="checkbox"
+            checked={form.visibility === 'public'}
+            onChange={(e) => setForm((p) => ({ ...p, visibility: e.target.checked ? 'public' : 'private' }))}
+            className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+          />
+          <span className="text-sm text-gray-700 dark:text-gray-300">{t('talent:personal.visibility')}</span>
+        </label>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{t('talent:personal.visibilityHint')}</p>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'contact') {
+    return (
+      <SectionCard title={t('talent:tabs.contact')}>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <FormField label={t('talent:contact.email')} id="tp-email" className="sm:col-span-2">
+            <input id="tp-email" className={`${inputClass} opacity-70`} value={form.contactEmail} readOnly aria-readonly="true" />
+            <p className="text-xs text-gray-500 mt-1">{t('talent:contact.emailReadOnly')}</p>
+          </FormField>
+          <FormField label={t('talent:contact.phone')} id="tp-phone">
+            <input
+              id="tp-phone"
+              type="tel"
+              className={inputClass}
+              value={form.personal.phone}
+              onChange={(e) => updateNested(setForm, 'personal.phone', e.target.value)}
+              autoComplete="tel"
+            />
+          </FormField>
+          <FormField label={t('talent:contact.website')} id="tp-website">
+            <input
+              id="tp-website"
+              type="url"
+              className={inputClass}
+              value={form.socialProfile.websiteUrl}
+              onChange={(e) => updateNested(setForm, 'socialProfile.websiteUrl', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:contact.linkedIn')} id="tp-linkedin">
+            <input
+              id="tp-linkedin"
+              type="url"
+              className={inputClass}
+              value={form.socialProfile.linkedInUrl}
+              onChange={(e) => updateNested(setForm, 'socialProfile.linkedInUrl', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:contact.github')} id="tp-github">
+            <input
+              id="tp-github"
+              type="url"
+              className={inputClass}
+              value={form.socialProfile.githubUrl}
+              onChange={(e) => updateNested(setForm, 'socialProfile.githubUrl', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:contact.portfolio')} id="tp-portfolio">
+            <input
+              id="tp-portfolio"
+              type="url"
+              className={inputClass}
+              value={form.socialProfile.portfolioUrl}
+              onChange={(e) => updateNested(setForm, 'socialProfile.portfolioUrl', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:contact.twitter')} id="tp-twitter">
+            <input
+              id="tp-twitter"
+              type="url"
+              className={inputClass}
+              value={form.socialProfile.twitterUrl}
+              onChange={(e) => updateNested(setForm, 'socialProfile.twitterUrl', e.target.value)}
+            />
+          </FormField>
+        </div>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'career') {
+    return (
+      <SectionCard title={t('talent:tabs.career')}>
+        <FormField label={t('talent:career.headline')} id="tp-headline">
+          <input
+            id="tp-headline"
+            className={inputClass}
+            value={form.headline}
+            onChange={(e) => setForm((p) => ({ ...p, headline: e.target.value }))}
+          />
+        </FormField>
+        <FormField label={t('talent:career.summary')} id="tp-summary">
+          <textarea
+            id="tp-summary"
+            rows={5}
+            className={inputClass}
+            value={form.summary}
+            onChange={(e) => setForm((p) => ({ ...p, summary: e.target.value }))}
+          />
+        </FormField>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <FormField label={t('talent:career.employmentStatus')} id="tp-employment">
+            <select
+              id="tp-employment"
+              className={inputClass}
+              value={form.preferences.employmentStatus}
+              onChange={(e) => updateNested(setForm, 'preferences.employmentStatus', e.target.value)}
+            >
+              {['employed', 'unemployed', 'student', 'freelance', 'self_employed', 'open_to_work'].map((k) => (
+                <option key={k} value={k}>{t(`talent:employmentStatus.${k}`)}</option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label={t('talent:career.workMode')} id="tp-workmode">
+            <select
+              id="tp-workmode"
+              className={inputClass}
+              value={form.preferences.workMode}
+              onChange={(e) => updateNested(setForm, 'preferences.workMode', e.target.value)}
+            >
+              {['onsite', 'remote', 'hybrid'].map((k) => (
+                <option key={k} value={k}>{t(`talent:workMode.${k}`)}</option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label={t('talent:career.timeZone')} id="tp-tz">
+            <input
+              id="tp-tz"
+              className={inputClass}
+              placeholder="e.g. Asia/Karachi, America/New_York"
+              value={form.preferences.timeZone}
+              onChange={(e) => {
+                updateNested(setForm, 'preferences.timeZone', e.target.value);
+                updateNested(setForm, 'personal.timeZone', e.target.value);
+              }}
+            />
+          </FormField>
+          <FormField label={t('talent:career.preferredCountries')} id="tp-countries" className="sm:col-span-2">
+            <input
+              id="tp-countries"
+              className={inputClass}
+              value={formatListInput(form.preferences.preferredCountries)}
+              onChange={(e) => updateNested(setForm, 'preferences.preferredCountries', parseListInput(e.target.value))}
+            />
+            <p className="text-xs text-gray-500 mt-1">{t('talent:career.preferredCountriesHint')}</p>
+          </FormField>
+          <FormField label={t('talent:career.salaryMin')} id="tp-sal-min">
+            <input
+              id="tp-sal-min"
+              type="number"
+              min="0"
+              className={inputClass}
+              value={form.preferences.salaryExpectation.min}
+              onChange={(e) => updateNested(setForm, 'preferences.salaryExpectation.min', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:career.salaryMax')} id="tp-sal-max">
+            <input
+              id="tp-sal-max"
+              type="number"
+              min="0"
+              className={inputClass}
+              value={form.preferences.salaryExpectation.max}
+              onChange={(e) => updateNested(setForm, 'preferences.salaryExpectation.max', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:career.salaryCurrency')} id="tp-currency">
+            <input
+              id="tp-currency"
+              className={inputClass}
+              value={form.preferences.salaryExpectation.currency}
+              onChange={(e) => updateNested(setForm, 'preferences.salaryExpectation.currency', e.target.value)}
+            />
+          </FormField>
+          <FormField label={t('talent:career.salaryPeriod')} id="tp-period">
+            <select
+              id="tp-period"
+              className={inputClass}
+              value={form.preferences.salaryExpectation.period}
+              onChange={(e) => updateNested(setForm, 'preferences.salaryExpectation.period', e.target.value)}
+            >
+              <option value="hourly">Hourly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </FormField>
+        </div>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'education') {
+    return (
+      <SectionCard title={t('talent:tabs.education')}>
+        <div className="space-y-4">
+          {(form.education || []).map((row, i) => (
+            <div key={i} className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 p-4 space-y-3">
+              <div className="grid sm:grid-cols-2 gap-3">
+                <input className={inputClass} placeholder={t('talent:education.institution')} value={row.institution} onChange={(e) => updateArrayItem(setForm, 'education', i, { institution: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:education.degree')} value={row.degree} onChange={(e) => updateArrayItem(setForm, 'education', i, { degree: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:education.field')} value={row.fieldOfStudy} onChange={(e) => updateArrayItem(setForm, 'education', i, { fieldOfStudy: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:education.grade')} value={row.gpa} onChange={(e) => updateArrayItem(setForm, 'education', i, { gpa: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:education.startYear')} value={row.startYear} onChange={(e) => updateArrayItem(setForm, 'education', i, { startYear: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:education.endYear')} value={row.endYear} onChange={(e) => updateArrayItem(setForm, 'education', i, { endYear: e.target.value })} />
+              </div>
+              <textarea className={inputClass} rows={2} placeholder={t('talent:education.description')} value={row.description} onChange={(e) => updateArrayItem(setForm, 'education', i, { description: e.target.value })} />
+              <Button type="button" variant="outline" onClick={() => removeArrayItem(setForm, 'education', i)}>{t('talent:education.remove')}</Button>
+            </div>
+          ))}
+        </div>
+        <Button type="button" variant="secondary" onClick={() => addArrayItem(setForm, 'education', emptyEducation)}>{t('talent:education.add')}</Button>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'experience') {
+    return (
+      <SectionCard title={t('talent:tabs.experience')}>
+        <div className="space-y-4">
+          {(form.experience || []).map((row, i) => (
+            <div key={i} className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 p-4 space-y-3">
+              <div className="grid sm:grid-cols-2 gap-3">
+                <input className={inputClass} placeholder={t('talent:experience.company')} value={row.company} onChange={(e) => updateArrayItem(setForm, 'experience', i, { company: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:experience.title')} value={row.role} onChange={(e) => updateArrayItem(setForm, 'experience', i, { role: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:experience.location')} value={row.location} onChange={(e) => updateArrayItem(setForm, 'experience', i, { location: e.target.value })} />
+                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 min-h-[44px]">
+                  <input type="checkbox" checked={row.isCurrent} onChange={(e) => updateArrayItem(setForm, 'experience', i, { isCurrent: e.target.checked })} />
+                  {t('talent:experience.current')}
+                </label>
+                <input className={inputClass} placeholder={t('talent:experience.startDate')} value={row.startDate} onChange={(e) => updateArrayItem(setForm, 'experience', i, { startDate: e.target.value })} />
+                <input className={inputClass} placeholder={t('talent:experience.endDate')} value={row.endDate} onChange={(e) => updateArrayItem(setForm, 'experience', i, { endDate: e.target.value })} disabled={row.isCurrent} />
+              </div>
+              <textarea className={inputClass} rows={3} placeholder={t('talent:experience.responsibilities')} value={row.description} onChange={(e) => updateArrayItem(setForm, 'experience', i, { description: e.target.value })} />
+              <textarea
+                className={inputClass}
+                rows={2}
+                placeholder={t('talent:experience.achievements')}
+                value={(row.achievements || []).join('\n')}
+                onChange={(e) => updateArrayItem(setForm, 'experience', i, { achievements: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) })}
+              />
+              <Button type="button" variant="outline" onClick={() => removeArrayItem(setForm, 'experience', i)}>{t('talent:experience.remove')}</Button>
+            </div>
+          ))}
+        </div>
+        <Button type="button" variant="secondary" onClick={() => addArrayItem(setForm, 'experience', emptyExperience)}>{t('talent:experience.add')}</Button>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'skills') {
+    const renderSkillGroup = (category, titleKey) => {
+      const items = (form.skills || []).map((s, idx) => ({ ...s, idx })).filter((s) => (s.category || 'technical') === category);
+      return (
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{t(titleKey)}</h3>
+          {items.map(({ idx, ...row }) => (
+            <div key={idx} className="grid sm:grid-cols-[1fr_160px_auto] gap-2 items-center">
+              <input className={inputClass} placeholder={t('talent:skills.name')} value={row.name} onChange={(e) => updateArrayItem(setForm, 'skills', idx, { name: e.target.value })} />
+              <select className={inputClass} value={row.level} onChange={(e) => updateArrayItem(setForm, 'skills', idx, { level: e.target.value })}>
+                {['beginner', 'intermediate', 'advanced', 'expert'].map((k) => (
+                  <option key={k} value={k}>{t(`talent:skillLevel.${k}`)}</option>
+                ))}
+              </select>
+              <Button type="button" variant="outline" onClick={() => removeArrayItem(setForm, 'skills', idx)}>{t('talent:skills.remove')}</Button>
+            </div>
+          ))}
+          <Button type="button" variant="secondary" onClick={() => addArrayItem(setForm, 'skills', () => emptySkill(category))}>{t('talent:skills.add')}</Button>
+        </div>
+      );
+    };
+    return (
+      <SectionCard title={t('talent:tabs.skills')}>
+        <div className="space-y-6">
+          {renderSkillGroup('technical', 'talent:skills.technical')}
+          {renderSkillGroup('soft', 'talent:skills.soft')}
+        </div>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'languages') {
+    return (
+      <SectionCard title={t('talent:tabs.languages')}>
+        <div className="space-y-3">
+          {(form.languages || []).map((row, i) => (
+            <div key={i} className="grid sm:grid-cols-[1fr_160px_auto] gap-2 items-center">
+              <input className={inputClass} placeholder={t('talent:languages.language')} value={row.language} onChange={(e) => updateArrayItem(setForm, 'languages', i, { language: e.target.value })} />
+              <select className={inputClass} value={row.proficiency} onChange={(e) => updateArrayItem(setForm, 'languages', i, { proficiency: e.target.value })}>
+                {['basic', 'conversational', 'professional', 'native'].map((k) => (
+                  <option key={k} value={k}>{t(`talent:languageLevel.${k}`)}</option>
+                ))}
+              </select>
+              <Button type="button" variant="outline" onClick={() => removeArrayItem(setForm, 'languages', i)}>{t('talent:languages.remove')}</Button>
+            </div>
+          ))}
+        </div>
+        <Button type="button" variant="secondary" className="mt-4" onClick={() => addArrayItem(setForm, 'languages', emptyLanguage)}>{t('talent:languages.add')}</Button>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'certifications') {
+    return (
+      <SectionCard title={t('talent:tabs.certifications')}>
+        <div className="space-y-4">
+          {(form.certificationReferences || []).map((row, i) => (
+            <div key={i} className="grid sm:grid-cols-2 gap-3 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 p-4">
+              <input className={inputClass} placeholder={t('talent:certifications.name')} value={row.name} onChange={(e) => updateArrayItem(setForm, 'certificationReferences', i, { name: e.target.value })} />
+              <input className={inputClass} placeholder={t('talent:certifications.issuer')} value={row.issuer} onChange={(e) => updateArrayItem(setForm, 'certificationReferences', i, { issuer: e.target.value })} />
+              <input type="date" className={inputClass} value={row.issuedAt ? String(row.issuedAt).slice(0, 10) : ''} onChange={(e) => updateArrayItem(setForm, 'certificationReferences', i, { issuedAt: e.target.value })} />
+              <input type="date" className={inputClass} value={row.expiresAt ? String(row.expiresAt).slice(0, 10) : ''} onChange={(e) => updateArrayItem(setForm, 'certificationReferences', i, { expiresAt: e.target.value })} />
+              <input className={`${inputClass} sm:col-span-2`} placeholder={t('talent:certifications.url')} value={row.externalUrl} onChange={(e) => updateArrayItem(setForm, 'certificationReferences', i, { externalUrl: e.target.value })} />
+              <Button type="button" variant="outline" onClick={() => removeArrayItem(setForm, 'certificationReferences', i)}>{t('talent:certifications.remove')}</Button>
+            </div>
+          ))}
+        </div>
+        <Button type="button" variant="secondary" className="mt-4" onClick={() => addArrayItem(setForm, 'certificationReferences', emptyCertification)}>{t('talent:certifications.add')}</Button>
+      </SectionCard>
+    );
+  }
+
+  if (activeTab === 'portfolio') {
+    return (
+      <SectionCard title={t('talent:tabs.portfolio')}>
+        <div className="space-y-4">
+          {(form.portfolioReferences || []).map((row, i) => (
+            <div key={i} className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 p-4 space-y-3">
+              <input className={inputClass} placeholder={t('talent:portfolio.title')} value={row.title} onChange={(e) => updateArrayItem(setForm, 'portfolioReferences', i, { title: e.target.value })} />
+              <textarea className={inputClass} rows={2} placeholder={t('talent:portfolio.description')} value={row.description} onChange={(e) => updateArrayItem(setForm, 'portfolioReferences', i, { description: e.target.value })} />
+              <input className={inputClass} placeholder={t('talent:portfolio.url')} value={row.url} onChange={(e) => updateArrayItem(setForm, 'portfolioReferences', i, { url: e.target.value })} />
+              <input
+                className={inputClass}
+                placeholder={t('talent:portfolio.technologies')}
+                value={formatListInput(row.technologies)}
+                onChange={(e) => updateArrayItem(setForm, 'portfolioReferences', i, { technologies: parseListInput(e.target.value) })}
+              />
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={row.featured} onChange={(e) => updateArrayItem(setForm, 'portfolioReferences', i, { featured: e.target.checked })} />
+                {t('talent:portfolio.featured')}
+              </label>
+              <Button type="button" variant="outline" onClick={() => removeArrayItem(setForm, 'portfolioReferences', i)}>{t('talent:portfolio.remove')}</Button>
+            </div>
+          ))}
+        </div>
+        <Button type="button" variant="secondary" className="mt-4" onClick={() => addArrayItem(setForm, 'portfolioReferences', emptyPortfolio)}>{t('talent:portfolio.add')}</Button>
+      </SectionCard>
+    );
+  }
+
+  return null;
+}

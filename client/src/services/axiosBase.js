@@ -4,6 +4,12 @@ import { API_BASE_URL } from '../constants';
 const TOKEN_KEY = 'edurozgaar-token';
 const REFRESH_KEY = 'edurozgaar-refresh-token';
 
+const AUTH_NO_REFRESH = ['/auth/login', '/auth/register', '/auth/refresh-token', '/auth/logout', '/auth/forgot-password', '/auth/reset-password', '/auth/verify-email'];
+
+function isAuthNoRefreshUrl(url = '') {
+  return AUTH_NO_REFRESH.some((path) => url.includes(path));
+}
+
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
@@ -12,7 +18,12 @@ const axiosInstance = axios.create({
   },
 });
 
-// Request interceptor – add JWT for protected requests
+let refreshPromise = null;
+
+export function resetAxiosAuthState() {
+  refreshPromise = null;
+}
+
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(TOKEN_KEY);
@@ -22,26 +33,34 @@ axiosInstance.interceptors.request.use(
   (err) => Promise.reject(err)
 );
 
-// Response interceptor – on 401 try refresh token, then retry or clear auth
-let refreshPromise = null;
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (err) => {
     const original = err.config;
-    if (err.response?.status !== 401 || original._retry) {
-      if (err.response?.status === 401) {
+    const status = err.response?.status;
+
+    if (!original || status === 429) {
+      return Promise.reject(err);
+    }
+
+    if (status !== 401 || original._retry || isAuthNoRefreshUrl(original.url)) {
+      if (status === 401 && !isAuthNoRefreshUrl(original.url)) {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_KEY);
         localStorage.removeItem('edurozgaar-user');
       }
       return Promise.reject(err);
     }
+
     const refresh = localStorage.getItem(REFRESH_KEY);
     if (!refresh) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem('edurozgaar-user');
       return Promise.reject(err);
     }
+
+    original._retry = true;
+
     if (!refreshPromise) {
       refreshPromise = axios
         .post(`${API_BASE_URL}/auth/refresh-token`, { refreshToken: refresh })
@@ -56,15 +75,17 @@ axiosInstance.interceptors.response.use(
           refreshPromise = null;
         });
     }
+
     try {
       const newToken = await refreshPromise;
       original.headers.Authorization = `Bearer ${newToken}`;
       return axiosInstance(original);
-    } catch {
+    } catch (refreshErr) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_KEY);
       localStorage.removeItem('edurozgaar-user');
-      return Promise.reject(err);
+      resetAxiosAuthState();
+      return Promise.reject(refreshErr);
     }
   }
 );

@@ -1,173 +1,111 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ROUTES } from '../../constants';
-import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { DrawerMenu } from './DrawerMenu';
+import { useHeaderNavItems } from '../../hooks/useHeaderNavItems';
+import { NotificationBell } from '../notifications/NotificationBell';
+import { UserAccountMenu } from './UserAccountMenu';
 
 const navItems = [
-  { labelKey: 'nav.home', path: ROUTES.HOME },
-  { labelKey: 'nav.jobs', path: ROUTES.JOBS },
-  { labelKey: 'nav.scholarships', path: ROUTES.SCHOLARSHIPS },
-  { labelKey: 'nav.admissions', path: ROUTES.ADMISSIONS },
-  { labelKey: 'nav.internships', path: ROUTES.INTERNSHIPS },
+  { labelKey: 'navbar:home', path: ROUTES.HOME },
+  { labelKey: 'navbar:jobs', path: ROUTES.JOBS },
+  { labelKey: 'navbar:scholarships', path: ROUTES.SCHOLARSHIPS },
+  { labelKey: 'navbar:admissions', path: ROUTES.ADMISSIONS },
+  { labelKey: 'navbar:internships', path: ROUTES.INTERNSHIPS },
   {
-    labelKey: 'nav.education',
+    labelKey: 'navbar:education',
     mega: [
-      { labelKey: 'nav.schoolsAndColleges', path: ROUTES.SCHOOLS_AND_COLLEGES },
-      { labelKey: 'nav.universities', path: ROUTES.INTL_SCHOLARSHIPS },
-      { labelKey: 'nav.foreign', path: ROUTES.FOREIGN_STUDIES },
+      { labelKey: 'navbar:schoolsAndColleges', path: ROUTES.SCHOOLS_AND_COLLEGES },
+      { labelKey: 'navbar:universities', path: ROUTES.INTL_SCHOLARSHIPS },
+      { labelKey: 'navbar:foreign', path: ROUTES.FOREIGN_STUDIES },
     ],
   },
-  { labelKey: 'nav.examPrep', path: ROUTES.EXAM_PREP },
-  { labelKey: 'nav.blog', path: ROUTES.BLOG },
-  { labelKey: 'nav.contact', path: ROUTES.CONTACT },
+  { labelKey: 'navbar:examPrep', path: ROUTES.EXAM_PREP },
+  { labelKey: 'navbar:blog', path: ROUTES.BLOG },
+  { labelKey: 'navbar:contact', path: ROUTES.CONTACT },
 ];
 
 export function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(null);
-  const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated, user, logout } = useAuth();
-  const { lang, setLang, t } = useLanguage();
+  const { t: legacyT } = useLanguage();
+  const { t } = useTranslation(['navbar', 'common']);
+
+  const label = (key) => (key.includes(':') ? t(key.split(':')[1], { ns: key.split(':')[0] }) : legacyT(key));
+  const resolvedNavItems = useHeaderNavItems(navItems, label);
+
+  const renderNavLink = (item, key) => {
+    if (item.external) {
+      return (
+        <a key={key} href={item.path} target="_blank" rel="noopener noreferrer" className="px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-mint rounded-lg link-hover">
+          {item.label}{item.icon ? ` ${item.icon}` : ''}
+        </a>
+      );
+    }
+    return (
+      <Link key={key} to={item.path} className="px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-mint rounded-lg link-hover">
+        {item.label}{item.icon ? ` ${item.icon}` : ''}
+      </Link>
+    );
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 bg-surface/98 dark:bg-surface-dark/98 backdrop-blur safe-area-inset-top">
       <div className="max-w-7xl mx-auto px-3 sm:px-6">
-        <div className="flex items-center justify-between h-14 md:h-16 gap-2 min-h-[56px]">
-          <Link to={ROUTES.HOME} className="font-bold text-base sm:text-lg text-gray-900 dark:text-white link-hover hover:text-primary dark:hover:text-mint truncate min-w-0 shrink">
-            EduRozgaar
+        <div className="flex items-center justify-between h-14 md:h-16 gap-2 min-h-[56px] min-w-0">
+          <Link to={ROUTES.HOME} className="font-bold text-base sm:text-lg text-gray-900 dark:text-white link-hover hover:text-primary dark:hover:text-mint truncate min-w-0 shrink sm:max-w-[40%]">
+            {t('common:appName')}
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Main">
-            {navItems.map((item) =>
+          <nav className="hidden lg:flex items-center gap-1" aria-label={t('navbar:mainNav')}>
+            {resolvedNavItems.map((item) =>
               item.mega ? (
                 <div
-                  key={item.labelKey || 'edu'}
+                  key={item.label}
                   className="relative"
-                  onMouseEnter={() => setMegaOpen(item.labelKey || 'edu')}
+                  onMouseEnter={() => setMegaOpen(item.label)}
                   onMouseLeave={() => setMegaOpen(null)}
                 >
                   <button
                     type="button"
                     className="px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-mint rounded-lg link-hover"
                   >
-                    {item.labelKey ? t(item.labelKey) : 'Education'} ▾
+                    {item.label} ▾
                   </button>
-                  {megaOpen === (item.labelKey || 'edu') && (
+                  {megaOpen === item.label && (
                     <div className="absolute left-0 top-full pt-1 w-56 animate-dropdown-enter">
                       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg py-2">
-                        {item.mega.map((sub) => (
-                          <Link
-                            key={sub.path}
-                            to={sub.path}
-                            className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 link-hover rounded-lg"
-                          >
-                            {sub.labelKey ? t(sub.labelKey) : sub.label || ''}
-                          </Link>
-                        ))}
+                        {item.mega.map((sub) =>
+                          sub.external ? (
+                            <a key={sub.path} href={sub.path} target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 link-hover rounded-lg">
+                              {sub.label}
+                            </a>
+                          ) : (
+                            <Link key={sub.path} to={sub.path} className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 link-hover rounded-lg">
+                              {sub.label}
+                            </Link>
+                          )
+                        )}
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-mint rounded-lg link-hover"
-                >
-                  {item.labelKey ? t(item.labelKey) : item.label}
-                </Link>
+                renderNavLink(item, item.path || item.label)
               )
             )}
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setLang('en')}
-                className={`min-w-[36px] min-h-[36px] sm:px-2 sm:py-1 flex items-center justify-center text-xs sm:text-sm ${lang === 'en' ? 'bg-mint/30 dark:bg-mint/20 text-primary dark:text-mint' : 'text-gray-600 dark:text-gray-400'}`}
-                aria-label="English"
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang('ur')}
-                className={`min-w-[36px] min-h-[36px] sm:px-2 sm:py-1 flex items-center justify-center text-xs sm:text-sm ${lang === 'ur' ? 'bg-mint/30 dark:bg-mint/20 text-primary dark:text-mint' : 'text-gray-600 dark:text-gray-400'}`}
-                aria-label="Urdu"
-              >
-                UR
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700"
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to={ROUTES.DASHBOARD}
-                  className="hidden sm:inline px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to={ROUTES.RESUME_ANALYZER}
-                  className="hidden sm:inline px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary"
-                >
-                  Resume
-                </Link>
-                <Link
-                  to={ROUTES.PROFILE}
-                  className="hidden sm:inline px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary"
-                >
-                  Profile
-                </Link>
-                {user?.role === 'Admin' && (
-                  <Link
-                    to={ROUTES.ADMIN}
-                    className="hidden sm:inline px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary"
-                  >
-                    Admin
-                  </Link>
-                )}
-                <button
-                  type="button"
-                  onClick={() => logout()}
-                  className="hidden sm:inline px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to={ROUTES.LOGIN}
-                  className="hidden sm:inline px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary"
-                >
-                  {t('nav.login')}
-                </Link>
-                <Link
-                  to={ROUTES.REGISTER}
-                  className="hidden sm:inline px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-hover btn-theme"
-                >
-                  {t('nav.register')}
-                </Link>
-              </>
-            )}
+            <NotificationBell />
+            <UserAccountMenu />
             <button
               type="button"
               className="lg:hidden min-w-[48px] min-h-[48px] flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDrawerOpen(true); }}
-              aria-label="Open menu"
+              aria-label={t('common:openMenu')}
               aria-expanded={drawerOpen}
             >
               <svg className="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">

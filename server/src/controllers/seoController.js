@@ -6,10 +6,13 @@ import { Internship } from '../models/Internship.js';
 import { Exam } from '../models/Exam.js';
 import { IntlScholarship } from '../models/IntlScholarship.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { PAKISTAN_PROVINCES } from '../../../shared/constants/pakistan.js';
 
 const SITE_URL = process.env.SITE_URL || 'https://edurozgaar.pk';
 const CITIES = ['lahore', 'karachi', 'islamabad', 'rawalpindi', 'faisalabad', 'multan', 'peshawar', 'quetta', 'sialkot', 'gujranwala'];
-const PROVINCES = ['punjab', 'sindh', 'khyber-pakhtunkhwa', 'balochistan', 'islamabad', 'gilgit-baltistan'];
+const PROVINCES = PAKISTAN_PROVINCES
+  .filter((p) => p !== 'Other')
+  .map((p) => p.toLowerCase().replace(/\s+/g, '-'));
 const JOB_CATEGORIES = ['government-jobs', 'private-jobs', 'internships', 'internship-jobs'];
 const SCHOLARSHIP_COUNTRIES = ['turkey', 'germany', 'china', 'uk', 'usa', 'australia', 'canada', 'hungary', 'italy'];
 const JOB_SOURCE_SLUGS = ['fpsc', 'ppsc', 'nts', 'wapda'];
@@ -37,6 +40,12 @@ const STATIC_PAGES = [
   { path: '/terms', changefreq: 'yearly', priority: '0.3' },
   { path: '/cookies', changefreq: 'yearly', priority: '0.3' },
   { path: '/license', changefreq: 'yearly', priority: '0.3' },
+  { path: '/disclaimer', changefreq: 'yearly', priority: '0.3' },
+  { path: '/refund-policy', changefreq: 'yearly', priority: '0.3' },
+  { path: '/careers', changefreq: 'monthly', priority: '0.5' },
+  { path: '/support', changefreq: 'monthly', priority: '0.5' },
+  { path: '/company/systems-limited', changefreq: 'weekly', priority: '0.6' },
+  { path: '/university/comsats', changefreq: 'weekly', priority: '0.6' },
   { path: '/latest-government-jobs', changefreq: 'daily', priority: '0.9' },
 ];
 
@@ -111,8 +120,14 @@ ${urls.map((u) => `  <url><loc>${escapeXml(u.loc)}</loc>${u.lastmod ? `<lastmod>
 });
 
 const SLUG_TO_PROVINCE = {
-  'khyber-pakhtunkhwa': 'Khyber Pakhtunkhwa', kpk: 'Khyber Pakhtunkhwa',
-  punjab: 'Punjab', sindh: 'Sindh', balochistan: 'Balochistan', islamabad: 'Islamabad', 'gilgit-baltistan': 'Gilgit-Baltistan',
+  'khyber-pakhtunkhwa': 'Khyber Pakhtunkhwa',
+  kpk: 'Khyber Pakhtunkhwa',
+  punjab: 'Punjab',
+  sindh: 'Sindh',
+  balochistan: 'Balochistan',
+  islamabad: 'Islamabad',
+  'gilgit-baltistan': 'Gilgit-Baltistan',
+  ajk: 'AJK',
 };
 const SLUG_TO_JOB_TYPE = { 'government-jobs': 'Government', 'private-jobs': 'Private', internships: 'Internship', 'internship-jobs': 'Internship' };
 

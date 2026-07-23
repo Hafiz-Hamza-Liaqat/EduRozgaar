@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
-import { DEFAULT_KEYWORDS } from '../../seo/config';
 import { internshipsApi, savedApi } from '../../services/listingsService';
 import { useListings } from '../../hooks/useListings';
 import { ROUTES } from '../../constants';
@@ -20,6 +20,7 @@ const CITIES = ['Lahore', 'Karachi', 'Islamabad', 'Rawalpindi', 'Faisalabad', 'M
 const FIELDS = ['Software', 'Marketing', 'Finance', 'HR', 'Design', 'Data', 'Engineering', 'Content'];
 
 export default function Internships() {
+  const { t } = useTranslation(['internships', 'common', 'navbar']);
   const { isAuthenticated } = useAuth();
   const [savedIds, setSavedIds] = useState(new Set());
 
@@ -45,33 +46,36 @@ export default function Internships() {
     });
   };
 
+  const seoTitle = t('seoTitle', { ns: 'internships' });
+  const seoDescription = t('seoDescription', { ns: 'internships' });
+
   return (
     <>
       <SeoHead
-        title="Internships & Trainings – EduRozgaar"
-        description="Find internships and training opportunities across Pakistan."
+        title={seoTitle}
+        description={seoDescription}
         canonical={ROUTES.INTERNSHIPS}
-        keywords={`internships Pakistan, training opportunities, ${DEFAULT_KEYWORDS}`}
+        keywords={t('seoKeywords', { ns: 'internships' })}
         ogType="website"
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Internships', url: ROUTES.INTERNSHIPS },
+            { name: t('home', { ns: 'navbar' }), url: ROUTES.HOME },
+            { name: t('internships', { ns: 'navbar' }), url: ROUTES.INTERNSHIPS },
           ]),
           collectionPageSchema({
-            name: 'Internships & Trainings – EduRozgaar',
-            description: 'Find internships and training opportunities across Pakistan.',
+            name: seoTitle,
+            description: seoDescription,
             url: ROUTES.INTERNSHIPS,
           })
         )}
       />
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Internships & Trainings</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Discover internship and training opportunities to kickstart your career.</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('title', { ns: 'internships' })}</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">{t('subtitle', { ns: 'internships' })}</p>
 
         <div className="flex flex-col lg:flex-row gap-4 mb-6">
           <div className="flex-1">
-            <SearchBar placeholder="Search internships..." onSearch={(q) => setFilters({ search: q || undefined })} />
+            <SearchBar placeholder={t('searchPlaceholder', { ns: 'internships' })} onSearch={(q) => setFilters({ search: q || undefined })} />
           </div>
           <div className="flex flex-wrap gap-2 items-center">
             <select
@@ -79,7 +83,7 @@ export default function Internships() {
               value={params.province || ''}
               onChange={(e) => setFilters({ province: e.target.value || undefined })}
             >
-              <option value="">All provinces</option>
+              <option value="">{t('allProvinces', { ns: 'internships' })}</option>
               {PROVINCES.map((p) => (
                 <option key={p} value={p}>{p}</option>
               ))}
@@ -89,7 +93,7 @@ export default function Internships() {
               value={params.location || ''}
               onChange={(e) => setFilters({ location: e.target.value || undefined })}
             >
-              <option value="">All cities</option>
+              <option value="">{t('allCities', { ns: 'internships' })}</option>
               {CITIES.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -99,7 +103,7 @@ export default function Internships() {
               value={params.skillset || ''}
               onChange={(e) => setFilters({ skillset: e.target.value || undefined })}
             >
-              <option value="">Any field</option>
+              <option value="">{t('anyField', { ns: 'internships' })}</option>
               {FIELDS.map((f) => (
                 <option key={f} value={f}>{f}</option>
               ))}
@@ -109,16 +113,16 @@ export default function Internships() {
               value={params.isPaid ?? ''}
               onChange={(e) => setFilters({ isPaid: e.target.value === '' ? undefined : e.target.value })}
             >
-              <option value="">Paid / Unpaid</option>
-              <option value="true">Paid</option>
-              <option value="false">Unpaid</option>
+              <option value="">{t('paidUnpaid', { ns: 'internships' })}</option>
+              <option value="true">{t('paid', { ns: 'internships' })}</option>
+              <option value="false">{t('unpaid', { ns: 'internships' })}</option>
             </select>
             <select
               className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm"
               value={params.duration || ''}
               onChange={(e) => setFilters({ duration: e.target.value || undefined })}
             >
-              <option value="">Any duration</option>
+              <option value="">{t('anyDuration', { ns: 'internships' })}</option>
               {DURATIONS.map((d) => (
                 <option key={d} value={d}>{d}</option>
               ))}
@@ -149,7 +153,7 @@ export default function Internships() {
                         {item.location && <span>{item.location}</span>}
                         {item.province && <span> · {item.province}</span>}
                         {item.duration && <span> · {item.duration}</span>}
-                        {item.deadline && <span> · Deadline {formatDate(item.deadline)}</span>}
+                        {item.deadline && <span> · {t('deadlinePrefix', { ns: 'internships' })} {formatDate(item.deadline)}</span>}
                       </div>
                       {item.skillset?.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
@@ -168,7 +172,7 @@ export default function Internships() {
                       to={`${ROUTES.INTERNSHIPS}/${item.slug || item._id}`}
                       className="inline-flex items-center px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover btn-theme"
                     >
-                      View & Apply
+                      {t('viewAndApply', { ns: 'internships' })}
                     </Link>
                   </div>
                 </article>
@@ -177,7 +181,7 @@ export default function Internships() {
           </ul>
         )}
 
-        {!loading && data.length === 0 && <p className="text-gray-500 dark:text-gray-400 py-8 text-center">No internships found. Try adjusting filters.</p>}
+        {!loading && data.length === 0 && <p className="text-gray-500 dark:text-gray-400 py-8 text-center">{t('noInternships', { ns: 'internships' })}</p>}
 
         {totalPages > 1 && (
           <Pagination currentPage={params.page} totalPages={totalPages} onPageChange={setPage} className="mt-6" />

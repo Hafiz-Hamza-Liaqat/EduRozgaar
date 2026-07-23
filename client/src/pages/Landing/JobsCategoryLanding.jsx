@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, collectionPageSchema, itemListSchema, combineSchemas } from '../../seo/schemas';
 import { v1Api, seoApi, jobsApi, savedApi } from '../../services/listingsService';
@@ -9,6 +10,7 @@ import { ListingCardSkeleton } from '../../components/listings/ListingCardSkelet
 import { useAuth } from '../../context/AuthContext';
 
 export default function JobsCategoryLanding() {
+  const { t } = useTranslation(['jobs', 'navbar']);
   const { slug } = useParams();
   const { isAuthenticated } = useAuth();
   const [meta, setMeta] = useState(null);
@@ -24,12 +26,12 @@ export default function JobsCategoryLanding() {
       seoApi.jobsByCategory(slug).then(({ data }) => ({ meta: data.meta, jobs: data.data || [] })).catch(() => ({ meta: null, jobs: [] })),
     ]).then(([landingMeta, jobsData]) => {
       setMeta(landingMeta || jobsData.meta || {
-        title: `${slug} Jobs`,
-        description: `Browse ${slug} jobs in Pakistan.`,
+        title: t('jobs:categoryJobsTitle', { slug }),
+        description: t('jobs:browseCategoryJobsDesc', { slug }),
       });
       setJobs(jobsData.jobs);
     }).finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, t]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -48,8 +50,8 @@ export default function JobsCategoryLanding() {
   };
 
   const canonical = meta?.canonical || `${ROUTES.JOBS}/category/${slug}`;
-  const pageTitle = meta?.title?.split('|')[0]?.trim() || `${slug} Jobs`;
-  const description = meta?.description || `Browse ${slug} jobs in Pakistan.`;
+  const pageTitle = meta?.title?.split('|')[0]?.trim() || t('jobs:categoryJobsTitle', { slug });
+  const description = meta?.description || t('jobs:browseCategoryJobsDesc', { slug });
   const filteredJobsUrl = `${ROUTES.JOBS}?category=${encodeURIComponent(slug)}`;
 
   return (
@@ -60,8 +62,8 @@ export default function JobsCategoryLanding() {
         canonical={canonical}
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Jobs', url: ROUTES.JOBS },
+            { name: t('navbar:home'), url: ROUTES.HOME },
+            { name: t('jobs:breadcrumbJobs'), url: ROUTES.JOBS },
             { name: pageTitle, url: canonical },
           ]),
           collectionPageSchema({ name: pageTitle, description, url: canonical }),
@@ -73,8 +75,8 @@ export default function JobsCategoryLanding() {
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{pageTitle}</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
           <div className="flex flex-wrap gap-3 mt-3 text-sm">
-            <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline">← All jobs</Link>
-            <Link to={filteredJobsUrl} className="text-primary dark:text-mint hover:underline">View all {slug} jobs →</Link>
+            <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline">{t('jobs:allJobs')}</Link>
+            <Link to={filteredJobsUrl} className="text-primary dark:text-mint hover:underline">{t('jobs:viewAllCategoryJobs', { slug })}</Link>
           </div>
         </div>
         {loading ? (
@@ -89,7 +91,8 @@ export default function JobsCategoryLanding() {
           </div>
         ) : (
           <p className="text-gray-500 dark:text-gray-400">
-            No jobs found. <Link to={filteredJobsUrl} className="text-primary dark:text-mint">Browse {slug} jobs</Link>
+            {t('jobs:noJobsFound')}{' '}
+            <Link to={filteredJobsUrl} className="text-primary dark:text-mint">{t('jobs:browseCategoryJobs', { slug })}</Link>
           </p>
         )}
       </div>

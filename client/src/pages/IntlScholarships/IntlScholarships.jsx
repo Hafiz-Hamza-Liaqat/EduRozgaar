@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
 import { DEFAULT_KEYWORDS } from '../../seo/config';
@@ -17,11 +18,12 @@ const PER_PAGE = 10;
 const COUNTRIES = ['UK', 'USA', 'Australia', 'Germany', 'Canada', 'Singapore'];
 
 export default function IntlScholarships() {
+  const { t } = useTranslation(['scholarships', 'seo', 'common']);
   const { isAuthenticated } = useAuth();
   const [savedIds, setSavedIds] = useState(new Set());
 
   const initialParams = { limit: PER_PAGE, page: 1 };
-  const { data, total, totalPages, loading, error, params, setPage, setFilters } = useListings(intlScholarshipsApi.list, initialParams);
+  const { data, totalPages, loading, error, params, setPage, setFilters } = useListings(intlScholarshipsApi.list, initialParams);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -45,30 +47,30 @@ export default function IntlScholarships() {
   return (
     <>
       <SeoHead
-        title="International Scholarships – EduRozgaar"
-        description="Scholarships and university admissions abroad. Filter by country, deadline, and visa requirements."
+        title={t('seo:intlScholarshipsTitle')}
+        description={t('seo:intlScholarshipsDescription')}
         canonical={ROUTES.INTL_SCHOLARSHIPS}
         keywords={`international scholarships, study abroad, ${DEFAULT_KEYWORDS}`}
         ogType="website"
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'International Scholarships', url: ROUTES.INTL_SCHOLARSHIPS },
+            { name: t('seo:breadcrumbHome'), url: ROUTES.HOME },
+            { name: t('scholarships:intlTitle'), url: ROUTES.INTL_SCHOLARSHIPS },
           ]),
           collectionPageSchema({
-            name: 'International Scholarships – EduRozgaar',
-            description: 'Scholarships and university admissions abroad. Filter by country, deadline, and visa requirements.',
+            name: t('seo:intlScholarshipsTitle'),
+            description: t('seo:intlScholarshipsDescription'),
             url: ROUTES.INTL_SCHOLARSHIPS,
           })
         )}
       />
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">International Scholarships</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Scholarships and university admissions abroad. Save and track your applications.</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('scholarships:intlTitle')}</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">{t('scholarships:intlSubtitle')}</p>
 
         <div className="flex flex-col lg:flex-row gap-4 mb-6">
           <div className="flex-1">
-            <SearchBar placeholder="Search by title, country, university..." onSearch={(q) => setFilters({ search: q || undefined })} />
+            <SearchBar placeholder={t('scholarships:intlSearchPlaceholder')} onSearch={(q) => setFilters({ search: q || undefined })} />
           </div>
           <div className="flex flex-wrap gap-2">
             <select
@@ -76,7 +78,7 @@ export default function IntlScholarships() {
               value={params.country || ''}
               onChange={(e) => setFilters({ country: e.target.value || undefined })}
             >
-              <option value="">All countries</option>
+              <option value="">{t('scholarships:allCountries')}</option>
               {COUNTRIES.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -86,8 +88,8 @@ export default function IntlScholarships() {
               value={params.deadline || ''}
               onChange={(e) => setFilters({ deadline: e.target.value || undefined })}
             >
-              <option value="">Any deadline</option>
-              <option value="upcoming">Upcoming only</option>
+              <option value="">{t('scholarships:anyDeadline')}</option>
+              <option value="upcoming">{t('scholarships:upcomingOnly')}</option>
             </select>
           </div>
         </div>
@@ -112,14 +114,14 @@ export default function IntlScholarships() {
                       </Link>
                       <p className="text-gray-600 dark:text-gray-400 mt-1">{item.country}{item.university ? ` · ${item.university}` : ''}</p>
                       <div className="flex flex-wrap gap-2 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                        {item.deadline && <span>Deadline {formatDate(item.deadline)}</span>}
-                        {item.visaRequirements && <span> · Visa info available</span>}
+                        {item.deadline && <span>{t('scholarships:deadlinePrefix')} {formatDate(item.deadline)}</span>}
+                        {item.visaRequirements && <span> · {t('scholarships:visaInfoAvailable')}</span>}
                       </div>
                     </div>
                     {isAuthenticated && <SaveButton saved={savedIds.has(item._id)} onToggle={() => handleSaveToggle(item._id, !savedIds.has(item._id))} />}
                   </div>
                   <Link to={`${ROUTES.INTL_SCHOLARSHIPS}/${item._id}`} className="inline-block mt-3 text-sm text-primary dark:text-mint hover:underline">
-                    View details →
+                    {t('scholarships:viewDetails')}
                   </Link>
                 </article>
               </li>
@@ -127,7 +129,7 @@ export default function IntlScholarships() {
           </ul>
         )}
 
-        {!loading && data.length === 0 && <p className="text-gray-500 dark:text-gray-400 py-8 text-center">No scholarships found.</p>}
+        {!loading && data.length === 0 && <p className="text-gray-500 dark:text-gray-400 py-8 text-center">{t('scholarships:noIntlScholarships')}</p>}
 
         {totalPages > 1 && (
           <Pagination currentPage={params.page} totalPages={totalPages} onPageChange={setPage} className="mt-6" />

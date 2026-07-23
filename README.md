@@ -1,147 +1,129 @@
-# EduRozgaar – Pakistan Job & Education E-Portal
+# EduRozgaar – Pakistan Career Intelligence Platform
 
-A production-ready platform to **help students, provide job & education alerts, and reduce unemployment** in Pakistan. Monetization is secondary; the focus is on impact, scalability, and future-ready architecture.
+Production-ready platform helping students find **jobs, scholarships, admissions, and career readiness** across Pakistan — with employer hiring tools and an admin CMS.
 
-## Vision
+**Founders:** see [AUTHORS.md](./AUTHORS.md) · **License:** [MIT](./LICENSE) · **Notice:** [NOTICE.md](./NOTICE.md)
 
-- **Primary**: Student support, job & education alerts, reducing unemployment.
-- **Secondary**: Scalable foundation for ads, paid features, or premium content later.
+## Overview
 
-## Tech Stack
+EduRozgaar combines a public opportunity marketplace with Career Intelligence (Talent Profile, readiness scoring, assessments, credentials) and employer productivity (candidate filters, comparison, job match, vacancy seats).
 
-| Layer    | Stack                          |
-| -------- | ------------------------------ |
-| Frontend | React.js, Vite, TailwindCSS, React Router, Axios |
-| Backend  | Node.js, Express.js            |
-| Database | MongoDB with Mongoose          |
-| Auth     | JWT / OAuth / role-based (Phase-2) |
+## Features
 
-## Project Structure (Monorepo)
+- Jobs, scholarships, admissions, internships, exam prep, and career guidance
+- Student Talent Profile, resume builder, readiness scores, assessments & credentials
+- Application tracker and personalized career dashboard
+- Employer portal: jobs, applicants, intelligence filters, comparison, hiring recommendations
+- Admin CMS, moderation, search reindex, analytics, and role-based access (Admin / Moderator / Editor)
+- Deterministic scoring engines (no paid AI required for launch — see [AI Budget Policy](./docs/AI_BUDGET_POLICY.md))
 
-```
-root/
-├── client/          # React frontend
-│   └── src/
-│       ├── assets/
-│       ├── components/   (common, layout, ui)
-│       ├── pages/
-│       ├── routes/
-│       ├── services/
-│       ├── hooks/
-│       ├── context/
-│       ├── utils/
-│       ├── layouts/
-│       └── constants/
-├── server/          # Node backend
-│   └── src/
-│       ├── config/
-│       ├── controllers/
-│       ├── models/
-│       ├── routes/
-│       ├── middleware/
-│       ├── services/
-│       ├── utils/
-│       └── validators/
-├── docs/            # Documentation
-├── DEPLOYMENT.md    # Full setup, DB, env, deploy
-└── README.md
-```
+## Architecture
+
+| Layer | Stack |
+| ----- | ----- |
+| Frontend | React, Vite, Tailwind CSS, React Router |
+| Backend | Node.js, Express |
+| Database | MongoDB (Mongoose) |
+| Auth | JWT access + refresh (students/staff & employers) |
+| Optional | Redis (session revoke / cache), SMTP, object storage |
+
+Monorepo layout: `client/` · `server/` · `shared/` · `docs/` · `scripts/`
+
+## Screenshots
+
+Optional screenshots live under `docs/screenshots/` (add as needed for the GitHub landing page).
 
 ## Installation
 
-1. **Clone and install dependencies**
+```bash
+git clone https://github.com/Hafiz-Hamza-Liaqat/EduRozgaar.git
+cd EduRozgaar
+npm install
+cd client && npm install && cd ..
+cd server && npm install && cd ..
+```
 
-   ```bash
-   cd EDU-E-Portal
-   npm install
-   cd client && npm install && cd ..
-   cd server && npm install && cd ..
-   ```
-
-2. **Environment & database**
-
-   For **full step-by-step setup** (MongoDB, env vars, seeding, production), see **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
-
-   **Quick env setup:** Use the root **`.env.template`** — copy its SERVER section into `server/.env` and CLIENT section into `client/.env`; then set `MONGO_URI` and `JWT_SECRET` in `server/.env`.
-
-3. **MongoDB**
-
-   Start MongoDB locally or use MongoDB Atlas; set `MONGO_URI` in `server/.env`. See [DEPLOYMENT.md](./DEPLOYMENT.md) for install and connection strings.
-
-## Running the Project
-
-| Command           | Description                    |
-| ----------------- | ------------------------------ |
-| `npm run dev`     | Start React dev server (Vite)  |
-| `npm run client`  | Same as dev (from root)        |
-| `npm run server`  | Start Express API server (from root) |
-| **`npm run dev:all`** / **`npm run dev-all`** | **Run backend + frontend in one terminal** |
-| `npm run build`   | Build frontend for production  |
-| `npm run start:server` | Run backend in production |
-
-### Quick start (one-command dev)
-
-**Step 1 — Start MongoDB** (required once; Cursor cannot start system services for you)
-
-- **Windows:** `net start MongoDB`
-- **Mac/Linux:** `mongod` or `sudo systemctl start mongod`
-
-**Step 2 — Run the app** (from project root)
+Copy environment templates (never commit real secrets):
 
 ```bash
+cp .env.example server/.env   # or copy sections from .env.template
+# Set MONGO_URI and a strong JWT_SECRET in server/.env
+```
+
+See [docs/ENVIRONMENT_VARIABLES.md](./docs/ENVIRONMENT_VARIABLES.md) and [docs/SETUP_AND_RUN.md](./docs/SETUP_AND_RUN.md).
+
+## Development
+
+1. Start MongoDB locally (or set an Atlas `MONGO_URI`).
+2. From repo root:
+
+```bash
+npm run server    # API → http://localhost:5000
+npm run client    # Vite → http://localhost:5173
+# or both:
 npm run dev:all
 ```
 
-This starts the API and the React app in one terminal. If MongoDB is not running, the backend will exit with a clear message telling you to start it.
+Health check: `http://localhost:5000/api/health`
 
-- **Backend:** http://localhost:5000  
-- **Frontend:** http://localhost:5173  
-- **API health check:** http://localhost:5000/api/health  
-
-**Or use two terminals:** Terminal 1: `npm run server` · Terminal 2: `npm run dev`
-
-Frontend is configured to call `http://localhost:5000/api` via Axios.
-
-**Seed data:** From `server/` run (in order if starting fresh):
-- `npm run seed:users` – 5 students + 1 admin (e.g. `admin@edurozgaar.pk` / `Admin1234`).
-- `npm run seed:phase4` – 50 jobs, 30 scholarships, 20 admissions, 20 blogs, 10 foreign studies, 10 notifications. Use `SEED_FORCE=1` to clear and reseed.
-- `npm run seed:phase5` – Newsletter subscribers, user bookmarks, recently viewed, and view counts for trending (run after seed:users + seed:phase4).
-- `npm run seed:phase7` – Analytics events, preferred language and channel preferences for sample users (run after seed:phase5). From `server/`: `node src/scripts/seedPhase7.js`.
-- `npm run seed:phase8` – Sample scraped jobs/admissions, auto-generated blogs, newsletter logs (run after seed:phase4). From `server/`: `node src/scripts/seedPhase8.js`.
-- **Mobile app**: `cd mobile && npm install && npm start`. Set `EXPO_PUBLIC_API_URL` to your API base (e.g. `http://localhost:5000/api/v1`).
-- **Exam prep seed**: `cd server && npm run seed:exam-prep` — creates PPSC, FPSC, NTS, Punjab Police, WAPDA exams with sample syllabus, past papers, and practice quizzes.
-- **Phase 9 seed**: `cd server && npm run seed:phase9` — 20 internships, 5 webinars, 15 international scholarships, 5 universities, 10 badge definitions, and sample leaderboard points.
-
-## Docker (Phase 6)
-
-**Production** (internal DB/API only, port 80 exposed):
+**Recommended seed (fresh DB):**
 
 ```bash
-cp .env.template .env   # set JWT_SECRET, SITE_URL, VITE_APP_URL
-bash deploy/deploy.sh
+cd server
+npm run seed              # core + CMS
+npm run seed:launch       # launch content
+npm run seed:assessments  # assessment catalog
 ```
 
-See **[DEPLOYMENT.md §10](./DEPLOYMENT.md)** and **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** for VPS setup, HTTPS (Caddy), seeding, and post-launch SEO.
+## Deployment
 
-**Local Docker debug** (exposes MongoDB 27017, backend 5000):
+| Target | Guide |
+| ------ | ----- |
+| Staging | [docs/STAGING_DEPLOYMENT.md](./docs/STAGING_DEPLOYMENT.md) |
+| Production | [docs/PRODUCTION_DEPLOYMENT.md](./docs/PRODUCTION_DEPLOYMENT.md) |
+| Docker / VPS | [DEPLOYMENT.md](./DEPLOYMENT.md), [docs/DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |
+| Post-launch | [docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md) |
+
+**Typical production stack:** Vercel (frontend) · Render / Node host (API) · MongoDB Atlas · Redis (recommended) · SMTP · TLS
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+npm run build           # frontend production build
+npm run start:server    # backend production start
 ```
 
-**Smoke test after deploy:** `SITE_URL=https://yourdomain.com npm run smoke-test`
+## Environment variables
 
-## Future Roadmap
+Use **`.env.example`** / **`.env.template`** as the source of truth for keys. Required for a minimal local run:
 
-- **Phase 5 (done)**: Viral growth — trending listings, dashboard, notifications, newsletter, SEO, toast alerts.
-- **Phase 6 (done)**: Monetization (ads, featured/sponsored), FCM tokens, AI job generator, resume analyzer, Redis cache, Docker, security hardening.
-- **Phase 7 (done)**: Investor-grade — AI recommendations API (`/api/v1/recommendations/me`), multi-channel alerts (Telegram/WhatsApp placeholders), Mobile API v1, English/Urdu i18n, SEO landing pages (`/jobs/province/:slug`, `/jobs/category/:slug`), analytics dashboard, schema markup.
-- **Phase 8 (done)**: 10X growth — AI job scraper (cron every 6h), auto SEO blog generation, daily newsletter with logging, Admin Growth Dashboard, scraped “New” badges on Jobs/Admissions, React Native (Expo) mobile app in `mobile/`.
-- **Ultimate Power (done)**: AI resume scanner (scan history, suggestions, Redis cache), Government exam preparation (PPSC, FPSC, NTS, Punjab Police, WAPDA — syllabus, past papers, MCQs, timed quizzes, badges, leaderboard), dashboard and nav integration.
-- **Phase 9 (done)**: Internships & Trainings portal (filters, apply, save), AI cover letter generator (from job detail + resume_scans), Career counseling chatbot (dashboard, history), Live webinars & workshops (upcoming, register, recorded), International scholarships (filters, save, universities), Gamified badges & leaderboard (points, rank, badges on dashboard), Dashboard integration for all; monetization (paid postings via paidUntil, sponsored exam content via isSponsored on Exam).
+| Variable | Where | Purpose |
+| -------- | ----- | ------- |
+| `MONGO_URI` | `server/.env` | MongoDB connection |
+| `JWT_SECRET` | `server/.env` | Sign JWTs (long random secret) |
+| `SITE_URL` / `FRONTEND_URL` | server | CORS / links |
+| `VITE_API_URL` | client | API base URL |
+
+Full list: [docs/ENVIRONMENT_VARIABLES.md](./docs/ENVIRONMENT_VARIABLES.md).
+
+## Documentation
+
+| Doc | Purpose |
+| --- | ------- |
+| [docs/SETUP_AND_RUN.md](./docs/SETUP_AND_RUN.md) | Local setup |
+| [docs/SECURITY_CHECKLIST.md](./docs/SECURITY_CHECKLIST.md) | Security |
+| [docs/BACKUP_GUIDE.md](./docs/BACKUP_GUIDE.md) | Backups |
+| [docs/AI_BUDGET_POLICY.md](./docs/AI_BUDGET_POLICY.md) | AI cost policy |
+| [docs/RC2_IMPLEMENTATION_REPORT.md](./docs/RC2_IMPLEMENTATION_REPORT.md) | Current RC status |
+| [docs/archive/](./docs/archive/) | Historical sprint / QA docs |
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](./LICENSE).
 
-Copyright (c) 2026 Syed Daniyal Abbas. See [LICENSE](LICENSE) for the full text.
+## Contributors
+
+| Role | Name | Contact |
+| ---- | ---- | ------- |
+| Founder, Lead Developer, QA | Hafiz Hamza Liaqat | hamza4h761@gmail.com |
+| Co-Founder, Developer, UI/UX | Daniyal Abbas Shah | abbaskazmi231@gmail.com |
+
+See [AUTHORS.md](./AUTHORS.md), [NOTICE.md](./NOTICE.md), and [CONTRIBUTING.md](./CONTRIBUTING.md).

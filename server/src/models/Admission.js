@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import { admissionSlug } from '../utils/slugify.js';
+import { translationFieldDefinition, applySlugLocaleIndex, ensureTranslationGroupHook } from './mixins/translationFields.js';
 
 const admissionSchema = new mongoose.Schema(
   {
     program: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
+    slug: { type: String, required: true },
     institution: { type: String, required: true },
     university: { type: String }, // alias for institution / display
     department: { type: String },
@@ -20,10 +21,18 @@ const admissionSchema = new mongoose.Schema(
     link: { type: String },
     status: { type: String, enum: ['draft', 'active', 'closed'], default: 'active' },
     logoUrl: { type: String },
+    fee: { type: String },
+    duration: { type: String },
+    degree: { type: String },
+    brochureUrl: { type: String },
+    seoTitle: { type: String },
+    metaDescription: { type: String },
+    isFeatured: { type: Boolean, default: false },
     views: { type: Number, default: 0 },
     source: { type: String, enum: ['manual', 'scraper'], default: 'manual' },
     scrapedAt: { type: Date },
     sourceUrl: { type: String },
+    ...translationFieldDefinition,
   },
   { timestamps: true }
 );
@@ -31,9 +40,11 @@ const admissionSchema = new mongoose.Schema(
 admissionSchema.index({ deadline: 1, status: 1 });
 admissionSchema.index({ institution: 1, status: 1 });
 admissionSchema.index({ program: 'text', institution: 'text', department: 'text' });
+applySlugLocaleIndex(admissionSchema);
+ensureTranslationGroupHook(admissionSchema);
 
 admissionSchema.pre('save', function (next) {
-  if (!this.slug || this.isModified('program') || this.isModified('institution')) {
+  if (!this.slug && this.program) {
     this.slug = admissionSlug(this.program, this.institution);
   }
   next();

@@ -1,0 +1,49 @@
+# Staging overlay (L.2)
+# Creates project "edurozgaar-staging" so volumes do not collide with production.
+#
+#   cp docker/.env.staging.example .env.staging
+#   docker compose -f docker-compose.yml -f docker-compose.staging.yml --env-file .env.staging up -d --build
+#   npm run staging:smoke
+
+name: edurozgaar-staging
+
+services:
+  mongodb:
+    ports:
+      - "${STAGING_MONGO_PORT:-27018}:27017"
+
+  redis:
+    ports:
+      - "${STAGING_REDIS_PORT:-6380}:6379"
+
+  backend:
+    env_file:
+      - path: .env.staging
+        required: true
+    environment:
+      NODE_ENV: production
+      APP_ENV: staging
+      REQUIRE_REDIS: ${REQUIRE_REDIS:-1}
+      MEDIA_STORAGE_PROVIDER: ${MEDIA_STORAGE_PROVIDER:-local}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      CMS_SEED_ON_START: ${CMS_SEED_ON_START:-0}
+      DISABLE_QUEUE_CRON: "1"
+      DISABLE_REMINDER_CRON: "1"
+      # No paid AI keys — launch OpEx ≈ $0 (see docs/AI_BUDGET_POLICY.md)
+    ports:
+      - "${STAGING_API_PORT:-5001}:5000"
+
+  worker:
+    env_file:
+      - path: .env.staging
+        required: true
+    environment:
+      NODE_ENV: production
+      APP_ENV: staging
+      WORKER_ONLY: "1"
+      REQUIRE_REDIS: ${REQUIRE_REDIS:-1}
+      DISABLE_REMINDER_CRON: "0"
+
+  frontend:
+    ports:
+      - "${STAGING_FRONTEND_PORT:-8080}:80"

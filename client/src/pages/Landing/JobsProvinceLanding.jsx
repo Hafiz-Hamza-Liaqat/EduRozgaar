@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, collectionPageSchema, itemListSchema, combineSchemas } from '../../seo/schemas';
 import { v1Api, seoApi, jobsApi, savedApi } from '../../services/listingsService';
@@ -9,6 +10,7 @@ import { ListingCardSkeleton } from '../../components/listings/ListingCardSkelet
 import { useAuth } from '../../context/AuthContext';
 
 export default function JobsProvinceLanding() {
+  const { t } = useTranslation(['jobs', 'navbar']);
   const { slug } = useParams();
   const { isAuthenticated } = useAuth();
   const [meta, setMeta] = useState(null);
@@ -24,12 +26,12 @@ export default function JobsProvinceLanding() {
       seoApi.jobsIn(slug).then(({ data }) => ({ meta: data.meta, jobs: data.data || [] })).catch(() => ({ meta: null, jobs: [] })),
     ]).then(([landingMeta, jobsData]) => {
       setMeta(landingMeta || jobsData.meta || {
-        title: `Jobs in ${slug}`,
-        description: `Find jobs in ${slug}, Pakistan.`,
+        title: t('jobs:jobsInProvince', { province: slug }),
+        description: t('jobs:findJobsInProvince', { province: slug }),
       });
       setJobs(jobsData.jobs);
     }).finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, t]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -48,8 +50,8 @@ export default function JobsProvinceLanding() {
   };
 
   const canonical = meta?.canonical || `${ROUTES.JOBS}/province/${slug}`;
-  const pageTitle = meta?.title?.split('|')[0]?.trim() || `Jobs in ${slug}`;
-  const description = meta?.description || `Find jobs in ${slug}, Pakistan.`;
+  const pageTitle = meta?.title?.split('|')[0]?.trim() || t('jobs:jobsInProvince', { province: slug });
+  const description = meta?.description || t('jobs:findJobsInProvince', { province: slug });
   const filteredJobsUrl = `${ROUTES.JOBS}?province=${encodeURIComponent(slug)}`;
 
   return (
@@ -60,8 +62,8 @@ export default function JobsProvinceLanding() {
         canonical={canonical}
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Jobs', url: ROUTES.JOBS },
+            { name: t('navbar:home'), url: ROUTES.HOME },
+            { name: t('jobs:breadcrumbJobs'), url: ROUTES.JOBS },
             { name: pageTitle, url: canonical },
           ]),
           collectionPageSchema({ name: pageTitle, description, url: canonical }),
@@ -73,8 +75,8 @@ export default function JobsProvinceLanding() {
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{pageTitle}</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
           <div className="flex flex-wrap gap-3 mt-3 text-sm">
-            <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline">← All jobs</Link>
-            <Link to={filteredJobsUrl} className="text-primary dark:text-mint hover:underline">View all jobs in {slug} →</Link>
+            <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline">{t('jobs:allJobs')}</Link>
+            <Link to={filteredJobsUrl} className="text-primary dark:text-mint hover:underline">{t('jobs:viewAllProvinceJobs', { province: slug })}</Link>
           </div>
         </div>
         {loading ? (
@@ -89,7 +91,8 @@ export default function JobsProvinceLanding() {
           </div>
         ) : (
           <p className="text-gray-500 dark:text-gray-400">
-            No jobs found. <Link to={filteredJobsUrl} className="text-primary dark:text-mint">Browse jobs in {slug}</Link>
+            {t('jobs:noJobsFound')}{' '}
+            <Link to={filteredJobsUrl} className="text-primary dark:text-mint">{t('jobs:browseProvinceJobs', { province: slug })}</Link>
           </p>
         )}
       </div>

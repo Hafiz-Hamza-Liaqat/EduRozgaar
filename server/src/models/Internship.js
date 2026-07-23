@@ -18,6 +18,12 @@ const internshipSchema = new mongoose.Schema(
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     isPaid: { type: Boolean, default: false },
     paidUntil: { type: Date },
+    city: { type: String },
+    isFeatured: { type: Boolean, default: false },
+    eligibility: [{ type: String }],
+    seoTitle: { type: String },
+    metaDescription: { type: String },
+    internshipType: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },
@@ -29,7 +35,7 @@ internshipSchema.index({ province: 1, status: 1 });
 internshipSchema.index({ organization: 1 });
 
 internshipSchema.pre('save', function (next) {
-  if (!this.slug || this.isModified('title')) {
+  if (!this.slug && this.title) {
     const base = slugify(this.title);
     this.slug = base ? `${base}-${(this._id || Date.now()).toString().slice(-6)}` : (this._id || Date.now()).toString();
   }

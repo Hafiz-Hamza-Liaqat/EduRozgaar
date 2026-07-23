@@ -1,11 +1,27 @@
 import { Resume } from '../models/Resume.js';
 import { Job } from '../models/Job.js';
-import asyncHandler from '../utils/asyncHandler.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { TalentProfileService } from '../services/career/TalentProfileService.js';
+import { evaluateResumeQuality } from '../../../shared/scoring/resumeQualityRules.js';
+
+function resumeQualityScore(resume) {
+  const result = evaluateResumeQuality({
+    profile: {},
+    resumeVersions: [{
+      isPrimary: true,
+      title: 'Resume',
+      status: 'published',
+      snapshot: resume,
+    }],
+  });
+  return result.score;
+}
 
 export const createResume = asyncHandler(async (req, res) => {
   const userId = req.user.userId;
   const body = sanitizeResumeBody(req.body);
   const resume = await Resume.create({ userId, ...body });
+  TalentProfileService.syncFromLegacyResume(userId, resume.toObject()).catch(() => {});
   res.status(201).json(resume);
 });
 
@@ -19,7 +35,7 @@ export const getResumeById = asyncHandler(async (req, res) => {
   const userId = req.user.userId;
   const resume = await Resume.findOne({ _id: req.params.id, userId }).lean();
   if (!resume) return res.status(404).json({ error: 'Resume not found' });
-  const score = computeResumeScore(resume);
+  const score = resumeQualityScore(resume);
   res.json({ ...resume, score });
 });
 
@@ -30,7 +46,8 @@ export const updateResume = asyncHandler(async (req, res) => {
   const body = sanitizeResumeBody(req.body);
   Object.assign(resume, body);
   await resume.save();
-  const score = computeResumeScore(resume.toObject());
+  TalentProfileService.syncFromLegacyResume(userId, resume.toObject()).catch(() => {});
+  const score = resumeQualityScore(resume.toObject());
   res.json({ ...resume.toObject(), score });
 });
 
@@ -112,6 +129,7 @@ function sanitizeResumeBody(body) {
   const allowed = [
     'title', 'template', 'personalInfo', 'careerObjective', 'education', 'skills',
     'experience', 'projects', 'certifications', 'languages',
+    'references', 'awards', 'volunteerExperience', 'publications', 'interests', 'professionalMemberships',
   ];
   const out = {};
   for (const key of allowed) {
@@ -124,9 +142,13 @@ function sanitizeResumeBody(body) {
     out.education = out.education.map((e) => (e && typeof e === 'object' ? e : {}));
   }
   if (out.skills && typeof out.skills === 'object') {
+    const norm = (arr) => {
+      if (!Array.isArray(arr)) return [];
+      return [...new Set(arr.flatMap((item) => String(item).split(/[\n,]/).map((s) => s.trim()).filter(Boolean)))];
+    };
     out.skills = {
-      technical: Array.isArray(out.skills.technical) ? out.skills.technical : [],
-      soft: Array.isArray(out.skills.soft) ? out.skills.soft : [],
+      technical: norm(out.skills.technical),
+      soft: norm(out.skills.soft),
     };
   }
   if (Array.isArray(out.experience)) {
@@ -141,42 +163,35 @@ function sanitizeResumeBody(body) {
   if (Array.isArray(out.languages)) {
     out.languages = out.languages.filter((l) => typeof l === 'string');
   }
+  if (Array.isArray(out.references)) {
+    out.references = out.references.map((e) => (e && typeof e === 'object' ? e : {}));
+  }
+  if (Array.isArray(out.awards)) {
+    out.awards = out.awards.map((e) => (e && typeof e === 'object' ? e : {}));
+  }
+  if (Array.isArray(out.volunteerExperience)) {
+    out.volunteerExperience = out.volunteerExperience.map((e) => (e && typeof e === 'object' ? e : {}));
+  }
+  if (Array.isArray(out.publications)) {
+    out.publications = out.publications.map((e) => (e && typeof e === 'object' ? e : {}));
+  }
+  if (Array.isArray(out.interests)) {
+    out.interests = out.interests.filter((i) => typeof i === 'string');
+  }
+  if (Array.isArray(out.professionalMemberships)) {
+    out.professionalMemberships = out.professionalMemberships.map((e) => (e && typeof e === 'object' ? e : {}));
+  }
   return out;
 }
 
 function sanitizePersonalInfo(p) {
-  const fields = ['fullName', 'email', 'phone', 'city', 'province', 'linkedInUrl', 'githubUrl', 'portfolioUrl', 'profilePhotoUrl'];
+  const fields = ['fullName', 'professionalTitle', 'email', 'phone', 'city', 'province', 'linkedInUrl', 'githubUrl', 'portfolioUrl', 'profilePhotoUrl'];
   const out = {};
   for (const f of fields) {
     if (p[f] != null && typeof p[f] === 'string') out[f] = p[f].trim();
     else out[f] = '';
   }
   return out;
-}
-
-function computeResumeScore(resume) {
-  let score = 0;
-  const max = 100;
-  const personal = resume.personalInfo || {};
-  const hasName = !!(personal.fullName && personal.fullName.trim());
-  const hasEmail = !!(personal.email && personal.email.trim());
-  const hasPhone = !!(personal.phone && personal.phone.trim());
-  const hasLinkedIn = !!(personal.linkedInUrl && personal.linkedInUrl.trim());
-  if (hasName) score += 15;
-  if (hasEmail) score += 10;
-  if (hasPhone) score += 5;
-  if (hasLinkedIn) score += 10;
-  if (resume.careerObjective && resume.careerObjective.trim()) score += 10;
-  const eduCount = (resume.education || []).length;
-  if (eduCount > 0) score += 10;
-  const techCount = (resume.skills?.technical || []).length;
-  const softCount = (resume.skills?.soft || []).length;
-  score += Math.min(15, techCount * 2 + softCount);
-  const expCount = (resume.experience || []).length;
-  score += Math.min(15, expCount * 5);
-  const projCount = (resume.projects || []).length;
-  score += Math.min(10, projCount * 3);
-  return Math.min(max, score);
 }
 
 function improveCareerObjective(text) {

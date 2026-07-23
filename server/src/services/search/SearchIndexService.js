@@ -1,0 +1,273 @@
+/**
+ * Canonical search index service (C.7.0.4).
+ */
+import { SearchDocument } from '../../models/SearchDocument.js';
+import { SearchQueryLog } from '../../models/SearchQueryLog.js';
+import { rankSearchResults } from '../../../../shared/search/scoring.js';
+import { isPublicSearchable } from '../../../../shared/search/searchDocument.js';
+import { PUBLIC_SEARCH_ENTITY_TYPES, SUGGESTION_ENTITY_TYPES } from '../../../../shared/search/entityTypes.js';
+import { SEARCH_SUGGESTION_LIMIT } from '../../../../shared/search/rankingWeights.js';
+import {
+  buildSearchCacheKey,
+  searchCacheGet,
+  searchCacheInvalidatePrefix,
+  searchCacheSet,
+} from './searchCache.js';
+
+function buildMongoFilter(params) {
+  const filter = {};
+  if (!params.includeDraft) {
+    filter.searchable = true;
+    filter.status = { $in: ['active', 'published'] };
+  }
+  if (params.locale) filter.locale = params.locale;
+  if (params.types?.length) filter.entityType = { $in: params.types };
+  if (params.category) filter.category = new RegExp(params.category, 'i');
+  if (params.province) filter.province = new RegExp(params.province, 'i');
+  if (params.country) filter.country = new RegExp(params.country, 'i');
+  if (params.featured) filter.featured = true;
+  return filter;
+}
+
+function buildTextFilter(q) {
+  if (!q) return {};
+  const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+  return {
+    $or: [
+      { title: re },
+      { slug: re },
+      { summary: re },
+      { searchText: re },
+      { tags: re },
+      { keywords: re },
+      { category: re },
+      { province: re },
+      { country: re },
+    ],
+  };
+}
+
+function toResultDto(doc) {
+  return {
+    id: doc.entityId,
+    entityType: doc.entityType,
+    title: doc.title,
+    slug: doc.slug,
+    url: doc.url,
+    summary: doc.summary,
+    category: doc.category,
+    province: doc.province,
+    country: doc.country,
+    tags: doc.tags,
+    featured: doc.featured,
+    publishedAt: doc.publishedAt,
+    updatedAt: doc.updatedAt,
+    status: doc.status,
+    metadata: doc.metadata,
+    score: doc._score,
+  };
+}
+
+function buildFacets(docs) {
+  const facets = {
+    entityType: {},
+    category: {},
+    province: {},
+    country: {},
+  };
+  for (const doc of docs) {
+    if (doc.entityType) facets.entityType[doc.entityType] = (facets.entityType[doc.entityType] || 0) + 1;
+    if (doc.category) facets.category[doc.category] = (facets.category[doc.category] || 0) + 1;
+    if (doc.province) facets.province[doc.province] = (facets.province[doc.province] || 0) + 1;
+    if (doc.country) facets.country[doc.country] = (facets.country[doc.country] || 0) + 1;
+  }
+  return facets;
+}
+
+/**
+ * @param {ReturnType<import('../../../../shared/search/validation.js').parseSearchParams>} params
+ * @param {object} [options]
+ */
+export async function searchIndex(params, options = {}) {
+  const started = Date.now();
+  const cacheKey = buildSearchCacheKey({ ...params, mode: options.admin ? 'admin' : 'public' });
+  const cached = await searchCacheGet(cacheKey);
+  if (cached) return { ...cached, elapsedTime: Date.now() - started, cached: true };
+
+  const filter = {
+    ...buildMongoFilter(params),
+    ...buildTextFilter(params.q),
+  };
+
+  const types = params.types?.length
+    ? params.types
+    : (options.admin ? null : PUBLIC_SEARCH_ENTITY_TYPES);
+  if (types) filter.entityType = { $in: types };
+
+  const candidates = await SearchDocument.find(filter).limit(500).lean();
+  const ranked = params.q
+    ? rankSearchResults(candidates, params.q, params.sort)
+    : rankSearchResults(candidates, '', params.sort === 'relevance' ? 'newest' : params.sort);
+  const total = ranked.length;
+  const pageResults = ranked.slice(params.skip, params.skip + params.limit).map(toResultDto);
+  const facets = buildFacets(ranked);
+
+  const payload = {
+    results: pageResults,
+    facets,
+    pagination: {
+      page: params.page,
+      limit: params.limit,
+      total,
+      totalPages: Math.max(1, Math.ceil(total / params.limit)),
+    },
+    total,
+    elapsedTime: Date.now() - started,
+    cached: false,
+  };
+
+  await searchCacheSet(cacheKey, payload);
+  return payload;
+}
+
+/**
+ * @param {string} q
+ * @param {object} [options]
+ */
+export async function searchSuggestions(q, options = {}) {
+  const params = {
+    q,
+    types: SUGGESTION_ENTITY_TYPES,
+    locale: options.locale || 'en',
+    limit: SEARCH_SUGGESTION_LIMIT * SUGGESTION_ENTITY_TYPES.length,
+    page: 1,
+    skip: 0,
+    sort: 'relevance',
+    includeDraft: false,
+    featured: false,
+    category: '',
+    province: '',
+    country: '',
+  };
+
+  const filter = {
+    ...buildMongoFilter(params),
+    ...buildTextFilter(q),
+    entityType: { $in: SUGGESTION_ENTITY_TYPES },
+  };
+
+  const candidates = await SearchDocument.find(filter).limit(100).lean();
+  const ranked = rankSearchResults(candidates, q, 'relevance');
+
+  /** @type {Record<string, object[]>} */
+  const groups = {};
+  for (const type of SUGGESTION_ENTITY_TYPES) groups[type] = [];
+
+  for (const doc of ranked) {
+    const list = groups[doc.entityType];
+    if (list && list.length < SEARCH_SUGGESTION_LIMIT) {
+      list.push(toResultDto({ ...doc, _score: doc._score }));
+    }
+  }
+
+  return { query: q, groups, elapsedTime: 0 };
+}
+
+/**
+ * @param {object} normalizedDoc
+ */
+export async function upsertSearchDocument(normalizedDoc) {
+  if (!normalizedDoc?.entityType || !normalizedDoc?.entityId) return null;
+
+  const doc = await SearchDocument.findOneAndUpdate(
+    {
+      entityType: normalizedDoc.entityType,
+      entityId: normalizedDoc.entityId,
+      locale: normalizedDoc.locale || 'en',
+    },
+    {
+      $set: {
+        title: normalizedDoc.title,
+        slug: normalizedDoc.slug,
+        url: normalizedDoc.url,
+        summary: normalizedDoc.summary,
+        keywords: normalizedDoc.keywords,
+        category: normalizedDoc.category,
+        province: normalizedDoc.province,
+        country: normalizedDoc.country,
+        tags: normalizedDoc.tags,
+        publishedAt: normalizedDoc.publishedAt ? new Date(normalizedDoc.publishedAt) : undefined,
+        updatedAt: normalizedDoc.updatedAt ? new Date(normalizedDoc.updatedAt) : new Date(),
+        featured: normalizedDoc.featured,
+        status: normalizedDoc.status,
+        searchable: normalizedDoc.searchable,
+        metadata: normalizedDoc.metadata,
+        searchText: normalizedDoc.searchText,
+        indexedAt: new Date(),
+      },
+    },
+    { upsert: true, new: true },
+  );
+
+  await searchCacheInvalidatePrefix('');
+  return doc;
+}
+
+export async function deleteSearchDocument(entityType, entityId, locale = 'en') {
+  await SearchDocument.deleteOne({ entityType, entityId, locale });
+  await searchCacheInvalidatePrefix('');
+}
+
+export async function logSearchQuery({
+  query,
+  locale = 'en',
+  entityTypes = [],
+  resultCount = 0,
+  responseTimeMs = 0,
+  source = 'public',
+  userId = null,
+  ipHash = '',
+}) {
+  try {
+    await SearchQueryLog.create({
+      query,
+      locale,
+      entityTypes,
+      resultCount,
+      responseTimeMs,
+      source,
+      userId,
+      ipHash,
+    });
+  } catch {
+    // analytics must not break search
+  }
+}
+
+export async function logSearchClick({
+  query,
+  clickedResult,
+  source = 'public',
+  userId = null,
+}) {
+  try {
+    await SearchQueryLog.create({
+      query,
+      clickedResult,
+      source,
+      userId,
+      resultCount: 0,
+    });
+  } catch { /* ignore */ }
+}
+
+export async function getIndexStats() {
+  const total = await SearchDocument.countDocuments();
+  const byType = await SearchDocument.aggregate([
+    { $group: { _id: '$entityType', count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+  ]);
+  return { total, byType };
+}
+
+export { isPublicSearchable };

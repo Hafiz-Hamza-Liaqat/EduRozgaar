@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, collectionPageSchema, itemListSchema, combineSchemas } from '../../seo/schemas';
 import { ROUTES } from '../../constants';
@@ -10,6 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 import { jobsApi, savedApi } from '../../services/listingsService';
 
 export default function SEOJobsPage() {
+  const { t } = useTranslation(['jobs', 'navbar']);
   const { slug: paramSlug } = useParams();
   const location = useLocation();
   const pathSlug = (location.pathname || '').replace(/^\//, '').split('?')[0];
@@ -38,9 +40,9 @@ export default function SEOJobsPage() {
         setMeta(data.meta);
         setJobs(data.data || []);
       })
-      .catch(() => setMeta({ title: 'Jobs – EduRozgaar', description: 'Find jobs in Pakistan.' }))
+      .catch(() => setMeta({ title: t('jobs:seoFallbackTitle'), description: t('jobs:findJobsPakistan') }))
       .finally(() => setLoading(false));
-  }, [slug, isCategory, isLatestGov, sourceSlug]);
+  }, [slug, isCategory, isLatestGov, sourceSlug, t]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -66,8 +68,8 @@ export default function SEOJobsPage() {
         ? `/${slug}`
         : `/jobs-in-${slug}`);
 
-  const pageTitle = meta?.title?.split('|')[0]?.trim() || (isCategory ? slug.replace(/-/g, ' ') : `Jobs in ${slug}`);
-  const description = meta?.description || 'Find jobs in Pakistan.';
+  const pageTitle = meta?.title?.split('|')[0]?.trim() || (isCategory ? slug.replace(/-/g, ' ') : t('jobs:jobsInProvince', { province: slug }));
+  const description = meta?.description || t('jobs:findJobsPakistan');
 
   return (
     <>
@@ -77,8 +79,8 @@ export default function SEOJobsPage() {
         canonical={canonical}
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Jobs', url: ROUTES.JOBS },
+            { name: t('navbar:home'), url: ROUTES.HOME },
+            { name: t('jobs:breadcrumbJobs'), url: ROUTES.JOBS },
             { name: pageTitle, url: canonical },
           ]),
           collectionPageSchema({ name: pageTitle, description, url: canonical }),
@@ -91,7 +93,7 @@ export default function SEOJobsPage() {
             {pageTitle}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">{description}</p>
-          <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline text-sm mt-2 inline-block">← All jobs</Link>
+          <Link to={ROUTES.JOBS} className="text-primary dark:text-mint hover:underline text-sm mt-2 inline-block">{t('jobs:allJobs')}</Link>
         </div>
         {loading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -104,7 +106,10 @@ export default function SEOJobsPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">No jobs found. <Link to={ROUTES.JOBS} className="text-primary dark:text-mint">Browse all jobs</Link></p>
+          <p className="text-gray-500 dark:text-gray-400">
+            {t('jobs:noJobsFound')}{' '}
+            <Link to={ROUTES.JOBS} className="text-primary dark:text-mint">{t('jobs:browseAllJobs')}</Link>
+          </p>
         )}
       </div>
     </>

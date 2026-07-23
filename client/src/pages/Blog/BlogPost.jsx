@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { blogPostingSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { buildCanonicalUrl } from '../../seo/config';
 import { blogsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 import { SAMPLE_BLOGS } from '../../constants/seedData';
+import { AdHost } from '../../components/ads';
+import { useContentView } from '../../hooks/usePageView';
 
 function readingTimeMinutes(content) {
   if (!content || typeof content !== 'string') return 5;
@@ -20,10 +23,10 @@ function extractHeadings(content) {
     .map((line) => ({ level: line.match(/^#+/)?.[0]?.length || 2, text: line.replace(/^#+\s*/, '').trim() }));
 }
 
-function ShareButtons({ title, url }) {
+function ShareButtons({ title, url, t }) {
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title || '');
-  const text = encodeURIComponent(`${title} – EduRozgaar`);
+  const text = encodeURIComponent(`${title} – ${t('common:appName')}`);
 
   return (
     <div className="flex flex-wrap gap-2 mt-6">
@@ -33,7 +36,7 @@ function ShareButtons({ title, url }) {
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm"
       >
-        Share on X
+        {t('blog:shareOnX')}
       </a>
       <a
         href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
@@ -41,7 +44,7 @@ function ShareButtons({ title, url }) {
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm"
       >
-        Facebook
+        {t('blog:facebook')}
       </a>
       <a
         href={`https://wa.me/?text=${text}%20${encodedUrl}`}
@@ -49,7 +52,7 @@ function ShareButtons({ title, url }) {
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm"
       >
-        WhatsApp
+        {t('blog:whatsapp')}
       </a>
       <button
         type="button"
@@ -58,18 +61,21 @@ function ShareButtons({ title, url }) {
         }}
         className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm"
       >
-        Copy link
+        {t('blog:copyLink')}
       </button>
     </div>
   );
 }
 
 export default function BlogPost() {
+  const { t } = useTranslation(['blog', 'common', 'seo']);
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useContentView('blog', post?._id, 'blog_view');
 
   useEffect(() => {
     if (!slug) return;
@@ -106,8 +112,8 @@ export default function BlogPost() {
   if (error || !post) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Post not found</h1>
-        <Link to={ROUTES.BLOG} className="text-edur-steel dark:text-edur-sky mt-4 inline-block hover:underline">← Back to Blog</Link>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('blog:postNotFound')}</h1>
+        <Link to={ROUTES.BLOG} className="text-edur-steel dark:text-edur-sky mt-4 inline-block hover:underline">← {t('blog:backToBlog')}</Link>
       </div>
     );
   }
@@ -119,7 +125,7 @@ export default function BlogPost() {
   return (
     <>
       <SeoHead
-        title={`${post.title} – Blog`}
+        title={`${post.title} ${t('blog:postSeoSuffix')}`}
         description={post.excerpt || post.title}
         canonical={canonicalPath}
         ogType="article"
@@ -128,25 +134,25 @@ export default function BlogPost() {
         jsonLd={combineSchemas(
           blogPostingSchema(post, { readingMinutes: readingMin }),
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Blog', url: ROUTES.BLOG },
+            { name: t('blog:breadcrumbHome'), url: ROUTES.HOME },
+            { name: t('blog:breadcrumbBlog'), url: ROUTES.BLOG },
             { name: post.title, url: canonicalPath },
           ]),
         )}
       />
       <article className="max-w-4xl mx-auto px-4 py-8">
-        <Link to={ROUTES.BLOG} className="text-sm text-edur-steel dark:text-edur-sky hover:underline mb-6 inline-block">← Back to Blog</Link>
+        <Link to={ROUTES.BLOG} className="text-sm text-edur-steel dark:text-edur-sky hover:underline mb-6 inline-block">← {t('blog:backToBlog')}</Link>
 
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">{post.title}</h1>
         <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-gray-500 dark:text-gray-400">
-          <span>{post.author || 'EduRozgaar'}</span>
+          <span>{post.author || t('blog:defaultAuthor')}</span>
           {post.publishedAt && <span>{new Date(post.publishedAt).toLocaleDateString()}</span>}
-          <span>{readingMin} min read</span>
+          <span>{t('blog:minRead', { count: readingMin })}</span>
         </div>
         {post.tags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {post.tags.map((t) => (
-              <span key={t} className="text-xs px-2 py-0.5 rounded bg-edur-sky/20 dark:bg-edur-sky/10 text-edur-steel dark:text-edur-sky">{t}</span>
+            {post.tags.map((tag) => (
+              <span key={tag} className="text-xs px-2 py-0.5 rounded bg-edur-sky/20 dark:bg-edur-sky/10 text-edur-steel dark:text-edur-sky">{tag}</span>
             ))}
           </div>
         )}
@@ -155,20 +161,22 @@ export default function BlogPost() {
           <img src={post.featuredImage || post.imageUrl} alt={post.title} className="w-full rounded-xl mt-6 object-cover max-h-64" loading="lazy" />
         ) : (
           <div className="w-full h-48 rounded-xl mt-6 bg-gradient-to-br from-edur-steel/20 to-edur-blue/20 dark:from-edur-steel/30 dark:to-edur-blue/30 flex items-center justify-center text-edur-steel/50 dark:text-edur-sky/50 text-sm">
-            Featured image
+            {t('blog:featuredImage')}
           </div>
         )}
+
+        <AdHost placementId="blog-inline" index={1} variant="inline" className="my-6" />
 
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <div className="flex-1 min-w-0">
             <div className="prose dark:prose-invert text-gray-700 dark:text-gray-300 whitespace-pre-wrap max-w-none">
               {post.content || post.excerpt}
             </div>
-            <ShareButtons title={post.title} url={buildCanonicalUrl(canonicalPath)} />
+            <ShareButtons title={post.title} url={buildCanonicalUrl(canonicalPath)} t={t} />
           </div>
           {toc.length > 0 && (
             <aside className="lg:w-56 shrink-0">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Table of contents</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('blog:tableOfContents')}</h3>
               <nav className="space-y-1 text-sm">
                 {toc.map((h, i) => (
                   <a key={i} href={`#h-${i}`} className="block text-edur-steel dark:text-edur-sky hover:underline pl-0">
@@ -182,7 +190,7 @@ export default function BlogPost() {
 
         {related.length > 0 && (
           <section className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Related posts</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('blog:relatedPosts')}</h2>
             <div className="grid sm:grid-cols-3 gap-4">
               {related.map((p) => (
                 <Link key={p._id || p.slug} to={`${ROUTES.BLOG}/${p.slug}`} className="block p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-md hover:border-edur-blue/50 card-hover">

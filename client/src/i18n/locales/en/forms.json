@@ -1,0 +1,86 @@
+{
+  "login": {
+    "title": "Login",
+    "seoDescription": "Login to EduRozgaar account.",
+    "subtitle": "Sign in to access your profile and saved items.",
+    "adminSubtitle": "Sign in with an admin account to access the admin panel.",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "failed": "Login failed. Please try again.",
+    "googleSoon": "Google sign-in will be available in a future update."
+  },
+  "register": {
+    "title": "Register",
+    "seoDescription": "Create your EduRozgaar account.",
+    "subtitle": "Register to save jobs, scholarships, and get alerts.",
+    "signUp": "Create account",
+    "signingUp": "Creating account...",
+    "failed": "Registration failed.",
+    "googleSoon": "Google sign-up will be available in a future update.",
+    "signUpWith": "Or sign up with",
+    "namePlaceholder": "Your name",
+    "passwordHint": "Min 8 chars, upper, lower, number",
+    "confirmPlaceholder": "Repeat password",
+    "referralCode": "Referral code (optional)"
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "seoDescription": "Reset your EduRozgaar account password.",
+    "subtitle": "Enter your email and we will send you a reset link.",
+    "subtitleExtended": "Enter the email address for your account and we'll send you a link to reset your password.",
+    "sendLink": "Send reset link",
+    "sending": "Sending...",
+    "sent": "If an account exists, you will receive a reset link shortly.",
+    "sentExtended": "If an account exists with this email, you will receive a password reset link shortly. The link expires in 1 hour.",
+    "checkEmail": "Check your email",
+    "backToLogin": "← Back to login",
+    "failed": "Could not send reset link."
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "setNewPasswordTitle": "Set new password",
+    "seoDescription": "Set a new password for your EduRozgaar account.",
+    "subtitle": "Enter your new password below. Use at least 8 characters with uppercase, lowercase, and a number.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "submit": "Reset password",
+    "resetting": "Resetting...",
+    "successTitle": "Password reset",
+    "success": "Your password has been reset. Redirecting you to login...",
+    "goToLogin": "Go to login",
+    "requestNewLink": "Request a new reset link",
+    "failed": "Failed to reset password. The link may have expired.",
+    "invalidToken": "Invalid reset link. Please use the link from your email or request a new one."
+  },
+  "newsletter": {
+    "placeholder": "Your email address",
+    "placeholderCompact": "Your email",
+    "placeholderFull": "your@email.com",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing…",
+    "success": "Subscribed! You'll receive student alerts.",
+    "failed": "Subscription failed. Try again.",
+    "enterEmail": "Please enter your email.",
+    "description": "Get daily or weekly alerts: new jobs, scholarships, and admission deadlines.",
+    "daily": "Daily",
+    "weekly": "Weekly"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with the EduRozgaar team.",
+    "name": "Your name",
+    "message": "Message",
+    "send": "Send message",
+    "sent": "Message sent!"
+  },
+  "submitOpportunity": {
+    "title": "Submit an Opportunity",
+    "subtitle": "Share a job, scholarship, or admission listing with our team."
+  },
+  "employerLogin": {
+    "seoDescription": "Sign in to manage your job posts."
+  },
+  "employerRegister": {
+    "seoDescription": "Create an employer account to post jobs."
+  }
+}

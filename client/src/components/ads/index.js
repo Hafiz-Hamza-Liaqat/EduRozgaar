@@ -1,3 +1,3 @@
 export { AdBanner } from './AdBanner';
-export { AdSidebar } from './AdSidebar';
-export { AdInFeed } from './AdInFeed';
+export { AdHost } from './AdHost';
+export { AdImageCreative } from './AdImageCreative';

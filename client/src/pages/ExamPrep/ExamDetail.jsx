@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { courseSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { examsApi } from '../../services/listingsService';
 import { ROUTES } from '../../constants';
 
 export default function ExamDetail() {
+  const { t } = useTranslation(['exams', 'navbar']);
   const { slug } = useParams();
   const [exam, setExam] = useState(null);
   const [papers, setPapers] = useState([]);
@@ -39,46 +41,48 @@ export default function ExamDetail() {
   if (!exam) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <p className="text-red-600 dark:text-red-400">Exam not found.</p>
-        <Link to={ROUTES.EXAM_PREP} className="text-primary dark:text-mint mt-2 inline-block">← Back to Exam Prep</Link>
+        <p className="text-red-600 dark:text-red-400">{t('exams:examNotFound')}</p>
+        <Link to={ROUTES.EXAM_PREP} className="text-primary dark:text-mint mt-2 inline-block">{t('exams:backToExamPrep')}</Link>
       </div>
     );
   }
 
   const canonicalPath = `${ROUTES.EXAM_PREP}/${exam.slug || slug}`;
-  const description = exam.description || `${exam.name} syllabus, past papers, and practice quizzes.`;
+  const description = exam.description || t('exams:examDescriptionFallback', { name: exam.name });
 
   return (
     <>
       <SeoHead
-        title={`${exam.name} – Exam Preparation`}
+        title={`${exam.name} ${t('exams:examPrepSuffix')}`}
         description={description}
         canonical={canonicalPath}
         jsonLd={combineSchemas(
           courseSchema(exam),
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Exam Prep', url: ROUTES.EXAM_PREP },
+            { name: t('navbar:home'), url: ROUTES.HOME },
+            { name: t('exams:examPrepBreadcrumb'), url: ROUTES.EXAM_PREP },
             { name: exam.name, url: canonicalPath },
           ]),
         )}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link to={ROUTES.EXAM_PREP} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← Exam Prep</Link>
+        <Link to={ROUTES.EXAM_PREP} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">
+          ← {t('exams:examPrepBreadcrumb')}
+        </Link>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{exam.name}</h1>
         {exam.description && <p className="text-gray-600 dark:text-gray-400 mb-6">{exam.description}</p>}
 
         {exam.syllabus && (
           <section className="mb-8 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Syllabus</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('exams:syllabus')}</h2>
             <div className="prose dark:prose-invert text-gray-700 dark:text-gray-300 whitespace-pre-wrap text-sm">{exam.syllabus}</div>
           </section>
         )}
 
         <section className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Past Papers & Model Tests</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('exams:pastPapersTitle')}</h2>
           {papers.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400 text-sm">No past papers yet.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">{t('exams:noPastPapers')}</p>
           ) : (
             <ul className="space-y-2">
               {papers.map((p) => (
@@ -99,9 +103,9 @@ export default function ExamDetail() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Practice Quizzes</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('exams:practiceQuizzes')}</h2>
           {quizzes.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400 text-sm">No quizzes yet.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">{t('exams:noQuizzes')}</p>
           ) : (
             <ul className="space-y-2">
               {quizzes.map((q) => (
@@ -111,7 +115,11 @@ export default function ExamDetail() {
                     className="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-sm transition"
                   >
                     <span className="font-medium text-gray-900 dark:text-white">{q.title}</span>
-                    {q.durationMinutes && <span className="text-gray-500 dark:text-gray-400 ml-2">· {q.durationMinutes} min</span>}
+                    {q.durationMinutes && (
+                      <span className="text-gray-500 dark:text-gray-400 ml-2">
+                        · {q.durationMinutes} {t('exams:minutesShort')}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}

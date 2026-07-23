@@ -1,4 +1,6 @@
 /** Site-wide SEO configuration for EduRozgaar */
+import { LANGUAGES } from '../i18n/config.js';
+
 export const SITE_URL = (import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk').replace(/\/$/, '');
 export const SITE_NAME = 'EduRozgaar';
 export const SITE_TAGLINE = 'Jobs & Education Portal Pakistan';
@@ -12,6 +14,12 @@ export const TWITTER_HANDLE = '@EduRozgaar';
 export const THEME_COLOR = '#31708E';
 export const LOCALE_EN = 'en_PK';
 export const LOCALE_UR = 'ur_PK';
+export const LOCALE_AR = 'ar_SA';
+
+export function getLocaleForLang(lang) {
+  const cfg = LANGUAGES.find((l) => l.code === lang);
+  return cfg?.ogLocale || LOCALE_EN;
+}
 
 export const SEO_CONFIG = {
   siteUrl: SITE_URL,
@@ -69,6 +77,7 @@ export function buildAlternateUrls(path = '/') {
   return {
     en: base,
     ur: `${base}${separator}lang=ur`,
+    ar: `${base}${separator}lang=ar`,
     'x-default': base,
   };
 }

@@ -1,12 +1,21 @@
 import { Router } from 'express';
 import { requireAuth, requireEmployerAuth } from '../middleware/auth.js';
+import { employerAuthLimiter, refreshLimiter } from '../middleware/rateLimit.js';
 import * as employerAuth from '../controllers/employerAuthController.js';
 import * as employer from '../controllers/employerController.js';
+import { createJobCheckout } from '../controllers/paymentsController.js';
 
 export const employerRouter = Router();
 
-employerRouter.post('/auth/employer/register', employerAuth.employerRegister);
-employerRouter.post('/auth/employer/login', employerAuth.employerLogin);
+employerRouter.post('/auth/employer/register', employerAuthLimiter, employerAuth.employerRegister);
+employerRouter.post('/auth/employer/login', employerAuthLimiter, employerAuth.employerLogin);
+employerRouter.post('/auth/employer/refresh-token', refreshLimiter, employerAuth.employerRefreshToken);
+employerRouter.post(
+  '/auth/employer/logout',
+  requireAuth,
+  requireEmployerAuth,
+  employerAuth.employerLogout
+);
 
 employerRouter.get('/employer/me', requireAuth, requireEmployerAuth, employerAuth.employerMe);
 employerRouter.get('/employer/dashboard', requireAuth, requireEmployerAuth, employer.getDashboard);
@@ -15,6 +24,7 @@ employerRouter.get('/employer/jobs', requireAuth, requireEmployerAuth, employer.
 employerRouter.post('/employer/jobs', requireAuth, requireEmployerAuth, employer.createJob);
 employerRouter.patch('/employer/jobs/:id', requireAuth, requireEmployerAuth, employer.updateJob);
 employerRouter.post('/employer/jobs/:id/activate', requireAuth, requireEmployerAuth, employer.activateJob);
+employerRouter.post('/employer/jobs/:id/checkout', requireAuth, requireEmployerAuth, createJobCheckout);
 employerRouter.get('/employer/jobs/:id/applications', requireAuth, requireEmployerAuth, employer.getJobApplications);
 employerRouter.get('/employer/analytics/:jobId', requireAuth, requireEmployerAuth, employer.getJobAnalytics);
 employerRouter.patch('/employer/applications/:id', requireAuth, requireEmployerAuth, employer.updateApplicationStatus);

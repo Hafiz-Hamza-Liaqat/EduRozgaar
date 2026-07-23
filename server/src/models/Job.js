@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import { jobSlug } from '../utils/slugify.js';
+import { translationFieldDefinition, applySlugLocaleIndex, ensureTranslationGroupHook } from './mixins/translationFields.js';
 
 const jobSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
+    slug: { type: String, required: true },
     company: { type: String, required: true },
     organization: { type: String }, // alias / display name
     location: { type: String },
@@ -30,6 +31,9 @@ const jobSchema = new mongoose.Schema(
     logoUrl: { type: String },
     views: { type: Number, default: 0 },
     applicationsCount: { type: Number, default: 0 },
+    /** L.2.8 — optional headcount; null = unlimited */
+    totalSeats: { type: Number, default: null, min: 1 },
+    autoCloseWhenFilled: { type: Boolean, default: true },
     isFeatured: { type: Boolean, default: false },
     isSponsored: { type: Boolean, default: false },
     priority: { type: Number, default: 0 },
@@ -45,6 +49,16 @@ const jobSchema = new mongoose.Schema(
     sourceWebsite: { type: String }, // e.g. PPSC, FPSC, LinkedIn, Rozee.pk
     externalId: { type: String, unique: true, sparse: true }, // unique per source for dedup
     approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'approved' },
+    remote: { type: Boolean, default: false },
+    hybrid: { type: Boolean, default: false },
+    responsibilities: [{ type: String }],
+    benefits: [{ type: String }],
+    gender: { type: String },
+    salaryCurrency: { type: String, default: 'PKR' },
+    gallery: [{ type: String }],
+    seoTitle: { type: String },
+    metaDescription: { type: String },
+    ...translationFieldDefinition,
   },
   { timestamps: true }
 );
@@ -58,9 +72,11 @@ jobSchema.index({ title: 'text', company: 'text', location: 'text', province: 't
 jobSchema.index({ employerId: 1, status: 1 });
 jobSchema.index({ status: 1, approvalStatus: 1 });
 jobSchema.index({ expiresAt: 1 });
+applySlugLocaleIndex(jobSchema);
+ensureTranslationGroupHook(jobSchema);
 
 jobSchema.pre('save', function (next) {
-  if (!this.slug || this.isModified('title') || this.isModified('location') || this.isModified('province')) {
+  if (!this.slug && this.title) {
     this.slug = jobSlug(this.title, this.province || this.location || '');
   }
   next();

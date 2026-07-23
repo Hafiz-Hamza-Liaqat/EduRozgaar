@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { newsletterApi } from '../../services/listingsService';
 import { useToast } from '../../context/ToastContext';
 
 export function NewsletterSubscribe({ compact = false }) {
+  const { t } = useTranslation('forms');
   const [email, setEmail] = useState('');
   const [frequency, setFrequency] = useState('weekly');
   const [loading, setLoading] = useState(false);
@@ -12,16 +14,16 @@ export function NewsletterSubscribe({ compact = false }) {
     e.preventDefault();
     const trimmed = email.trim();
     if (!trimmed) {
-      toast.error('Please enter your email.');
+      toast.error(t('newsletter.enterEmail'));
       return;
     }
     setLoading(true);
     try {
       await newsletterApi.subscribe(trimmed, frequency);
-      toast.success('Subscribed! You\'ll receive student alerts.');
+      toast.success(t('newsletter.success'));
       setEmail('');
     } catch (err) {
-      const msg = err.response?.data?.error || 'Subscription failed. Try again.';
+      const msg = err.response?.data?.error || t('newsletter.failed');
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -35,7 +37,7 @@ export function NewsletterSubscribe({ compact = false }) {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Your email"
+          placeholder={t('newsletter.placeholderCompact')}
           className="w-full min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm"
           disabled={loading}
         />
@@ -44,7 +46,7 @@ export function NewsletterSubscribe({ compact = false }) {
           disabled={loading}
           className="w-full shrink-0 rounded-lg bg-primary hover:bg-primary-hover text-white btn-theme px-4 py-2 text-sm font-medium disabled:opacity-50"
         >
-          {loading ? '…' : 'Subscribe'}
+          {loading ? '…' : t('newsletter.subscribe')}
         </button>
       </form>
     );
@@ -53,14 +55,14 @@ export function NewsletterSubscribe({ compact = false }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        Get daily or weekly alerts: new jobs, scholarships, and admission deadlines.
+        {t('newsletter.description')}
       </p>
       <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="your@email.com"
+          placeholder={t('newsletter.placeholderFull')}
           className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm"
           disabled={loading}
         />
@@ -69,15 +71,15 @@ export function NewsletterSubscribe({ compact = false }) {
           onChange={(e) => setFrequency(e.target.value)}
           className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm w-full sm:w-32"
         >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
+          <option value="daily">{t('newsletter.daily')}</option>
+          <option value="weekly">{t('newsletter.weekly')}</option>
         </select>
         <button
           type="submit"
           disabled={loading}
           className="rounded-lg bg-primary hover:bg-primary-hover text-white btn-theme px-4 py-2 text-sm font-medium disabled:opacity-50 shrink-0"
         >
-          {loading ? 'Subscribing…' : 'Subscribe'}
+          {loading ? t('newsletter.subscribing') : t('newsletter.subscribe')}
         </button>
       </div>
     </form>

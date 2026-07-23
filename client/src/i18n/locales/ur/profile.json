@@ -1,0 +1,18 @@
+{
+  "seoTitle": "پروفائل",
+  "seoDescription": "آپ کا ایڈوروزگار پروفائل اور ترجیحات۔",
+  "title": "پروفائل",
+  "subtitle": "اپنی ترجیحات اور محفوظ اشیاء کا انتظام کریں۔",
+  "couldNotLoad": "پروفائل لوڈ نہیں ہو سکا۔",
+  "updated": "پروفائل اپ ڈیٹ ہو گیا۔",
+  "failedUpdate": "پروفائل اپ ڈیٹ ناکام۔",
+  "interestsHelp": "دلچسپیاں (نوکریاں، اسکالرشپس، داخلے)",
+  "emailNotif": "ای میل",
+  "pushNotif": "پش (placeholder)",
+  "whatsappNotif": "WhatsApp (placeholder)",
+  "telegramNotif": "Telegram (placeholder)",
+  "selectProvince": "صوبہ منتخب کریں",
+  "saveJobsEmpty": "کوئی محفوظ نوکری نہیں۔ <link>نوکریاں</link> صفحے سے محفوظ کریں۔",
+  "saveScholarshipsEmpty": "کوئی محفوظ اسکالرشپ نہیں۔ <link>اسکالرشپس</link> صفحے سے محفوظ کریں۔",
+  "saveAdmissionsEmpty": "کوئی محفوظ داخلہ نہیں۔ <link>داخلے</link> صفحے سے محفوظ کریں۔"
+}

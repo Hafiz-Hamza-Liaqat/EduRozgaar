@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { breadcrumbSchema, collectionPageSchema, combineSchemas } from '../../seo/schemas';
 import { DEFAULT_KEYWORDS } from '../../seo/config';
@@ -8,15 +9,7 @@ import { ROUTES } from '../../constants';
 import { SAMPLE_BLOGS } from '../../constants/seedData';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
-
-const BLOG_CATEGORIES = [
-  { label: 'All', value: '' },
-  { label: 'Career Advice', value: 'Career' },
-  { label: 'Scholarships', value: 'Scholarships' },
-  { label: 'Job Preparation', value: 'Job Preparation' },
-  { label: 'International Study', value: 'International Study' },
-  { label: 'Platform Updates', value: 'Platform Updates' },
-];
+import { AdHost } from '../../components/ads';
 
 function readingTime(content) {
   if (!content || typeof content !== 'string') return 5;
@@ -24,9 +17,19 @@ function readingTime(content) {
 }
 
 export default function Blog() {
+  const { t } = useTranslation(['blog', 'seo', 'common']);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
+
+  const categories = [
+    { labelKey: 'categoryAll', value: '' },
+    { labelKey: 'categoryCareerAdvice', value: 'Career' },
+    { labelKey: 'categoryScholarships', value: 'Scholarships' },
+    { labelKey: 'categoryJobPrep', value: 'Job Preparation' },
+    { labelKey: 'categoryIntlStudy', value: 'International Study' },
+    { labelKey: 'categoryPlatformUpdates', value: 'Platform Updates' },
+  ];
 
   useEffect(() => {
     blogsApi.list({ limit: 30, status: 'published' })
@@ -41,36 +44,39 @@ export default function Blog() {
   return (
     <>
       <SeoHead
-        title="Blog – Career Advice, Scholarships, Job Tips – EduRozgaar Pakistan"
-        description="EduRozgaar blog – career tips, admission guides, scholarships, and education news for Pakistan."
+        title={t('blog:seoFullTitle')}
+        description={t('blog:seoFullDescription')}
         canonical={ROUTES.BLOG}
-        keywords={`career advice, education blog, job tips, ${DEFAULT_KEYWORDS}`}
+        keywords={`${t('blog:seoKeywords')}, ${DEFAULT_KEYWORDS}`}
         ogType="website"
         jsonLd={combineSchemas(
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Blog', url: ROUTES.BLOG },
+            { name: t('blog:breadcrumbHome'), url: ROUTES.HOME },
+            { name: t('blog:breadcrumbBlog'), url: ROUTES.BLOG },
           ]),
           collectionPageSchema({
-            name: 'Blog – Career Advice, Scholarships, Job Tips – EduRozgaar Pakistan',
-            description: 'EduRozgaar blog – career tips, admission guides, scholarships, and education news for Pakistan.',
+            name: t('blog:seoFullTitle'),
+            description: t('blog:seoFullDescription'),
             url: ROUTES.BLOG,
           })
         )}
       />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <AdHost placementId="blog-header" className="mb-6" />
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1 min-w-0">
         <ScrollReveal>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Blog & Career Articles</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">Tips, guides, and updates for students and job seekers.</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('blog:pageTitle')}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{t('blog:subtitle')}</p>
           <div className="flex flex-wrap gap-2 mb-8">
-            {BLOG_CATEGORIES.map(({ label, value }) => (
+            {categories.map(({ labelKey, value }) => (
               <button
                 key={value || 'all'}
                 type="button"
                 onClick={() => setCategory(value)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${category === value ? 'bg-edur-steel text-white dark:bg-edur-sky dark:text-gray-900' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
               >
-                {label}
+                {t(`blog:${labelKey}`)}
               </button>
             ))}
           </div>
@@ -94,13 +100,18 @@ export default function Blog() {
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white mt-1">{post.title}</h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{post.excerpt}</p>
                   <p className="text-xs text-gray-500 mt-2">
-                    {readingTime(post.content || post.excerpt)} min read · {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ''}
+                    {t('blog:minRead', { count: readingTime(post.content || post.excerpt) })} · {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ''}
                   </p>
                 </Link>
               ))}
             </div>
           </ScrollReveal>
         )}
+          </div>
+          <aside className="w-full lg:w-64 flex-shrink-0">
+            <AdHost placementId="blog-sidebar" variant="sidebar" />
+          </aside>
+        </div>
       </div>
     </>
   );

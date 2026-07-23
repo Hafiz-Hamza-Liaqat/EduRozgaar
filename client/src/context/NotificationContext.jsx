@@ -21,10 +21,10 @@ export function NotificationProvider({ children }) {
 
   useEffect(() => {
     if (!isAuthenticated || registered.current || !('Notification' in window)) return;
+    registered.current = true;
     const token = getOrCreatePlaceholderToken();
     Notification.requestPermission().then((permission) => {
       if (permission === 'granted' && token) {
-        registered.current = true;
         fcmApi.registerToken(token).catch(() => {});
       }
     }).catch(() => {});

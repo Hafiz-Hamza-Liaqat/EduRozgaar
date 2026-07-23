@@ -5,6 +5,13 @@ const applicationSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     jobId: { type: mongoose.Schema.Types.ObjectId, ref: 'Job', required: true },
     resumeURL: { type: String },
+    talentProfileId: { type: mongoose.Schema.Types.ObjectId, ref: 'TalentProfile' },
+    resumeVersionId: { type: mongoose.Schema.Types.ObjectId, ref: 'ResumeVersion' },
+    resumeSource: {
+      type: String,
+      enum: ['upload', 'talent-profile', 'talent-profile-document', 'legacy', 'none'],
+      default: 'none',
+    },
     coverLetter: { type: String },
     status: {
       type: String,

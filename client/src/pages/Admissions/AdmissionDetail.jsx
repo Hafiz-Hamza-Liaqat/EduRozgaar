@@ -1,32 +1,48 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SeoHead } from '../../components/seo';
 import { webPageSchema, breadcrumbSchema, combineSchemas } from '../../seo/schemas';
 import { admissionsApi, savedApi, recentViewedApi } from '../../services/listingsService';
+import { applicationsApi } from '../../services/applicationsApi';
 import { ROUTES } from '../../constants';
 import { SaveButton } from '../../components/listings/SaveButton';
 import { ListingCardSkeleton } from '../../components/listings/ListingCardSkeleton';
 import { Alert } from '../../components/ui/Alerts';
 import { formatDate, daysUntil } from '../../utils/formatDate';
 import { useAuth } from '../../context/AuthContext';
+import { useContentView } from '../../hooks/usePageView';
+import { talentApi } from '../../services/talentApi';
+import { shouldUseTalentProfileApi, isOpportunityApplicationEnabled } from '../../config/careerFeatureFlags';
+import { ApplyKitBanner } from '../../components/career/ApplyKitBanner';
 
 export default function AdmissionDetail() {
+  const { t } = useTranslation(['admissions', 'common', 'navbar', 'applications']);
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [savedIds, setSavedIds] = useState(new Set());
+  const [applyKit, setApplyKit] = useState(null);
+  const [trackLoading, setTrackLoading] = useState(false);
+
+  useContentView('admission', item?._id, 'admission_view');
 
   useEffect(() => {
     admissionsApi.get(slug).then(({ data }) => {
       setItem(data);
       if (isAuthenticated && data?._id) recentViewedApi.record('admission', data._id).catch(() => {});
-    }).catch((err) => setError(err.response?.data?.error || 'Failed to load')).finally(() => setLoading(false));
+    }).catch((err) => setError(err.response?.data?.error || t('failedToLoad', { ns: 'common' }))).finally(() => setLoading(false));
   }, [slug, isAuthenticated]);
+
   useEffect(() => {
     if (!isAuthenticated) return;
     savedApi.get().then(({ data: d }) => setSavedIds(new Set((d.savedAdmissions || []).map((a) => a._id)))).catch(() => {});
+    if (shouldUseTalentProfileApi()) {
+      talentApi.getApplyKit().then(({ data }) => setApplyKit(data)).catch(() => setApplyKit(null));
+    }
   }, [isAuthenticated]);
 
   const handleSaveToggle = async (id, save) => {
@@ -35,32 +51,63 @@ export default function AdmissionDetail() {
     setSavedIds((prev) => { const next = new Set(prev); save ? next.add(id) : next.delete(id); return next; });
   };
 
+  const handleTrackApplication = async () => {
+    if (!item?._id) return;
+    setTrackLoading(true);
+    try {
+      const { data: app } = await applicationsApi.create({
+        opportunityType: 'admission',
+        opportunityId: item._id,
+        source: 'platform',
+        title: item.program,
+        companyName: item.institution || '',
+      });
+      navigate(`${ROUTES.APPLICATIONS}/${app._id}`);
+    } catch (err) {
+      if (err.response?.data?.applicationId) {
+        navigate(`${ROUTES.APPLICATIONS}/${err.response.data.applicationId}`);
+        return;
+      }
+      navigate(`${ROUTES.APPLICATIONS_NEW}?opportunityId=${item._id}&type=admission`);
+    } finally {
+      setTrackLoading(false);
+    }
+  };
+
   if (loading) return <div className="max-w-3xl mx-auto px-4 py-8"><ListingCardSkeleton /></div>;
-  if (error || !item) return <div className="max-w-3xl mx-auto px-4 py-8"><Alert variant="error">{error || 'Not found'}</Alert><Link to={ROUTES.ADMISSIONS} className="text-primary dark:text-mint mt-4 inline-block">← Back to Admissions</Link></div>;
+  if (error || !item) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <Alert variant="error">{error || t('admissionNotFound', { ns: 'admissions' })}</Alert>
+        <Link to={ROUTES.ADMISSIONS} className="text-primary dark:text-mint mt-4 inline-block">{t('backToAdmissions', { ns: 'admissions' })}</Link>
+      </div>
+    );
+  }
 
   const related = item.related || [];
   const days = daysUntil(item.deadline);
   const canonicalPath = `${ROUTES.ADMISSIONS}/${item.slug || item._id}`;
   const description = item.description || `${item.program} at ${item.institution}`;
+  const seoTitle = t('detailSeoTitle', { program: item.program, ns: 'admissions' });
 
   return (
     <>
       <SeoHead
-        title={`${item.program} – Admissions`}
+        title={seoTitle}
         description={description}
         canonical={canonicalPath}
         ogType="website"
         jsonLd={combineSchemas(
           webPageSchema({ name: item.program, description, url: canonicalPath }),
           breadcrumbSchema([
-            { name: 'Home', url: ROUTES.HOME },
-            { name: 'Admissions', url: ROUTES.ADMISSIONS },
+            { name: t('home', { ns: 'navbar' }), url: ROUTES.HOME },
+            { name: t('admissions', { ns: 'navbar' }), url: ROUTES.ADMISSIONS },
             { name: item.program, url: canonicalPath },
           ]),
         )}
       />
       <article className="max-w-3xl mx-auto px-4 py-6 md:py-8">
-        <Link to={ROUTES.ADMISSIONS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">← Back to Admissions</Link>
+        <Link to={ROUTES.ADMISSIONS} className="text-sm text-primary dark:text-mint hover:underline mb-4 inline-block">{t('backToAdmissions', { ns: 'admissions' })}</Link>
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 md:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -71,25 +118,53 @@ export default function AdmissionDetail() {
               {item.deadline && (
                 <p className="mt-2">
                   {days != null && days >= 0 ? (
-                    <span className="inline-block px-3 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 font-medium">{days} days until deadline</span>
+                    <span className="inline-block px-3 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 font-medium">{t('daysUntilDeadline', { count: days, ns: 'admissions' })}</span>
                   ) : (
-                    <span className="text-gray-500">Deadline: {formatDate(item.deadline)}</span>
+                    <span className="text-gray-500">{t('deadline', { ns: 'common' })}: {formatDate(item.deadline)}</span>
                   )}
                 </p>
               )}
             </div>
             <div className="flex flex-wrap gap-2">
               <SaveButton type="admission" id={item._id} saved={savedIds.has(item._id)} onToggle={handleSaveToggle} />
-              <a href={item.link || '#'} className="inline-flex items-center px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover btn-theme" target="_blank" rel="noopener noreferrer">Apply</a>
+              {(item.link || item.applyLink) && (
+                <a href={item.link || item.applyLink} className="inline-flex items-center px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover btn-theme" target="_blank" rel="noopener noreferrer">{t('apply', { ns: 'common' })}</a>
+              )}
+              {isAuthenticated && isOpportunityApplicationEnabled() && (
+                <button
+                  type="button"
+                  onClick={handleTrackApplication}
+                  disabled={trackLoading}
+                  className="inline-flex items-center px-4 py-2 rounded-lg border-2 border-primary text-primary dark:text-mint hover:bg-mint/20 btn-theme text-sm font-medium disabled:opacity-50"
+                >
+                  {trackLoading ? t('applications:create.submitting') : t('applications:createApplication')}
+                </button>
+              )}
             </div>
           </div>
-          {item.description && <section className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700"><h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h2><p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{item.description}</p></section>}
-          {item.eligibility && item.eligibility.length > 0 && <section className="mt-6"><h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Eligibility</h2><ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">{item.eligibility.map((e, i) => <li key={i}>{e}</li>)}</ul></section>}
-          {item.applicationInstructions && <section className="mt-6"><h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">How to Apply</h2><p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{item.applicationInstructions}</p></section>}
+          {isAuthenticated && <ApplyKitBanner kit={applyKit} />}
+          {item.description && (
+            <section className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('description', { ns: 'common' })}</h2>
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{item.description}</p>
+            </section>
+          )}
+          {item.eligibility && item.eligibility.length > 0 && (
+            <section className="mt-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('eligibility', { ns: 'admissions' })}</h2>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">{item.eligibility.map((e, i) => <li key={i}>{e}</li>)}</ul>
+            </section>
+          )}
+          {item.applicationInstructions && (
+            <section className="mt-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('howToApply', { ns: 'admissions' })}</h2>
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{item.applicationInstructions}</p>
+            </section>
+          )}
         </div>
         {related.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Related admissions</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('relatedAdmissions', { ns: 'admissions' })}</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               {related.map((r) => (
                 <Link key={r._id} to={`${ROUTES.ADMISSIONS}/${r.slug || r._id}`} className="block p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-md transition">

@@ -1,4 +1,5 @@
-import { TEMPLATE_IDS, TEMPLATE_NAMES } from './resumeDefaults';
+import { useTranslation } from 'react-i18next';
+import { TEMPLATE_IDS } from './resumeDefaults';
 
 const TEMPLATE_PREVIEW_COLORS = {
   'modern-professional': 'bg-slate-700 text-white border-slate-600',
@@ -7,7 +8,16 @@ const TEMPLATE_PREVIEW_COLORS = {
   'academic-cv': 'bg-indigo-900 text-indigo-100 border-indigo-700',
 };
 
+const TEMPLATE_LABEL_KEYS = {
+  'modern-professional': 'templateModern',
+  'minimal-ats': 'templateMinimal',
+  'creative-portfolio': 'templateCreative',
+  'academic-cv': 'templateAcademic',
+};
+
 export function TemplateSelector({ value, onChange }) {
+  const { t } = useTranslation('resume');
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {TEMPLATE_IDS.map((id) => (
@@ -26,7 +36,7 @@ export function TemplateSelector({ value, onChange }) {
             <div className="h-2 w-1/2 bg-white/20 rounded mb-1" />
             <div className="h-2 w-2/3 bg-white/20 rounded" />
           </div>
-          <p className="mt-2 text-sm font-medium text-gray-900 dark:text-white">{TEMPLATE_NAMES[id]}</p>
+          <p className="mt-2 text-sm font-medium text-gray-900 dark:text-white">{t(TEMPLATE_LABEL_KEYS[id])}</p>
         </button>
       ))}
     </div>
