@@ -6,6 +6,7 @@ node_modules/
 .env.*
 !.env.example
 !.env.template
+!docker/.env.*.example
 server/.env
 client/.env
 client/.env.production
