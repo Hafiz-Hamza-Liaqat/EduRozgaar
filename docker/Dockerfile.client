@@ -4,6 +4,8 @@ WORKDIR /app
 COPY client/package*.json ./
 RUN npm ci
 COPY client/ .
+# Vite alias @shared → ../shared; relative ../../../../shared also resolves here
+COPY shared /shared
 ARG VITE_APP_URL
 ARG VITE_API_URL
 ENV VITE_APP_URL=${VITE_APP_URL:-https://edurozgaar.pk}

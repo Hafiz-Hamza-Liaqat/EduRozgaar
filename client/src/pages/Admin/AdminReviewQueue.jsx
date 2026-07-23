@@ -5,8 +5,8 @@ import { adminApi } from '../../services/listingsService';
 import { usePermissions } from '../../hooks/usePermissions';
 import { PERMISSIONS } from '../../config/rbac';
 import { AdminRouteGuard } from '../../components/admin/AdminRouteGuard';
-import { workflowResourceLabel } from '../../../../shared/workflow/resources.js';
-import { workflowStateLabel } from '../../../../shared/workflow/states.js';
+import { workflowResourceLabel } from '@shared/workflow/resources.js';
+import { workflowStateLabel } from '@shared/workflow/states.js';
 
 const TABS = [
   { id: 'awaiting', label: 'Awaiting review' },

@@ -8,6 +8,8 @@ COPY server/package*.json ./
 RUN npm ci --omit=dev
 
 COPY server/ .
+# Server imports resolve shared via ../../../../shared → /shared
+COPY shared /shared
 
 ENV NODE_ENV=production
 EXPOSE 5000
