@@ -1,4 +1,4 @@
-# Rollback Guide — EduRozgaar
+# Rollback Guide — Strideto
 
 Use when a deployment causes errors, data corruption, or unacceptable downtime.
 
@@ -61,8 +61,8 @@ Typical recovery time: **3–5 minutes**
 ## 5. Verification after rollback
 
 ```bash
-curl https://api.yourdomain.com/api/health
-node scripts/verify-sprint-c4.mjs --base https://api.yourdomain.com
+curl https://api.strideto.com/api/health
+node scripts/verify-sprint-c4.mjs --base https://api.strideto.com
 ```
 
 Manual checks:
@@ -74,7 +74,7 @@ Manual checks:
 
 ## 6. Communication template
 
-> We experienced a brief issue after [date/time] deployment. Service has been restored to the previous stable version. If you notice missing data from [window], contact support@yourdomain.com.
+> We experienced a brief issue after [date/time] deployment. Service has been restored to the previous stable version. If you notice missing data from [window], contact support@strideto.com.
 
 ---
 

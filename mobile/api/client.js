@@ -1,5 +1,5 @@
 /**
- * EduRozgaar Mobile – API client for /api/v1
+ * Strideto Mobile – API client for /api/v1
  * Set EXPO_PUBLIC_API_URL or use default (localhost for dev).
  */
 import axios from 'axios';

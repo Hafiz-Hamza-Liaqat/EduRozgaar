@@ -10,7 +10,7 @@
 
 ## Purpose
 
-This audit evaluates whether the existing EduRozgaar platform can evolve from a **Pakistan-focused education and jobs portal** into a **Global Career Intelligence Platform** centered on a canonical **Talent Profile**, while reserving **GigRadar** as a future sibling product on shared platform services.
+This audit evaluates whether the existing Strideto platform can evolve from a **Pakistan-focused education and jobs portal** into a **Global Career Intelligence Platform** centered on a canonical **Talent Profile**, while reserving **GigRadar** as a future sibling product on shared platform services.
 
 The audit inspects the live codebase and answers fourteen architectural questions before any C.8 implementation begins.
 
@@ -584,7 +584,7 @@ Location (on Job, TalentProfile, Opportunity)
 ### 9.1 Product boundary
 
 **GigRadar** = Developer Career & Hiring Intelligence (future C.9.x)  
-**EduRozgaar** = General Career Intelligence + Education adjacency
+**Strideto** = General Career Intelligence + Education adjacency
 
 ### 9.2 Shared platform (must not duplicate)
 
@@ -601,7 +601,7 @@ Location (on Job, TalentProfile, Opportunity)
 | Scoring | ✓ | `developer_readiness` score type |
 | Cache/Queue | ✓ | GitHub sync as job type |
 
-### 9.3 GigRadar-only (never in EduRozgaar core UI)
+### 9.3 GigRadar-only (never in Strideto core UI)
 
 | Capability | Rationale |
 |------------|-----------|
@@ -625,7 +625,7 @@ TalentProfile (base)
             └── technicalCredentials[]
 ```
 
-EduRozgaar users without GigRadar entitlement never see or store GitHub data.
+Strideto users without GigRadar entitlement never see or store GitHub data.
 
 ---
 
@@ -749,7 +749,7 @@ C.10.x Global Expansion (parallel to C.8.1+ once geo in C.8.0)
 | **C.8.7** | Learning Progress | Enriches readiness; not blocking tracker |
 | **C.8.8** | Recommendation Engine | Needs behavioral data from tracker |
 | **C.8.9** | Career AI (insights, not scores) | After deterministic scoring exists |
-| **C.9.0** | GigRadar foundation | After EduRozgaar career loop proves retention |
+| **C.9.0** | GigRadar foundation | After Strideto career loop proves retention |
 | **C.10.0** | Global market packs | After geo abstraction in C.8.0 |
 
 ### Why Career Core must be first

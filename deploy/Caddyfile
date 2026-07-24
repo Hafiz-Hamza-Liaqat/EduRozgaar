@@ -1,12 +1,12 @@
-# EduRozgaar TLS front door (L.2)
-# 1. Replace yourdomain.com with the real hostname (DNS A/AAAA → this host).
+# Strideto TLS front door (L.2)
+# 1. Replace strideto.com with the real hostname (DNS A/AAAA → this host).
 # 2. Ensure docker frontend publishes on localhost:80 (FRONTEND_PORT=80).
 # 3. Install Caddy (deploy/setup-vps.sh) and:
 #      sudo cp deploy/Caddyfile /etc/caddy/Caddyfile
 #      sudo systemctl reload caddy
 # Caddy auto-provisions Let's Encrypt certificates (ports 80/443 must be open).
 
-yourdomain.com, www.yourdomain.com {
+strideto.com, www.strideto.com {
 	encode gzip
 	# Forward real scheme/IP for backend SITE_URL / rate limits
 	header_up X-Forwarded-Proto {scheme}
@@ -15,7 +15,7 @@ yourdomain.com, www.yourdomain.com {
 }
 
 # Staging example (optional second host):
-# staging.yourdomain.com {
+# staging.strideto.com {
 # 	encode gzip
 # 	reverse_proxy localhost:8080
 # }

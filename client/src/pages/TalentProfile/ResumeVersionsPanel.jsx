@@ -223,7 +223,7 @@ export function ResumeVersionsPanel({ profileLoaded, form }) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <ResumeDownload previewRef={previewRef} fileName={(preview.title || 'EduRozgaar-Resume').replace(/\s+/g, '-')} />
+            <ResumeDownload previewRef={previewRef} fileName={(preview.title || 'Strideto-Resume').replace(/\s+/g, '-')} />
             {previewMode === 'print' ? (
               <Button type="button" variant="secondary" onClick={() => window.print()}>
                 {t('talent:resumes.print', { defaultValue: 'Print' })}

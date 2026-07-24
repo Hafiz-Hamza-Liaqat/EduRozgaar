@@ -1,7 +1,7 @@
 {
   "login": {
     "title": "Login",
-    "seoDescription": "Login to EduRozgaar account.",
+    "seoDescription": "Login to Strideto account.",
     "subtitle": "Sign in to access your profile and saved items.",
     "adminSubtitle": "Sign in with an admin account to access the admin panel.",
     "signIn": "Sign in",
@@ -11,7 +11,7 @@
   },
   "register": {
     "title": "Register",
-    "seoDescription": "Create your EduRozgaar account.",
+    "seoDescription": "Create your Strideto account.",
     "subtitle": "Register to save jobs, scholarships, and get alerts.",
     "signUp": "Create account",
     "signingUp": "Creating account...",
@@ -25,7 +25,7 @@
   },
   "forgotPassword": {
     "title": "Forgot password",
-    "seoDescription": "Reset your EduRozgaar account password.",
+    "seoDescription": "Reset your Strideto account password.",
     "subtitle": "Enter your email and we will send you a reset link.",
     "subtitleExtended": "Enter the email address for your account and we'll send you a link to reset your password.",
     "sendLink": "Send reset link",
@@ -39,7 +39,7 @@
   "resetPassword": {
     "title": "Reset password",
     "setNewPasswordTitle": "Set new password",
-    "seoDescription": "Set a new password for your EduRozgaar account.",
+    "seoDescription": "Set a new password for your Strideto account.",
     "subtitle": "Enter your new password below. Use at least 8 characters with uppercase, lowercase, and a number.",
     "newPassword": "New password",
     "confirmPassword": "Confirm password",
@@ -67,7 +67,7 @@
   },
   "contact": {
     "title": "Contact Us",
-    "subtitle": "Get in touch with the EduRozgaar team.",
+    "subtitle": "Get in touch with the Strideto team.",
     "name": "Your name",
     "message": "Message",
     "send": "Send message",

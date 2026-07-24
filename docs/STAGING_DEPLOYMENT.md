@@ -54,7 +54,7 @@ bash deploy/staging-down.sh
 
 ## SSL / DNS (staging hostname)
 
-1. Point `staging.yourdomain.com` DNS A/AAAA to the VPS  
+1. Point `staging.strideto.com` DNS A/AAAA to the VPS  
 2. Uncomment staging block in `deploy/Caddyfile`  
 3. `sudo systemctl reload caddy`  
 

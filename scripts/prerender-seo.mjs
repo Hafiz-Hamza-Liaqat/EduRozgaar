@@ -12,12 +12,12 @@ const DIST = path.join(__dirname, '../client/dist');
 const INDEX = path.join(DIST, 'index.html');
 
 const ROUTES = [
-  { path: '/', title: 'EduRozgaar – Jobs & Education Portal Pakistan', description: "Pakistan's job and education portal." },
+  { path: '/', title: 'Strideto – Jobs & Education Portal Pakistan', description: "Pakistan's job and education portal." },
   { path: '/jobs', title: 'Jobs in Pakistan', description: 'Find latest jobs in Pakistan.' },
   { path: '/scholarships', title: 'Scholarships in Pakistan', description: 'Find scholarships for Pakistani students.' },
   { path: '/admissions', title: 'Admissions in Pakistan', description: 'University and college admissions.' },
-  { path: '/about', title: 'About EduRozgaar', description: 'About EduRozgaar student-first mission.' },
-  { path: '/contact', title: 'Contact EduRozgaar', description: 'Contact EduRozgaar support.' },
+  { path: '/about', title: 'About Strideto', description: 'About Strideto student-first mission.' },
+  { path: '/contact', title: 'Contact Strideto', description: 'Contact Strideto support.' },
 ];
 
 async function main() {

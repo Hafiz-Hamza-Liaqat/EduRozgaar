@@ -176,7 +176,7 @@
   },
   "create": {
     "title": "Manual import / advanced track",
-    "subtitle": "Use this only for opportunities not listed on EduRozgaar, or when a listing link did not open the tracker automatically. Prefer Apply Now on job pages.",
+    "subtitle": "Use this only for opportunities not listed on Strideto, or when a listing link did not open the tracker automatically. Prefer Apply Now on job pages.",
     "modeLabel": "Import type",
     "modes": {
       "platform": "From platform listing (advanced)",

@@ -1,4 +1,4 @@
-const BRAND = 'EduRozgaar';
+const BRAND = 'Strideto';
 const PRIMARY = '#0d9488';
 
 function layout({ title, bodyHtml, lang = 'en', footerText }) {
@@ -20,7 +20,7 @@ function layout({ title, bodyHtml, lang = 'en', footerText }) {
 </td></tr>
 <tr><td style="padding:28px 24px;color:#111827;font-size:15px;line-height:1.6;">${bodyHtml}</td></tr>
 <tr><td style="padding:16px 24px 24px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;line-height:1.5;">
-${footerText || (lang === 'ur' ? 'یہ ای میل EduRozgaar کی طرف سے بھیجی گئی ہے۔' : 'This email was sent by EduRozgaar.')}
+${footerText || (lang === 'ur' ? 'یہ ای میل Strideto کی طرف سے بھیجی گئی ہے۔' : 'This email was sent by Strideto.')}
 </td></tr>
 </table>
 </td></tr>
@@ -39,17 +39,17 @@ const TEMPLATES = {
       subject: `${BRAND} – Welcome!`,
       html: layout({
         title: 'Welcome',
-        bodyHtml: `<p>Hi ${name || 'there'},</p><p>Welcome to ${BRAND}! Explore jobs, scholarships, admissions, and career tools tailored for Pakistan.</p>${btn(process.env.SITE_URL || 'https://edurozgaar.pk', 'Get started')}`,
+        bodyHtml: `<p>Hi ${name || 'there'},</p><p>Welcome to ${BRAND}! Explore jobs, scholarships, admissions, and career tools tailored for Pakistan.</p>${btn(process.env.SITE_URL || 'https://strideto.com', 'Get started')}`,
       }),
-      text: `Welcome to ${BRAND}! Visit ${process.env.SITE_URL || 'https://edurozgaar.pk'}`,
+      text: `Welcome to ${BRAND}! Visit ${process.env.SITE_URL || 'https://strideto.com'}`,
     }),
     ur: ({ name }) => ({
       subject: `${BRAND} – خوش آمدید!`,
       html: layout({
         lang: 'ur',
         title: 'خوش آمدید',
-        bodyHtml: `<p>السلام علیکم ${name || ''}،</p><p>${BRAND} میں خوش آمدید! پاکستان کے لیے نوکریاں، اسکالرشپس اور داخلہ مواقع دریافت کریں۔</p>${btn(process.env.SITE_URL || 'https://edurozgaar.pk', 'شروع کریں')}`,
-        footerText: 'یہ ای میل EduRozgaar کی طرف سے بھیجی گئی ہے۔',
+        bodyHtml: `<p>السلام علیکم ${name || ''}،</p><p>${BRAND} میں خوش آمدید! پاکستان کے لیے نوکریاں، اسکالرشپس اور داخلہ مواقع دریافت کریں۔</p>${btn(process.env.SITE_URL || 'https://strideto.com', 'شروع کریں')}`,
+        footerText: 'یہ ای میل Strideto کی طرف سے بھیجی گئی ہے۔',
       }),
       text: `${BRAND} میں خوش آمدید`,
     }),

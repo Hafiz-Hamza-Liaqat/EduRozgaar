@@ -1,4 +1,4 @@
-# Production Deployment Guide — EduRozgaar
+# Production Deployment Guide — Strideto
 
 ## Architecture
 
@@ -38,8 +38,8 @@ NODE_ENV=production
 MONGO_URI=
 JWT_SECRET=          # openssl rand -hex 32
 REFRESH_SECRET=      # different from JWT_SECRET
-SITE_URL=https://yourdomain.com
-FRONTEND_URL=https://yourdomain.com
+SITE_URL=https://strideto.com
+FRONTEND_URL=https://strideto.com
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
@@ -48,14 +48,14 @@ MAIL_HOST=              # Brevo: smtp-relay.brevo.com
 MAIL_PORT=587           # Brevo SMTP port (587 TLS)
 MAIL_USER=              # Brevo SMTP login (often your Brevo account email)
 MAIL_PASS=              # Brevo SMTP key (not REST API key)
-MAIL_FROM=noreply@yourdomain.com
+MAIL_FROM=noreply@strideto.com
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 REDIS_URL=           # optional but recommended
 CMS_SEED_ON_START=   # optional — set 0 to skip insert-only CMS bootstrap on boot
 ```
 
-5. Deploy → verify `GET https://api.yourdomain.com/api/health`.
+5. Deploy → verify `GET https://api.strideto.com/api/health`.
 
 ### CMS startup seed (production-safe)
 
@@ -82,7 +82,7 @@ When SMTP is not configured, `/api/health` reports `email.mode: "placeholder"` �
 3. Output: `dist`
 4. Environment:
    ```
-   VITE_API_URL=https://api.yourdomain.com/api
+   VITE_API_URL=https://api.strideto.com/api
    ```
 5. Add custom domain; enable HTTPS.
 
@@ -107,7 +107,7 @@ When SMTP is not configured, `/api/health` reports `email.mode: "placeholder"` �
 ## 6. Stripe
 
 1. Create live products/prices matching dev catalog.
-2. Webhook endpoint: `https://api.yourdomain.com/api/payments/webhook`
+2. Webhook endpoint: `https://api.strideto.com/api/payments/webhook`
 3. Events: `checkout.session.completed`, `payment_intent.succeeded`
 4. Set live keys on Render; test mode keys only in staging.
 
@@ -127,9 +127,9 @@ Update `SITE_URL`, `FRONTEND_URL`, and CORS after DNS propagates.
 ## 8. Post-deploy smoke test
 
 ```bash
-curl https://api.yourdomain.com/api/health
-curl https://yourdomain.com/robots.txt
-curl https://yourdomain.com/sitemap.xml
+curl https://api.strideto.com/api/health
+curl https://strideto.com/robots.txt
+curl https://strideto.com/sitemap.xml
 ```
 
 - Register test user on production
@@ -140,7 +140,7 @@ curl https://yourdomain.com/sitemap.xml
 
 ## 9. Search & analytics
 
-- **Google Search Console:** add property, submit `https://yourdomain.com/sitemap.xml`
+- **Google Search Console:** add property, submit `https://strideto.com/sitemap.xml`
 - **Google Analytics:** add GA4 tag to client env `VITE_GA_ID`
 - **Bing Webmaster Tools:** import from GSC or submit sitemap manually
 

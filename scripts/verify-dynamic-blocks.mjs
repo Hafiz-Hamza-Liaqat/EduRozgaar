@@ -109,7 +109,7 @@ function exists(rel) { return docExists(root, rel); }
     enabled: true,
     config: { title: 'Latest Jobs', buttonLink: '/jobs' },
   }];
-  const schemas = collectDynamicBlockJsonLd(blocks, 'https://edurozgaar.pk');
+  const schemas = collectDynamicBlockJsonLd(blocks, 'https://strideto.com');
   if (schemas[0]?.['@type'] === 'ItemList') pass('dynamic JSON-LD');
   else fail('dynamic JSON-LD');
   const deduped = dedupeDynamicJsonLd([...schemas, ...schemas]);
@@ -117,7 +117,7 @@ function exists(rel) { return docExists(root, rel); }
   else fail('JSON-LD dedupe');
   const seo = resolvePageBuilderSeo({
     layout: { blocks },
-    siteUrl: 'https://edurozgaar.pk',
+    siteUrl: 'https://strideto.com',
   });
   if (seo.dynamicSchemas?.length === 1) pass('page builder SEO integration');
   else fail('page builder SEO integration');

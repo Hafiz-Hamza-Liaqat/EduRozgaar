@@ -122,7 +122,7 @@ async function seedEmployers() {
           password: passwordHash,
           phone: `+92-300-${String(1000000 + i).slice(-7)}`,
           website: c.website || '',
-          companyDescription: `${c.name} hires talented graduates across Pakistan. Explore open positions on EduRozgaar.`,
+          companyDescription: `${c.name} hires talented graduates across Pakistan. Explore open positions on Strideto.`,
           industry: c.industry || '',
           companySize: c.size || '',
           city: c.city || '',
@@ -205,7 +205,7 @@ async function seedJobs() {
       salaryRange: i % 4 === 0 ? 'Rs. 50,000 – 120,000' : i % 4 === 1 ? 'Rs. 80,000 – 200,000' : 'Negotiable',
       // L.2.6.5 — Private/Internship posts support on-platform Apply → Tracker; government stays external
       applyType: isGov ? 'external' : 'internal',
-      applicationLink: isGov ? (company.website || 'https://edurozgaar.pk/jobs') : null,
+      applicationLink: isGov ? (company.website || 'https://strideto.com/jobs') : null,
     });
     inserted++;
   }
@@ -242,7 +242,7 @@ async function seedScholarships() {
       description: `${provider} offers ${level.toLowerCase()} scholarships for Pakistani students${country !== 'Pakistan' ? ` to study in ${country}` : ''}.`,
       eligibility: ['Pakistani nationality', 'Minimum 60% marks', 'English proficiency'],
       deadline: futureDate(60, i),
-      link: provider === 'HEC' ? 'https://www.hec.gov.pk' : 'https://edurozgaar.pk/scholarships',
+      link: provider === 'HEC' ? 'https://www.hec.gov.pk' : 'https://strideto.com/scholarships',
       status: 'active',
     });
     inserted++;
@@ -368,7 +368,7 @@ async function seedForeignStudies() {
       description: `Study ${program} (${level}) in ${country}. Scholarships and admission support available for Pakistani students.`,
       requirements: ['Valid passport', 'Academic transcripts', 'Language test scores'],
       deadline: futureDate(90, i),
-      link: 'https://edurozgaar.pk/foreign-studies',
+      link: 'https://strideto.com/foreign-studies',
       status: 'active',
     });
     inserted++;
@@ -387,7 +387,7 @@ async function seedExamPrep() {
           code: name,
           authority: name,
           description: `${name} exam preparation resources for Pakistani students.`,
-          syllabus: 'See official syllabus. Practice MCQs and past papers on EduRozgaar.',
+          syllabus: 'See official syllabus. Practice MCQs and past papers on Strideto.',
           status: 'active',
         },
       },
@@ -411,7 +411,7 @@ async function seedExamPrep() {
           year: 2019 + y,
           subject: pick(MCQ_SUBJECTS, y),
           status: 'active',
-          link: 'https://edurozgaar.pk/exam-prep',
+          link: 'https://strideto.com/exam-prep',
         });
         ppInserted++;
       }

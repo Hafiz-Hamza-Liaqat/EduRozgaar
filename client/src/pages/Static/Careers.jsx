@@ -29,8 +29,8 @@ export default function Careers() {
       </section>
       <p>
         {t('careersApplyPrefix')}{' '}
-        <a href="mailto:careers@edurozgaar.pk" className="text-primary dark:text-mint hover:underline">
-          careers@edurozgaar.pk
+        <a href="mailto:careers@strideto.com" className="text-primary dark:text-mint hover:underline">
+          careers@strideto.com
         </a>
         {' '}{t('careersApplySuffix')}
       </p>

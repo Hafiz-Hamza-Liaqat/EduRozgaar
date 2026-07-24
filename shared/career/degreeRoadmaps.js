@@ -70,7 +70,7 @@ export const DEGREE_ROADMAPS = [
       { label: 'English Proficiency', href: '/assessments/english-proficiency-basics' },
     ],
     faq: [
-      { q: 'Private vs government?', a: 'Government prefers formal recruitment cycles; private often skills + interviews. Track both on EduRozgaar.' },
+      { q: 'Private vs government?', a: 'Government prefers formal recruitment cycles; private often skills + interviews. Track both on Strideto.' },
     ],
     links: {
       jobs: '/jobs?q=engineer',

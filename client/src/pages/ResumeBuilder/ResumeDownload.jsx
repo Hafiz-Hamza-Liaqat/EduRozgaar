@@ -53,7 +53,7 @@ async function captureElement(target) {
   }
 }
 
-export function ResumeDownload({ previewRef, fileName = 'EduRozgaar-Resume' }) {
+export function ResumeDownload({ previewRef, fileName = 'Strideto-Resume' }) {
   const { t } = useTranslation('resume');
   const [downloading, setDownloading] = useState(false);
 

@@ -51,7 +51,7 @@ export const sendDaily = asyncHandler(async (req, res) => {
     Admission.find({ status: 'active' }).sort({ deadline: 1 }).limit(5).select('program institution deadline').lean(),
   ]);
 
-  const subject = `EduRozgaar Daily – ${newJobs.length} new jobs, scholarships & admission deadlines`;
+  const subject = `Strideto Daily – ${newJobs.length} new jobs, scholarships & admission deadlines`;
   const summary = `New jobs: ${newJobs.length}, Scholarships: ${trendingScholarships.length}, Admissions: ${admissionDeadlines.length}`;
 
   const log = await NewsletterLog.create({

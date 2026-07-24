@@ -22,8 +22,8 @@ export default function Support() {
         <ul className="space-y-3">
           <li>
             <strong>{t('supportEmailLabel')}</strong>{' '}
-            <a href="mailto:support@edurozgaar.pk" className="text-primary dark:text-mint hover:underline">
-              support@edurozgaar.pk
+            <a href="mailto:support@strideto.com" className="text-primary dark:text-mint hover:underline">
+              support@strideto.com
             </a>
           </li>
           <li>

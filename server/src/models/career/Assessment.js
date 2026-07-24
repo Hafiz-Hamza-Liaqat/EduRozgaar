@@ -33,7 +33,7 @@ export const assessmentCredentialRuleSchema = new mongoose.Schema(
     enabled: { type: Boolean, default: true },
     skillName: { type: String, trim: true, default: '' },
     credentialTitle: { type: String, trim: true, default: '' },
-    issuer: { type: String, trim: true, default: 'EduRozgaar Assessments' },
+    issuer: { type: String, trim: true, default: 'Strideto Assessments' },
     minScore: { type: Number, min: 0, max: 100, default: null },
     expiryDays: { type: Number, min: 0, default: 365 },
     autoVerify: { type: Boolean, default: true },

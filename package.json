@@ -1,7 +1,7 @@
 {
-  "name": "edurozgaar-e-portal",
+  "name": "strideto-e-portal",
   "version": "1.0.0",
-  "description": "EduRozgaar – Pakistan Job & Education E-Portal",
+  "description": "Strideto – Pakistan Job & Education E-Portal",
   "private": true,
   "scripts": {
     "dev": "npm run dev --prefix client",

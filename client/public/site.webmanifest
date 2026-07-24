@@ -1,10 +1,10 @@
 {
-  "name": "EduRozgaar",
-  "short_name": "EduRozgaar",
-  "description": "Pakistan's job and education portal — jobs, scholarships, admissions, and exam prep.",
+  "name": "Strideto",
+  "short_name": "Strideto",
+  "description": "Career & Education Platform",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#31708E",
+  "background_color": "#FFFFFF",
   "theme_color": "#31708E",
   "lang": "en-PK",
   "icons": [
@@ -13,6 +13,30 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

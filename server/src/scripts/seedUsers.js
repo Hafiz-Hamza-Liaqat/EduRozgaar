@@ -16,7 +16,7 @@ const STUDENTS = [
   { name: 'Omar Sheikh', email: 'omar@example.com', password: 'Test1234', role: 'User', province: 'Balochistan', interests: ['Engineering', 'Jobs', 'Admissions'] },
 ];
 
-const ADMIN = { name: 'Admin User', email: 'admin@edurozgaar.pk', password: 'Admin1234', role: 'Admin', province: '', interests: [] };
+const ADMIN = { name: 'Admin User', email: 'admin@strideto.com', password: 'Admin1234', role: 'Admin', province: '', interests: [] };
 
 async function seed() {
   await mongoose.connect(MONGO_URI);

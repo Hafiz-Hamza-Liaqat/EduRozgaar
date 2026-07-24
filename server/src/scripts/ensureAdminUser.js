@@ -2,7 +2,7 @@
  * Ensure an admin user exists. Safe to run anytime (updates existing or creates).
  * Run from server dir: node src/scripts/ensureAdminUser.js
  *
- * Development default: admin@edurozgaar.pk / Admin1234
+ * Development default: admin@strideto.com / Admin1234
  * Production: ADMIN_EMAIL and ADMIN_PASSWORD are required (NODE_ENV=production).
  *
  * Example:
@@ -14,7 +14,7 @@ import { User } from '../models/User.js';
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/edurozgaar';
 const isProduction = process.env.NODE_ENV === 'production';
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@edurozgaar.pk').trim().toLowerCase();
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@strideto.com').trim().toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (isProduction ? null : 'Admin1234');
 
 if (isProduction && !ADMIN_PASSWORD) {

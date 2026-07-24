@@ -1,6 +1,6 @@
-# Contributing to EduRozgaar
+# Contributing to Strideto
 
-Thank you for your interest in EduRozgaar – Pakistan Career Intelligence Platform.
+Thank you for your interest in Strideto – Pakistan Career Intelligence Platform.
 
 ## Ownership
 

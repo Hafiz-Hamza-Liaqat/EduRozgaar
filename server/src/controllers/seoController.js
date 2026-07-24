@@ -8,7 +8,7 @@ import { IntlScholarship } from '../models/IntlScholarship.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { PAKISTAN_PROVINCES } from '../../../shared/constants/pakistan.js';
 
-const SITE_URL = process.env.SITE_URL || 'https://edurozgaar.pk';
+const SITE_URL = process.env.SITE_URL || 'https://strideto.com';
 const CITIES = ['lahore', 'karachi', 'islamabad', 'rawalpindi', 'faisalabad', 'multan', 'peshawar', 'quetta', 'sialkot', 'gujranwala'];
 const PROVINCES = PAKISTAN_PROVINCES
   .filter((p) => p !== 'Other')
@@ -147,8 +147,8 @@ export const getSeoJobsPage = asyncHandler(async (req, res) => {
   }
   const jobs = await Job.find(filter).sort({ createdAt: -1 }).limit(limit).lean();
   const title = province
-    ? `Latest Government & Private Jobs in ${province} 2026 | EduRozgaar`
-    : `Latest Jobs in ${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} 2026 | EduRozgaar`;
+    ? `Latest Government & Private Jobs in ${province} 2026 | Strideto`
+    : `Latest Jobs in ${slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} 2026 | Strideto`;
   const description = `Find the latest government and private jobs in ${slug.replace(/-/g, ' ')}. Updated daily with verified opportunities.`;
   const base = SITE_URL.replace(/\/$/, '');
   res.json({
@@ -164,7 +164,7 @@ export const getSeoJobsByCategory = asyncHandler(async (req, res) => {
   if (!jobType) return res.status(404).json({ error: 'Invalid category' });
   const limit = Math.min(50, parseInt(req.query.limit, 10) || 24);
   const jobs = await Job.find({ status: 'active', jobType }).sort({ createdAt: -1 }).limit(limit).lean();
-  const title = `Latest ${jobType} in Pakistan 2026 | EduRozgaar`;
+  const title = `Latest ${jobType} in Pakistan 2026 | Strideto`;
   const description = `Find the latest ${jobType.toLowerCase()} in Pakistan. Updated daily with verified opportunities.`;
   const base = SITE_URL.replace(/\/$/, '');
   res.json({
@@ -184,7 +184,7 @@ export const getSeoJobsBySource = asyncHandler(async (req, res) => {
     .limit(limit)
     .lean();
   const sourceName = source.toUpperCase();
-  const title = `Latest ${sourceName} Jobs in Pakistan 2026 | EduRozgaar`;
+  const title = `Latest ${sourceName} Jobs in Pakistan 2026 | Strideto`;
   const description = `Find the latest ${sourceName} jobs and vacancies. Apply before deadline. Updated regularly.`;
   const base = SITE_URL.replace(/\/$/, '');
   res.json({
@@ -200,7 +200,7 @@ export const getLatestGovernmentJobs = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(limit)
     .lean();
-  const title = 'Latest Government Jobs in Pakistan 2026 | FPSC, PPSC, NTS, WAPDA | EduRozgaar';
+  const title = 'Latest Government Jobs in Pakistan 2026 | FPSC, PPSC, NTS, WAPDA | Strideto';
   const description = 'Find the latest government jobs in Pakistan. FPSC, PPSC, NTS, WAPDA and more. Updated every 6 hours.';
   const base = SITE_URL.replace(/\/$/, '');
   res.json({
@@ -216,7 +216,7 @@ export const getSeoScholarshipsPage = asyncHandler(async (req, res) => {
   const filter = { status: 'active', country: new RegExp(country, 'i') };
   const scholarships = await Scholarship.find(filter).sort({ deadline: 1 }).limit(limit).lean();
   const countryTitle = country.replace(/\b\w/g, (c) => c.toUpperCase());
-  const title = `Scholarships in ${countryTitle} for Pakistani Students 2026 | EduRozgaar`;
+  const title = `Scholarships in ${countryTitle} for Pakistani Students 2026 | Strideto`;
   const description = `Find scholarships in ${countryTitle} for Pakistani students. Fully funded and partial scholarships.`;
   const base = SITE_URL.replace(/\/$/, '');
   res.json({

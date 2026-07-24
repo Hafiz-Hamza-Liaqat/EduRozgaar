@@ -268,7 +268,7 @@ export async function seedAssessments({ force = false } = {}) {
           enabled: true,
           skillName: def.skillName,
           credentialTitle: `${def.skillName} Verified`,
-          issuer: 'EduRozgaar Assessments',
+          issuer: 'Strideto Assessments',
           minScore: 70,
           expiryDays: 365,
           autoVerify: true,

@@ -1,4 +1,4 @@
-# Moderator Manual — EduRozgaar
+# Moderator Manual — Strideto
 
 For users with **Moderator** role.
 

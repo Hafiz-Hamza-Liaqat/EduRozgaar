@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2">
-  <path d="M16 4L4 10v12l12 6 12-6V10L16 4z"/>
-  <path d="M16 16l8-4M16 16v12M16 16L8 12"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Strideto">
+  <rect width="32" height="32" rx="8" fill="#31708E"/>
+  <path d="M8 20 L14 12 L18 16 L24 8" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="24" cy="8" r="2" fill="#7DD3C0"/>
 </svg>

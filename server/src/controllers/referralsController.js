@@ -2,7 +2,7 @@ import { User } from '../models/User.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ensureReferralCode } from '../utils/referralCode.js';
 
-const SITE_URL = process.env.SITE_URL || 'https://edurozgaar.pk';
+const SITE_URL = process.env.SITE_URL || 'https://strideto.com';
 
 export const getMyReferrals = asyncHandler(async (req, res) => {
   const userId = req.user?.userId;

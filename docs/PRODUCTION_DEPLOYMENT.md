@@ -1,6 +1,6 @@
 # Production Deployment Guide
 
-**Sprint C.7.0.9** — Deploy EduRozgaar with Docker Compose.
+**Sprint C.7.0.9** — Deploy Strideto with Docker Compose.
 
 ## Prerequisites
 

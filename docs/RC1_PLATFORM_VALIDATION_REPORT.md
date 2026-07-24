@@ -14,7 +14,7 @@
 
 # GO WITH CONDITIONS — Release Candidate
 
-EduRozgaar is **Release Candidate ready for Beta (25–50 users)** after RC-1 defect fixes. Core Career Intelligence, authz, search, assessments, and employer intelligence verify suites pass. Remaining conditions are **operational** (SMTP, TLS, staging live, Redis for multi-instance) and **known product limits** (employer JWT refresh, fuzzy search, full WCAG, ESLint debt) — not missing MVP architecture.
+Strideto is **Release Candidate ready for Beta (25–50 users)** after RC-1 defect fixes. Core Career Intelligence, authz, search, assessments, and employer intelligence verify suites pass. Remaining conditions are **operational** (SMTP, TLS, staging live, Redis for multi-instance) and **known product limits** (employer JWT refresh, fuzzy search, full WCAG, ESLint debt) — not missing MVP architecture.
 
 | Scorecard | Score (0–100) |
 |-----------|---------------|

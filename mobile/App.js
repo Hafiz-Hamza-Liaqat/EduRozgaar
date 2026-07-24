@@ -1,5 +1,5 @@
 /**
- * EduRozgaar Mobile – Phase-8 scaffold.
+ * Strideto Mobile – Phase-8 scaffold.
  * Screens: Home, Jobs, Scholarships, Admissions, Saved, Profile.
  * Uses /api/v1, dark/light theme placeholder, EN/UR i18n.
  */

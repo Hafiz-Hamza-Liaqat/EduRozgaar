@@ -1,4 +1,4 @@
-# EduRozgaar E-Portal – Deployment & Setup Guide
+# Strideto E-Portal – Deployment & Setup Guide
 
 This guide covers local development, database setup, environment variables, and production deployment so the project runs fully and correctly.
 
@@ -96,8 +96,8 @@ Use this URI as `MONGO_URI` in the server `.env` (see below).
 | `NODE_ENV`     | No       | `development` or `production`. |
 | `JWT_EXPIRES_IN` | No     | Access token expiry (default `1h`). |
 | `REFRESH_EXPIRES_IN` | No  | Refresh token expiry (default `7d`). |
-| `SITE_URL`     | No       | Public site URL (for sitemap, referrals; e.g. `https://edurozgaar.pk`). |
-| `FRONTEND_URL` | No       | Frontend app URL for password-reset emails (defaults to `http://localhost:5173` if unset). Set to your client URL in production (e.g. `https://edurozgaar.pk`). |
+| `SITE_URL`     | No       | Public site URL (for sitemap, referrals; e.g. `https://strideto.com`). |
+| `FRONTEND_URL` | No       | Frontend app URL for password-reset emails (defaults to `http://localhost:5173` if unset). Set to your client URL in production (e.g. `https://strideto.com`). |
 | `DISABLE_SCRAPER_CRON` | No  | Set to `1` to disable the 6-hour scraper cron. |
 | `REDIS_URL`    | No       | Optional Redis; if not set, in-memory store is used. |
 
@@ -293,8 +293,8 @@ Recommended stack: **VPS + Docker Compose + Caddy (HTTPS)**.
 
 2. **Clone and configure env**:
    ```bash
-   git clone https://github.com/SyedDaniyal31/EduRozgaar.git
-   cd EduRozgaar
+   git clone https://github.com/SyedDaniyal31/Strideto.git
+   cd Strideto
    cp .env.template .env
    # Edit .env: JWT_SECRET (openssl rand -hex 32), SITE_URL, VITE_APP_URL, MAIL_*
    ```
@@ -317,7 +317,7 @@ Recommended stack: **VPS + Docker Compose + Caddy (HTTPS)**.
 
 6. **Smoke test**:
    ```bash
-   SITE_URL=https://yourdomain.com npm run smoke-test
+   SITE_URL=https://strideto.com npm run smoke-test
    ```
 
 ### Production security notes

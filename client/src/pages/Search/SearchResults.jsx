@@ -50,7 +50,7 @@ export default function SearchResults() {
     <>
       <SeoHead
         title={title}
-        description={q ? `Search results for ${q} on EduRozgaar` : 'Search EduRozgaar'}
+        description={q ? `Search results for ${q} on Strideto` : 'Search Strideto'}
         canonical={q ? canonical : ROUTES.SEARCH}
         noindex
       />

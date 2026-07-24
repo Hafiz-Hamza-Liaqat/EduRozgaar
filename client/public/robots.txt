@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /auth/
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /saved-jobs
+Disallow: /employer
+Disallow: /admin
+Disallow: /resume-analyzer
+Disallow: /badges
+
+Sitemap: https://strideto.com/sitemap.xml

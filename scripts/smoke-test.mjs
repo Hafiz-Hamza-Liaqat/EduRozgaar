@@ -11,7 +11,7 @@ const apiBase = process.env.API_URL
   : `${base}/api`;
 
 const checks = [
-  { name: 'Homepage', url: `${base}/`, expectStatus: 200, expectBody: /EduRozgaar|edurozgaar|root|<!DOCTYPE/i },
+  { name: 'Homepage', url: `${base}/`, expectStatus: 200, expectBody: /Strideto|edurozgaar|root|<!DOCTYPE/i },
   { name: 'Health live', url: `${apiBase}/health/live`, expectStatus: 200, expectBody: /"live"\s*:\s*true/ },
   { name: 'Health ready', url: `${apiBase}/health/ready`, expectStatus: 200, expectBody: /"status"\s*:\s*"ready"/, jsonAssert: assertReady },
   { name: 'Health extended', url: `${apiBase}/health`, expectStatus: 200 },

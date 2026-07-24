@@ -1,13 +1,13 @@
 # NOTICE
 
-EduRozgaar – Pakistan Career Intelligence Platform
+Strideto – Pakistan Career Intelligence Platform
 
 ------------------------------------------------------------
 Project Ownership & Contributors
 ------------------------------------------------------------
 
 **Project:**  
-EduRozgaar – Pakistan Career Intelligence Platform
+Strideto – Pakistan Career Intelligence Platform
 
 **Founder**  
 --------  
@@ -21,9 +21,9 @@ Name: Daniyal Abbas Shah
 Role: Co-Founder, Developer, UI/UX Designer, Web Specialist  
 Email: abbaskazmi231@gmail.com  
 
-Copyright (c) 2026 EduRozgaar
+Copyright (c) 2026 Strideto
 
-All trademarks, logos, and branding associated with EduRozgaar remain the
+All trademarks, logos, and branding associated with Strideto remain the
 property of the project owners unless otherwise stated.
 
 ---

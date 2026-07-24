@@ -1,4 +1,4 @@
-# AI Budget Policy — EduRozgaar
+# AI Budget Policy — Strideto
 
 **Status:** Official engineering policy (L.2)  
 **Aligned with:** L.1 Production Readiness §14

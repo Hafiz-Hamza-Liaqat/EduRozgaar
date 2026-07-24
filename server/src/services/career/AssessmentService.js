@@ -373,7 +373,7 @@ export const AssessmentService = {
           userId,
           {
             title: rule.credentialTitle || `${assessment.title} — Verified`,
-            issuer: rule.issuer || 'EduRozgaar Assessments',
+            issuer: rule.issuer || 'Strideto Assessments',
             source: 'assessment',
             skillName,
             score,

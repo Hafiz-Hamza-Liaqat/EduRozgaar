@@ -1,4 +1,6 @@
-# EduRozgaar – Pakistan Career Intelligence Platform
+# Strideto – Pakistan Career Intelligence Platform
+
+**Brand:** Strideto · **Tagline:** Your Career Journey Starts Here · **Domain:** [https://strideto.com](https://strideto.com)
 
 Production-ready platform helping students find **jobs, scholarships, admissions, and career readiness** across Pakistan — with employer hiring tools and an admin CMS.
 
@@ -6,7 +8,7 @@ Production-ready platform helping students find **jobs, scholarships, admissions
 
 ## Overview
 
-EduRozgaar combines a public opportunity marketplace with Career Intelligence (Talent Profile, readiness scoring, assessments, credentials) and employer productivity (candidate filters, comparison, job match, vacancy seats).
+Strideto combines a public opportunity marketplace with Career Intelligence (Talent Profile, readiness scoring, assessments, credentials) and employer productivity (candidate filters, comparison, job match, vacancy seats).
 
 ## Features
 
@@ -36,8 +38,8 @@ Optional screenshots live under `docs/screenshots/` (add as needed for the GitHu
 ## Installation
 
 ```bash
-git clone https://github.com/Hafiz-Hamza-Liaqat/EduRozgaar.git
-cd EduRozgaar
+git clone https://github.com/Hafiz-Hamza-Liaqat/Strideto.git
+cd Strideto
 npm install
 cd client && npm install && cd ..
 cd server && npm install && cd ..

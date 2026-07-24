@@ -5,7 +5,7 @@ import { Employer } from '../models/Employer.js';
 import { notifyStaff } from './notificationService.js';
 import { enqueueJob } from './jobQueueService.js';
 
-const SITE = process.env.SITE_URL || process.env.FRONTEND_URL || 'https://edurozgaar.pk';
+const SITE = process.env.SITE_URL || process.env.FRONTEND_URL || 'https://strideto.com';
 
 export function queueEmail({ to, templateKey, lang, vars, dedupKey, subject, body, text, template, scheduledAt }) {
   if (!to) return Promise.resolve({ enqueued: false });

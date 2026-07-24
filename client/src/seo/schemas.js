@@ -100,19 +100,19 @@ export function collectionPageSchema({ name, description, url }) {
   return webPageSchema({ name, description, url, type: 'CollectionPage' });
 }
 
-export function contactPageSchema({ name = 'Contact EduRozgaar', description, url = '/contact' }) {
+export function contactPageSchema({ name = 'Contact Strideto', description, url = '/contact' }) {
   return webPageSchema({
     name,
-    description: description || 'Contact EduRozgaar for support, partnerships, or to submit opportunities.',
+    description: description || 'Contact Strideto for support, partnerships, or to submit opportunities.',
     url,
     type: 'ContactPage',
   });
 }
 
-export function aboutPageSchema({ name = 'About EduRozgaar', description, url = '/about' }) {
+export function aboutPageSchema({ name = 'About Strideto', description, url = '/about' }) {
   return webPageSchema({
     name,
-    description: description || "Learn about EduRozgaar, Pakistan's student-first jobs and education portal.",
+    description: description || "Learn about Strideto — your career journey starts here with jobs, scholarships, admissions, and skills.",
     url,
     type: 'AboutPage',
   });

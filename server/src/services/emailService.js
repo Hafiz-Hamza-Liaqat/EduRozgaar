@@ -21,7 +21,7 @@ function getTransporter() {
 }
 
 function getFromAddress() {
-  return process.env.MAIL_FROM || process.env.MAIL_USER || 'noreply@edurozgaar.pk';
+  return process.env.MAIL_FROM || process.env.MAIL_USER || 'noreply@strideto.com';
 }
 
 export function isSmtpConfigured() {

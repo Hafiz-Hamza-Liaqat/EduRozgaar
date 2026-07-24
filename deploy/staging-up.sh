@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bring up EduRozgaar staging stack (L.2)
+# Bring up Strideto staging stack (L.2)
 # Usage: bash deploy/staging-up.sh
 
 set -euo pipefail

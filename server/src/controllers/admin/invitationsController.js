@@ -44,7 +44,7 @@ async function sendInvitationEmail(invitation, rawToken, inviter) {
     vars: {
       url: acceptUrl,
       role: invitation.role,
-      inviterName: inviter?.name || inviter?.email || 'EduRozgaar Admin',
+      inviterName: inviter?.name || inviter?.email || 'Strideto Admin',
       message: invitation.message || '',
       expiresHours: 72,
     },

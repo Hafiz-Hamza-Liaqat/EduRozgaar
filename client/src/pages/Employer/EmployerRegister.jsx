@@ -129,7 +129,7 @@ export default function EmployerRegister() {
           </div>
           <p className="mt-4 text-center">
             <Link to={ROUTES.HOME} className="text-sm text-slate-500 hover:text-[#635BFF]">
-              {t('employer:backToEduRozgaar')}
+              {t('employer:backToStrideto')}
             </Link>
           </p>
         </div>

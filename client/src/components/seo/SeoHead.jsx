@@ -78,6 +78,8 @@ export default function SeoHead({
       <meta name="description" content={desc} />
       <meta name="keywords" content={keywords || defaultKeywords} />
       <meta name="robots" content={robotsContent} />
+      <meta name="theme-color" content={SEO_CONFIG.themeColor} />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
       {alternates &&

@@ -6,7 +6,7 @@ RUN npm ci
 COPY . .
 ARG VITE_APP_URL
 ARG VITE_API_URL
-ENV VITE_APP_URL=${VITE_APP_URL:-https://edurozgaar.pk}
+ENV VITE_APP_URL=${VITE_APP_URL:-https://strideto.com}
 ENV VITE_API_URL=${VITE_API_URL:-/api}
 RUN npm run build
 

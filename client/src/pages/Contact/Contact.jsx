@@ -85,10 +85,10 @@ export default function Contact() {
         </form>
 
         <div className="mt-8 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 space-y-2 text-sm text-gray-600 dark:text-gray-400">
-          <p><strong>{t('static:contactEmailLabel')}</strong> contact@edurozgaar.pk</p>
+          <p><strong>{t('static:contactEmailLabel')}</strong> contact@strideto.com</p>
           <p>
             {t('static:contactSocialPrefix')}{' '}
-            <a href="https://t.me/edurozgaar" target="_blank" rel="noopener noreferrer" className="text-primary dark:text-mint hover:underline">Telegram</a>
+            <a href="https://t.me/strideto" target="_blank" rel="noopener noreferrer" className="text-primary dark:text-mint hover:underline">Telegram</a>
           </p>
         </div>
         <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">

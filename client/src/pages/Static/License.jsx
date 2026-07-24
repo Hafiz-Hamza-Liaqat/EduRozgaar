@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { StaticPageShell } from '../../components/static/StaticPageShell';
 import { ROUTES } from '../../constants';
 
-const REPO_URL = 'https://github.com/SyedDaniyal31/EduRozgaar';
+const REPO_URL = 'https://github.com/SyedDaniyal31/Strideto';
 
 export default function License() {
   const { t } = useTranslation('static');

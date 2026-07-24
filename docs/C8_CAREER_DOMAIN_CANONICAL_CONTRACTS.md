@@ -1462,7 +1462,7 @@ For each Application:
 | Timeline | Same verbs + dev-specific verbs |
 | Scoring | `technical_readiness` score type |
 
-### 17.2 GigRadar-only (never in EduRozgaar core)
+### 17.2 GigRadar-only (never in Strideto core)
 
 - GitHub/GitLab OAuth tokens
 - Repository snapshot storage

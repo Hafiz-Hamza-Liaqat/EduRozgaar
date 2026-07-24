@@ -157,7 +157,7 @@ export default function ResumeBuilder() {
     }
   };
 
-  const fileName = (resume.personalInfo?.fullName || t('resume:defaultTitle')).replace(/\s+/g, '-') + '-EduRozgaar';
+  const fileName = (resume.personalInfo?.fullName || t('resume:defaultTitle')).replace(/\s+/g, '-') + '-Strideto';
 
   if (loading) {
     return (

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# EduRozgaar VPS initial setup (Ubuntu 22.04+). Run as root or with sudo.
+# Strideto VPS initial setup (Ubuntu 22.04+). Run as root or with sudo.
 # Usage: sudo bash deploy/setup-vps.sh
 
 set -euo pipefail
@@ -40,7 +40,7 @@ echo "✅ VPS base setup complete."
 echo ""
 echo "Next steps:"
 echo "  1. Point your domain A record to this server's public IP"
-echo "  2. Clone repo: git clone https://github.com/SyedDaniyal31/EduRozgaar.git && cd EduRozgaar"
+echo "  2. Clone repo: git clone https://github.com/SyedDaniyal31/Strideto.git && cd Strideto"
 echo "  3. cp .env.template .env && edit .env (JWT_SECRET, SITE_URL, MAIL_*)"
 echo "  4. bash deploy/deploy.sh"
 echo "  5. Edit deploy/Caddyfile with your domain, then:"

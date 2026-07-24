@@ -1,16 +1,16 @@
-/** Site-wide SEO configuration for EduRozgaar */
+/** Site-wide SEO configuration for Strideto */
 import { LANGUAGES } from '../i18n/config.js';
 
-export const SITE_URL = (import.meta.env.VITE_APP_URL || 'https://edurozgaar.pk').replace(/\/$/, '');
-export const SITE_NAME = 'EduRozgaar';
-export const SITE_TAGLINE = 'Jobs & Education Portal Pakistan';
-export const DEFAULT_TITLE = `${SITE_NAME} – ${SITE_TAGLINE}`;
+export const SITE_URL = (import.meta.env.VITE_APP_URL || 'https://strideto.com').replace(/\/$/, '');
+export const SITE_NAME = 'Strideto';
+export const SITE_TAGLINE = 'Your Career Journey Starts Here';
+export const DEFAULT_TITLE = `${SITE_NAME} | Jobs, Scholarships, Admissions & Career Platform`;
 export const DEFAULT_DESCRIPTION =
-  "EduRozgaar – Pakistan's job and education portal. Find jobs, scholarships, admissions, internships, and study abroad opportunities.";
+  'Discover jobs, scholarships, university admissions, internships, career guidance, resume builder, and education opportunities across Pakistan.';
 export const DEFAULT_KEYWORDS =
-  'jobs Pakistan, scholarships Pakistan, admissions, government jobs, FPSC, PPSC, NTS, education portal, EduRozgaar';
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
-export const TWITTER_HANDLE = '@EduRozgaar';
+  'jobs pakistan, government jobs, private jobs, scholarships, internships, career guidance, resume builder, admissions, universities, students, education portal, Pakistan jobs, latest jobs, career opportunities, Strideto';
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+export const TWITTER_HANDLE = '@Strideto';
 export const THEME_COLOR = '#31708E';
 export const LOCALE_EN = 'en_PK';
 export const LOCALE_UR = 'ur_PK';
@@ -84,6 +84,6 @@ export function buildAlternateUrls(path = '/') {
 
 export function formatPageTitle(title, suffix = SITE_NAME) {
   if (!title || !String(title).trim()) return DEFAULT_TITLE;
-  if (title.includes(suffix)) return title;
-  return `${title} – ${suffix}`;
+  if (title.includes(suffix) || title.includes('|')) return title;
+  return `${title} | ${suffix}`;
 }

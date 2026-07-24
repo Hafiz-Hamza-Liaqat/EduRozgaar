@@ -1,6 +1,6 @@
 # Authors
 
-Project ownership and primary contributors for **EduRozgaar**.
+Project ownership and primary contributors for **Strideto**.
 
 For the legal license terms, see [LICENSE](./LICENSE).  
 For copyright and trademark attribution, see [NOTICE.md](./NOTICE.md).
@@ -9,7 +9,7 @@ For copyright and trademark attribution, see [NOTICE.md](./NOTICE.md).
 
 ## Project Ownership & Contributors
 
-**Project:** EduRozgaar – Pakistan Career Intelligence Platform
+**Project:** Strideto – Pakistan Career Intelligence Platform
 
 ### Founder
 

@@ -129,7 +129,7 @@ const RESOURCE_CATALOG = [
   },
   {
     id: 'resource-guidance',
-    title: 'EduRozgaar Career Guidance center',
+    title: 'Strideto Career Guidance center',
     type: 'roadmap',
     category: 'aptitude',
     href: '/career-guidance',

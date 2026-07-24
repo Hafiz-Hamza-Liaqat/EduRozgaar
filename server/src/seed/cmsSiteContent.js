@@ -82,7 +82,7 @@ function defaultFooterColumns() {
 }
 
 const STATIC_PAGE_SEEDS = [
-  { slug: 'about', pageType: 'about', title: 'About Us', heading: 'About EduRozgaar' },
+  { slug: 'about', pageType: 'about', title: 'About Us', heading: 'About Strideto' },
   { slug: 'contact', pageType: 'contact', title: 'Contact', heading: 'Contact Us' },
   { slug: 'faq', pageType: 'faq', title: 'FAQ', heading: 'Frequently Asked Questions' },
   { slug: 'privacy-policy', pageType: 'privacy', title: 'Privacy Policy', heading: 'Privacy Policy' },
@@ -90,7 +90,7 @@ const STATIC_PAGE_SEEDS = [
   { slug: 'cookies', pageType: 'cookies', title: 'Cookie Policy', heading: 'Cookie Policy' },
   { slug: 'disclaimer', pageType: 'disclaimer', title: 'Disclaimer', heading: 'Disclaimer' },
   { slug: 'refund-policy', pageType: 'refund', title: 'Refund Policy', heading: 'Refund Policy' },
-  { slug: 'careers', pageType: 'careers', title: 'Careers', heading: 'Careers at EduRozgaar' },
+  { slug: 'careers', pageType: 'careers', title: 'Careers', heading: 'Careers at Strideto' },
   { slug: 'advertise', pageType: 'advertise', title: 'Advertise', heading: 'Advertise With Us' },
   { slug: 'help-center', pageType: 'help', title: 'Help Center', heading: 'Help Center' },
   { slug: 'support', pageType: 'support', title: 'Support', heading: 'Support' },
@@ -151,7 +151,7 @@ export async function seedCmsSiteContent() {
           partners: { enabled: false, title: 'Our Partners', logos: [] },
           newsletter: { enabled: true, title: 'Get Daily Job & Scholarship Alerts', subtitle: 'Subscribe and we\'ll send you the latest opportunities.' },
         },
-        seoTitle: 'EduRozgaar – Jobs & Education Portal Pakistan',
+        seoTitle: 'Strideto – Jobs & Education Portal Pakistan',
         metaDescription: 'Pakistan\'s job and education portal. Find jobs, scholarships, admissions, internships, and study abroad opportunities.',
       }
     );
@@ -171,13 +171,13 @@ export async function seedCmsSiteContent() {
         status: 'draft',
         columns: defaultFooterColumns(),
         socialLinks: [
-          { platform: 'twitter', url: 'https://twitter.com/edurozgaar', icon: 'twitter' },
-          { platform: 'linkedin', url: 'https://linkedin.com/company/edurozgaar', icon: 'linkedin' },
-          { platform: 'telegram', url: 'https://t.me/edurozgaar', icon: 'telegram' },
+          { platform: 'twitter', url: 'https://twitter.com/strideto', icon: 'twitter' },
+          { platform: 'linkedin', url: 'https://linkedin.com/company/strideto', icon: 'linkedin' },
+          { platform: 'telegram', url: 'https://t.me/strideto', icon: 'telegram' },
         ],
-        contact: { email: 'contact@edurozgaar.pk', phone: '', address: 'Pakistan' },
+        contact: { email: 'contact@strideto.com', phone: '', address: 'Pakistan' },
         newsletterText: 'Get jobs, scholarships & admission alerts.',
-        copyrightText: '© 2026 EduRozgaar. All rights reserved.',
+        copyrightText: '© 2026 Strideto. All rights reserved.',
       }
     );
     stats.footerNav[footerResult] += 1;
@@ -240,7 +240,7 @@ export async function restorePublishedCmsDefaults(locale = 'en') {
 
   const footer = await CmsNavigation.findOne({ locale, placement: 'footer' });
   if (footer?.status === 'published' && isC61TestMarker(footer.copyrightText)) {
-    footer.copyrightText = '© 2026 EduRozgaar. All rights reserved.';
+    footer.copyrightText = '© 2026 Strideto. All rights reserved.';
     await footer.save();
     restored.footer = true;
   }

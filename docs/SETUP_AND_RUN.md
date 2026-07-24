@@ -1,4 +1,4 @@
-# EduRozgaar – What to Do: Setup, APIs, JWT, and Running on Localhost
+# Strideto – What to Do: Setup, APIs, JWT, and Running on Localhost
 
 This guide explains **everything you need to do** to run the project on your machine and what to set for deployment (APIs, JWT, database).
 
@@ -82,7 +82,7 @@ SITE_URL=http://localhost:5173
 | Variable       | What to put |
 |----------------|-------------|
 | **MONGO_URI**  | Your MongoDB URL from Part 1 (local: `mongodb://localhost:27017/edurozgaar` or Atlas URI from above). |
-| **JWT_SECRET** | Any long random string (e.g. 32+ characters). Example: `mySuperSecretKeyForEduRozgaar2024!@#` – in production use a strong random value. |
+| **JWT_SECRET** | Any long random string (e.g. 32+ characters). Example: `mySuperSecretKeyForStrideto2024!@#` – in production use a strong random value. |
 
 Leave the rest as-is for local run. Save the file.
 
@@ -144,7 +144,7 @@ npm run dev
 You should see:
 
 - `MongoDB connected`
-- `EduRozgaar API running at http://localhost:5000`
+- `Strideto API running at http://localhost:5000`
 
 If you see “MongoDB connection failed”, MongoDB is not running or `MONGO_URI` in `server/.env` is wrong. Fix that and run again.
 
@@ -163,7 +163,7 @@ You should see something like:
 
 ### Check that it’s working
 
-1. **Browser:** Open [http://localhost:5173](http://localhost:5173). You should see the EduRozgaar homepage.
+1. **Browser:** Open [http://localhost:5173](http://localhost:5173). You should see the Strideto homepage.
 2. **API health:** Open [http://localhost:5000/api/health](http://localhost:5000/api/health). You should get a short JSON response (e.g. `{"ok":true}` or similar).
 3. **Login/Register:** On the site, try Register with an email and password, then Login. If that works, **JWT and the auth API are working**.
 4. **Browse:** Click Jobs, Scholarships, Admissions. If listings appear, the **database and APIs are working**.
@@ -207,12 +207,12 @@ When you deploy to a real server (e.g. Vercel, Railway, your own VPS):
    - **MONGO_URI** = your production MongoDB URL (e.g. Atlas).
    - **JWT_SECRET** = a new, strong random secret (not the one you use on localhost).
    - **NODE_ENV** = `production`.
-   - **SITE_URL** = your real site URL (e.g. `https://edurozgaar.pk`).
+   - **SITE_URL** = your real site URL (e.g. `https://strideto.com`).
 
 2. **Client env (when building the frontend)**  
    When you run `npm run build` in `client/`, set (or put in `client/.env.production`):
-   - **VITE_API_URL** = your production API URL (e.g. `https://api.edurozgaar.pk/api`).
-   - **VITE_APP_URL** = your production site URL (e.g. `https://edurozgaar.pk`).
+   - **VITE_API_URL** = your production API URL (e.g. `https://api.strideto.com/api`).
+   - **VITE_APP_URL** = your production site URL (e.g. `https://strideto.com`).
 
 3. **Do not commit** `server/.env` or `client/.env` (they should be in `.gitignore`). Set the same values in your hosting provider’s “Environment variables” or “Config” instead.
 

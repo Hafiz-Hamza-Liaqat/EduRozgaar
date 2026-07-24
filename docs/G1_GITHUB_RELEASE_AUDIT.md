@@ -4,7 +4,7 @@
 **Scope:** Pre-push / pre-production repository hygiene only  
 **Application code / APIs / schemas / auth behavior:** **not modified**
 
-**Target remote (empty):** [Hafiz-Hamza-Liaqat/EduRozgaar](https://github.com/Hafiz-Hamza-Liaqat/EduRozgaar)
+**Target remote (empty):** [Hafiz-Hamza-Liaqat/Strideto](https://github.com/Hafiz-Hamza-Liaqat/Strideto)
 
 ---
 
@@ -144,7 +144,7 @@ Expected before first push to your empty GitHub repo:
 - **Do commit:** source, `shared/`, docs (kept + archive), scripts, `.env.example`, `.env.template`, LICENSE/AUTHORS/NOTICE/CONTRIBUTING/README, `.gitignore`
 - **Do not commit:** `server/.env`, `.env.staging`, `.mongo-data/`, `.cursor/`, `client/dist/`, `node_modules/`, logs, dumps
 
-Working tree still contains a large set of uncommitted product work relative to the old `origin` — that is expected for the first push of the full codebase to [Hafiz-Hamza-Liaqat/EduRozgaar](https://github.com/Hafiz-Hamza-Liaqat/EduRozgaar).
+Working tree still contains a large set of uncommitted product work relative to the old `origin` — that is expected for the first push of the full codebase to [Hafiz-Hamza-Liaqat/Strideto](https://github.com/Hafiz-Hamza-Liaqat/Strideto).
 
 ---
 
@@ -187,7 +187,7 @@ Working tree still contains a large set of uncommitted product work relative to 
 ## Phase 10 — Operator checklist (before push)
 
 1. Set local git identity to Hamza (`hamza4h761@gmail.com`) if committing as Founder.  
-2. Point `origin` to `https://github.com/Hafiz-Hamza-Liaqat/EduRozgaar.git`.  
+2. Point `origin` to `https://github.com/Hafiz-Hamza-Liaqat/Strideto.git`.  
 3. Stage intentionally; exclude any accidental `.env`.  
 4. Commit + `git push -u origin main`.  
 5. On Render/Vercel/Atlas: set **new** secrets (do not reuse local JWT).  
@@ -197,7 +197,7 @@ Working tree still contains a large set of uncommitted product work relative to 
 
 ## Confirmation
 
-The repository is **secure for public GitHub hosting**, **documentation is production-oriented**, **frontend builds**, **backend entry syntax-checks**, and is **suitable for first push** to the empty EduRozgaar remote, then staging deploy to Render + Vercel with Atlas.
+The repository is **secure for public GitHub hosting**, **documentation is production-oriented**, **frontend builds**, **backend entry syntax-checks**, and is **suitable for first push** to the empty Strideto remote, then staging deploy to Render + Vercel with Atlas.
 
 **Verdict: READY FOR FIRST GITHUB PUSH**
 

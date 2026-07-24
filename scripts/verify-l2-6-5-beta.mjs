@@ -188,10 +188,10 @@ async function main() {
   let adminToken = null;
   for (const [em, pw] of [
     ['verify-admin@edurozgaar.local', 'VerifyAdmin!23456'],
-    ['admin@edurozgaar.pk', 'Admin1234'],
-    ['admin@edurozgaar.pk', 'Admin@12345'],
-    ['admin@edurozgaar.pk', 'admin123'],
-    ['admin@edurozgaar.pk', 'Password1!'],
+    ['admin@strideto.com', 'Admin1234'],
+    ['admin@strideto.com', 'Admin@12345'],
+    ['admin@strideto.com', 'admin123'],
+    ['admin@strideto.com', 'Password1!'],
     ['admin@edurozgaar.com', 'Admin@12345'],
     ['admin@example.com', 'password123'],
   ]) {

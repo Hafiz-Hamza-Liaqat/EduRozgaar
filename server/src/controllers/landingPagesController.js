@@ -1,7 +1,7 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sanitizeString } from '../utils/sanitize.js';
 
-const SITE_URL = process.env.SITE_URL || 'https://edurozgaar.pk';
+const SITE_URL = process.env.SITE_URL || 'https://strideto.com';
 
 /**
  * Return SEO meta and schema for province/category landing pages.
@@ -14,8 +14,8 @@ export const getLandingPage = asyncHandler(async (req, res) => {
   if (!safeType || !safeSlug) return res.status(400).json({ error: 'Invalid type or slug' });
 
   const title = safeType === 'province'
-    ? `Jobs & Scholarships in ${safeSlug} – EduRozgaar Pakistan`
-    : `${safeSlug} Jobs & Scholarships – EduRozgaar Pakistan`;
+    ? `Jobs & Scholarships in ${safeSlug} – Strideto Pakistan`
+    : `${safeSlug} Jobs & Scholarships – Strideto Pakistan`;
   const description = safeType === 'province'
     ? `Find jobs, scholarships, and admissions in ${safeSlug}. Updated listings for students and job seekers.`
     : `Browse ${safeSlug} jobs, scholarships, and education opportunities in Pakistan.`;
@@ -41,7 +41,7 @@ export const getLandingPage = asyncHandler(async (req, res) => {
     url: canonical,
     publisher: {
       '@type': 'Organization',
-      name: 'EduRozgaar',
+      name: 'Strideto',
       url: SITE_URL,
     },
   };

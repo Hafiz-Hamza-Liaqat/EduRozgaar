@@ -53,7 +53,7 @@ export async function createCheckoutSession({ employerId, jobId, planId, success
           currency: 'usd',
           unit_amount: Math.round(plan.price * 100),
           product_data: {
-            name: `EduRozgaar Job Post — ${plan.name}`,
+            name: `Strideto Job Post — ${plan.name}`,
             description: job.title,
           },
         },

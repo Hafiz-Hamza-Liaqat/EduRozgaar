@@ -1,4 +1,4 @@
-# Editor Manual — EduRozgaar
+# Editor Manual — Strideto
 
 For users with **Editor** role.
 

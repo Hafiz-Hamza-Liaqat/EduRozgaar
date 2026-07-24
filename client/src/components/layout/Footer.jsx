@@ -99,9 +99,9 @@ export function Footer() {
   ];
 
   const socialLinks = cmsSocial || [
-    { id: 'twitter', label: t('footer:twitter'), href: 'https://twitter.com/edurozgaar' },
-    { id: 'linkedin', label: t('footer:linkedin'), href: 'https://linkedin.com/company/edurozgaar' },
-    { id: 'telegram', label: t('footer:telegram'), href: 'https://t.me/edurozgaar' },
+    { id: 'twitter', label: t('footer:twitter'), href: 'https://twitter.com/strideto' },
+    { id: 'linkedin', label: t('footer:linkedin'), href: 'https://linkedin.com/company/strideto' },
+    { id: 'telegram', label: t('footer:telegram'), href: 'https://t.me/strideto' },
   ];
 
   const newsletterText = footerNav?.newsletterText || t('footer:newsletterDesc');

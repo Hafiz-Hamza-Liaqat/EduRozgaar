@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and start EduRozgaar production stack.
+# Build and start Strideto production stack.
 # Requires .env at repo root (copy from .env.template).
 # Usage: bash deploy/deploy.sh
 
@@ -35,6 +35,6 @@ echo ""
 echo "Next:"
 echo "  - Configure Caddy: edit deploy/Caddyfile, copy to /etc/caddy/Caddyfile, reload caddy"
 echo "  - Seed DB: bash scripts/production-setup.sh"
-echo "  - Smoke test: SITE_URL=https://yourdomain.com npm run staging:smoke"
+echo "  - Smoke test: SITE_URL=https://strideto.com npm run staging:smoke"
 echo "  - Staging stack: bash deploy/staging-up.sh (see docs/STAGING_DEPLOYMENT.md)"
 echo "  - Rollback: bash deploy/rollback.sh"

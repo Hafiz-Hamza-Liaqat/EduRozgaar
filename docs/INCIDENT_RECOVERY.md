@@ -1,4 +1,4 @@
-# Incident Recovery Guide — EduRozgaar
+# Incident Recovery Guide — Strideto
 
 ## Severity levels
 
@@ -15,8 +15,8 @@
 
 1. Confirm scope: Vercel, Render, or Mongo?
    ```bash
-   curl -I https://yourdomain.com
-   curl https://api.yourdomain.com/api/health/ready
+   curl -I https://strideto.com
+   curl https://api.strideto.com/api/health/ready
    ```
 2. Check Render status page and MongoDB Atlas alerts
 3. If bad deploy → **rollback** (`docs/ROLLBACK_GUIDE.md`)

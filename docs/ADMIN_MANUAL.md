@@ -1,4 +1,4 @@
-# Admin Manual — EduRozgaar
+# Admin Manual — Strideto
 
 For users with **Admin** or **Super Admin** role.
 

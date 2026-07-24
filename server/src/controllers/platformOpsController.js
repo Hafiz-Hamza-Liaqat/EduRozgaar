@@ -85,7 +85,7 @@ export const getPlatformHealth = asyncHandler(async (_req, res) => {
 
   res.json({
     status: degraded ? 'degraded' : 'ok',
-    service: 'EduRozgaar Platform',
+    service: 'Strideto Platform',
     timestamp: new Date().toISOString(),
     services,
     environment: env,
@@ -115,7 +115,7 @@ export const getExtendedHealth = asyncHandler(async (_req, res) => {
   const smtpConfigured = isSmtpConfigured();
   res.json({
     status: mongo.status === 'up' ? 'ok' : 'degraded',
-    service: 'EduRozgaar API',
+    service: 'Strideto API',
     mongo: mongo.status,
     redis: redis.status,
     smtp: smtpConfigured ? 'configured' : 'not_configured',

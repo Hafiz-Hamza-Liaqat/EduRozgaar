@@ -113,7 +113,7 @@ export const exportInsights = asyncHandler(async (req, res) => {
     // Lightweight text summary (print-friendly); full PDF via browser print
     const cards = dashboard.overview?.cards || {};
     const lines = [
-      'EduRozgaar Content Insights Summary',
+      'Strideto Content Insights Summary',
       `Generated: ${dashboard.generatedAt}`,
       '',
       `Views today: ${cards.viewsToday ?? 0}`,

@@ -1,6 +1,6 @@
-# EduRozgaar Mobile (Phase-8)
+# Strideto Mobile (Phase-8)
 
-React Native (Expo) app for EduRozgaar – uses `/api/v1` for Jobs, Scholarships, Admissions, Trending, Bookmarks, Notifications.
+React Native (Expo) app for Strideto – uses `/api/v1` for Jobs, Scholarships, Admissions, Trending, Bookmarks, Notifications.
 
 ## Setup
 

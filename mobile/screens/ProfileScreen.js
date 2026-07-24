@@ -20,7 +20,7 @@ export default function ProfileScreen() {
           <Text style={[styles.btnText, { color: c.text }]}>Language: {getLocale() === 'ur' ? 'Urdu' : 'English'}</Text>
         </TouchableOpacity>
       </View>
-      <Text style={[styles.footer, { color: c.subtext }]}>EduRozgaar Mobile – Phase-8</Text>
+      <Text style={[styles.footer, { color: c.subtext }]}>Strideto Mobile – Phase-8</Text>
     </View>
   );
 }

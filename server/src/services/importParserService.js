@@ -166,7 +166,7 @@ export function validateImportColumns(resource, rows) {
 
   let hint;
   if (missing.length && looksLikeContactData(cols)) {
-    hint = 'This file looks like customer/contact data (first_name, last_name, email, etc.), not EduRozgaar content listings. Use a jobs or scholarships template with the correct columns.';
+    hint = 'This file looks like customer/contact data (first_name, last_name, email, etc.), not Strideto content listings. Use a jobs or scholarships template with the correct columns.';
   }
 
   return { ok: missing.length === 0, detectedColumns: cols, missing, hint };
